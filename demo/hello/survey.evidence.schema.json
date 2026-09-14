@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "hello survey — a genuine reading of the checked-out repo + an MR greeting",
+  "type": "object",
+  "required": ["ok", "repo_files", "sample", "sha", "commented"],
+  "properties": {
+    "ok": {
+      "type": "boolean",
+      "description": "CHECKABLE — the survey ran to completion."
+    },
+    "greeting": {
+      "type": "string",
+      "description": "The friendly hello; not checked."
+    },
+    "repo_files": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "CHECKABLE — how many tracked files the checked-out repo has (git ls-files)."
+    },
+    "sample": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "CHECKABLE — a few real paths the survey saw, proving it read the actual tree."
+    },
+    "sha": {
+      "type": "string",
+      "description": "The commit the node checked out (proves the checkout landed)."
+    },
+    "commented": {
+      "type": "boolean",
+      "description": "CHECKABLE — whether the survey posted its greeting to the MR through the forge API."
+    },
+    "comment_url": {
+      "type": "string",
+      "description": "URL of the posted comment, when commented; not checked."
+    },
+    "comment_error": {
+      "type": "string",
+      "description": "Diagnostic when the comment did not post; not checked."
+    }
+  }
+}

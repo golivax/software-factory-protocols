@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "toy-max compute output (the ground truth)",
+  "type": "object",
+  "required": ["records", "max_id", "max_value"],
+  "properties": {
+    "records": { "type": "array" },
+    "max_id": { "type": "string" },
+    "max_value": { "type": "integer" }
+  }
+}

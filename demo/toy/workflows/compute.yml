@@ -1,0 +1,32 @@
+name: compute
+# A CODE node: arbitrary code, run under act inside the microVM. NO gh-aw — no
+# AWF, no MCP, no arc-dind. Its output is the deterministic ground truth the
+# downstream agent must correctly read and the check settles against.
+on:
+  workflow_dispatch:
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: emit facts
+        run: |
+          python3 - <<'PY'
+          import json, os
+          # deterministic facts; the max is 'bravo' = 47
+          records = [
+              {"id": "alpha",   "value": 12},
+              {"id": "bravo",   "value": 47},
+              {"id": "charlie", "value": 23},
+              {"id": "delta",   "value": 8},
+          ]
+          top = max(records, key=lambda r: r["value"])
+          facts = {"records": records, "max_id": top["id"], "max_value": top["value"]}
+          ws = os.environ["GITHUB_WORKSPACE"]
+          # compute-facts.json: back-compat with the thin orchestrator (#24/#25).
+          # evidence-out.json: the code node's evidence the ENGINE's Dispatcher seam
+          # reads back and persists as compute.evidence.json (#26).
+          for name in ("compute-facts.json", "evidence-out.json"):
+              with open(os.path.join(ws, name), "w") as fh:
+                  json.dump(facts, fh, indent=2)
+          print("wrote facts:", json.dumps(facts))
+          PY

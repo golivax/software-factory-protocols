@@ -1,0 +1,141 @@
+{
+  "name": "code-review-ocr",
+  "min_engine_version": "7.0.0",
+  "triggers": [
+    {
+      "on": "issue_comment",
+      "comment_prefix": "/ocr-review",
+      "command": "start"
+    }
+  ],
+  "states": [
+    {
+      "id": "review",
+      "kind": "fork",
+      "expand": {
+        "hook": "expand-files",
+        "as": "file",
+        "id_from": "$.path",
+        "max_legs": 32,
+        "matrix_fields": [
+          "path"
+        ]
+      },
+      "each": {
+        "states": [
+          {
+            "id": "plan",
+            "kind": "agent",
+            "workflow": "ocr-plan-agent",
+            "evidence": "plan.evidence.schema.json",
+            "max_iterations": 1,
+            "params": {
+              "schema": "plan.evidence.schema.json"
+            },
+            "checks": [
+              {
+                "run": "evidence-schema-valid"
+              }
+            ],
+            "next": "main-review"
+          },
+          {
+            "id": "main-review",
+            "kind": "agent",
+            "workflow": "ocr-main-agent",
+            "evidence": "main-review.evidence.schema.json",
+            "max_iterations": 1,
+            "inputs": [
+              {
+                "from": "plan",
+                "as": "plan"
+              }
+            ],
+            "params": {
+              "schema": "main-review.evidence.schema.json"
+            },
+            "checks": [
+              {
+                "run": "evidence-schema-valid"
+              },
+              {
+                "run": "traces-exist-in-diff"
+              }
+            ],
+            "next": "findings"
+          },
+          {
+            "id": "findings",
+            "kind": "fork",
+            "expand": {
+              "hook": "expand-findings",
+              "as": "finding",
+              "id_from": "$.finding_id",
+              "max_legs": 32
+            },
+            "each": {
+              "workflow": "ocr-filter-agent",
+              "evidence": "filter.evidence.schema.json",
+              "max_iterations": 1,
+              "params": {
+                "schema": "filter.evidence.schema.json"
+              },
+              "checks": [
+                {
+                  "run": "evidence-schema-valid"
+                },
+                {
+                  "run": "filter-verdict-valid"
+                }
+              ],
+              "kind": "agent"
+            },
+            "next": "join-findings"
+          },
+          {
+            "id": "join-findings",
+            "kind": "join",
+            "of": "findings",
+            "policy": "any",
+            "next": "reduce"
+          },
+          {
+            "id": "reduce",
+            "kind": "code",
+            "script": "reduce-file",
+            "inputs": [
+              {
+                "from_fork": "findings",
+                "as": "findings"
+              }
+            ]
+          }
+        ],
+        "kind": "sequence"
+      },
+      "next": "join-review"
+    },
+    {
+      "id": "join-review",
+      "kind": "join",
+      "of": "review",
+      "policy": "any",
+      "next": "merge"
+    },
+    {
+      "id": "merge",
+      "kind": "code",
+      "script": "post-review",
+      "_note": "post-review.py delegates to _review.run, which posts a PR review with PUBLISH_TOKEN. Code hooks get a least-privilege env, so the token must be declared here or the post silently no-ops on live Actions.",
+      "env": [
+        "PUBLISH_TOKEN"
+      ],
+      "inputs": [
+        {
+          "from_fork": "review",
+          "as": "files"
+        }
+      ]
+    }
+  ]
+}

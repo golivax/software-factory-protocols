@@ -1,0 +1,95 @@
+name: survey
+# The whole `/hello` protocol: one dispatched code step, no LLM. It runs in a
+# throwaway microVM with the repository checked out (the node declares
+# `checkout: true`), takes a light but genuine reading of the tree, and posts a
+# friendly greeting back to the merge request through the forge API — then writes
+# its evidence for the factory to check. This is the "hello world" of the software
+# factory: a comment on an MR drives a real run end to end that does honest work on
+# your code and talks back to your MR, with nothing to compile.
+on:
+  workflow_dispatch:
+    inputs:
+      protocol_context:
+        description: "engine-supplied run context (JSON string)"
+        required: false
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: survey the repository and greet the MR
+        env:
+          SF_PROTOCOL_CONTEXT: ${{ github.event.inputs.protocol_context }}
+        run: |
+          python3 - <<'PY'
+          import json, os, ssl, subprocess, urllib.request
+
+          # GITHUB_WORKSPACE is the repository, checked out at the merge request's
+          # commit (the node asked for it with `checkout: true`). Count the files
+          # git tracks and keep a few real paths as proof we read the actual tree.
+          ws = os.environ["GITHUB_WORKSPACE"]
+          files = subprocess.run(
+              ["git", "-C", ws, "ls-files"],
+              capture_output=True, text=True, check=True,
+          ).stdout.split()
+          sha = os.environ.get("GITHUB_SHA", "")[:12]
+
+          greeting = "\U0001F44B Hello from the software factory"
+          body = greeting
+
+          # Post the greeting to the MR via the forge API. We speak the GitHub REST
+          # surface against $GITHUB_API_URL; the gh2gl proxy translates it to the
+          # real forge (GitLab/CodeHub) and authenticates with its own token, so
+          # this is forge-agnostic and the node holds no forge credential.
+          ctx = json.loads(os.environ.get("SF_PROTOCOL_CONTEXT") or "{}")
+          pr = str(ctx.get("pr", "")).strip()
+          iid = pr[3:] if pr.startswith("pr-") else pr        # "pr-7" -> "7"
+          api = os.environ.get("GITHUB_API_URL", "").rstrip("/")
+          repo = os.environ.get("GITHUB_REPOSITORY", "")
+
+          commented, comment_url, comment_error = False, "", ""
+          if api and repo and iid:
+              url = f"{api}/repos/{repo}/issues/{iid}/comments"
+              req = urllib.request.Request(
+                  url, data=json.dumps({"body": body}).encode(), method="POST",
+                  headers={
+                      "Content-Type": "application/json",
+                      "Accept": "application/vnd.github+json",
+                      # gh2gl ignores caller auth (it uses its own token), but send
+                      # a value so any client/proxy that expects one is satisfied.
+                      "Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', 'x')}",
+                      # Tell the proxy this iid is the MR (its own comments set this),
+                      # so `issues/<iid>/comments` resolves to the merge request.
+                      "X-SF-Pr-Iid": iid,
+                  })
+              # The proxy TLS is a PINNED self-signed cert (the CA env vars point at
+              # the exact cert). Verify the chain against it, but skip hostname
+              # matching: the proxy is reached at the Docker-internal alias
+              # `host.docker.internal`, and pinning the leaf cert already
+              # authenticates the server, so the SAN check is redundant here.
+              ca = os.environ.get("SSL_CERT_FILE") or None
+              ssl_ctx = ssl.create_default_context(cafile=ca)
+              ssl_ctx.check_hostname = False
+              try:
+                  with urllib.request.urlopen(req, timeout=30, context=ssl_ctx) as resp:
+                      payload = json.load(resp)
+                  commented = True
+                  comment_url = payload.get("html_url") or payload.get("url") or ""
+              except Exception as exc:                       # noqa: BLE001
+                  comment_error = f"{type(exc).__name__}: {exc}"
+          else:
+              comment_error = "no forge API configured (GITHUB_API_URL / repo / pr missing)"
+
+          evidence = {
+              "ok": True,
+              "greeting": greeting,
+              "repo_files": len(files),
+              "sample": sorted(files)[:5],
+              "sha": sha,
+              "commented": commented,
+              "comment_url": comment_url,
+              "comment_error": comment_error,
+          }
+          with open(os.environ["SF_EVIDENCE_OUT"], "w") as f:
+              json.dump(evidence, f, indent=2)
+          print(f"surveyed {len(files)} files at {sha}; commented={commented} {comment_error}")
+          PY

@@ -1,0 +1,84 @@
+{
+  "name": "impl-feature-auto",
+  "version": "0.1.0",
+  "min_engine_version": "7.0.0",
+  "triggers": [
+    {
+      "on": "issue_comment",
+      "comment_prefix": "/impl-feature-auto",
+      "command": "start",
+      "target": "issue"
+    }
+  ],
+  "states": [
+    {
+      "id": "design",
+      "kind": "agent",
+      "label": "design (spec + ledger + plan)",
+      "workflow": "impl-feature-auto-design-agent",
+      "evidence": "design.evidence.schema.json",
+      "max_iterations": 3,
+      "checks": [
+        {
+          "run": "ledger-wellformed",
+          "on_fail": "iterate"
+        },
+        {
+          "run": "ledger-consistent",
+          "on_fail": "iterate"
+        },
+        {
+          "run": "read-these-first-consistent",
+          "on_fail": "iterate"
+        },
+        {
+          "run": "spec-present",
+          "on_fail": "block"
+        },
+        {
+          "run": "plan-present",
+          "on_fail": "block"
+        }
+      ],
+      "on_blocked": "halt",
+      "next": "implement"
+    },
+    {
+      "id": "implement",
+      "kind": "agent",
+      "label": "implement (TDD + open PR)",
+      "workflow": "impl-feature-auto-implement-agent",
+      "evidence": "implement.evidence.schema.json",
+      "max_iterations": 1,
+      "inputs": [
+        {
+          "from": "design",
+          "as": "design"
+        }
+      ],
+      "checks": [
+        {
+          "run": "implement-schema-valid",
+          "on_fail": "iterate"
+        }
+      ],
+      "next": "post-summary"
+    },
+    {
+      "id": "post-summary",
+      "kind": "code",
+      "script": "post-summary",
+      "_note": "Resolves the PR gh-aw's safe-outputs opened and comments the link on the originating issue. Reads the PR list and posts with the PAT.",
+      "inputs": [
+        {
+          "from": "implement",
+          "as": "evidence"
+        }
+      ],
+      "env": [
+        "PUBLISH_TOKEN"
+      ],
+      "next": "done"
+    }
+  ]
+}

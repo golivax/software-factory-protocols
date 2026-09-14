@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "toy-max assess evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["claimed_max_id", "claimed_max_value", "assessment"],
+  "properties": {
+    "claimed_max_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CHECKABLE claim — which record the agent says has the max value. Settled against the code node's facts."
+    },
+    "claimed_max_value": {
+      "type": "integer",
+      "description": "CHECKABLE claim — the max value the agent read. Settled against the code node's facts."
+    },
+    "assessment": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JUDGMENT — the agent's opinion on the finding. NOT settleable by a check; passed through."
+    }
+  }
+}

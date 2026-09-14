@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "demo facts — the code node's output",
+  "type": "object",
+  "required": ["step", "ok", "examined", "token"],
+  "properties": {
+    "step": { "type": "string" },
+    "ok": { "type": "boolean", "description": "CHECKABLE — the code step ran and reported success." },
+    "examined": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "CHECKABLE — a non-empty trace of what the step looked at."
+    },
+    "token": {
+      "type": "string",
+      "description": "A deterministic value the downstream agent must echo back (proves inputs round-tripped)."
+    }
+  }
+}

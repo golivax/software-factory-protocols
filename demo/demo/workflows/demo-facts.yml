@@ -1,0 +1,32 @@
+name: demo-facts
+# CODE node (dispatched, no gh-aw, no LLM). Emits deterministic facts + a `token`
+# the downstream agent must echo back, proving the input round-tripped through the
+# dispatch boundary. Its evidence is settled by checks/facts-present.py; its verdict
+# is this job's exit status.
+on:
+  workflow_dispatch:
+    inputs:
+      protocol_context:
+        description: "engine-supplied {cid,pr,ref,sha,inputs,iteration} (JSON string)"
+        required: false
+jobs:
+  facts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: emit facts
+        run: |
+          python3 - <<'PY'
+          import json, os
+          facts = {
+              "step": "facts",
+              "ok": True,
+              "examined": ["README.md"],
+              "token": "demo-token-1",
+          }
+          # evidence-out.json in GITHUB_WORKSPACE — the bound per-node workspace the
+          # SbxDispatcher reads back on the host and persists as facts' evidence.
+          ws = os.environ["GITHUB_WORKSPACE"]
+          with open(os.path.join(ws, "evidence-out.json"), "w") as f:
+              json.dump(facts, f, indent=2)
+          print("wrote facts:", json.dumps(facts))
+          PY
