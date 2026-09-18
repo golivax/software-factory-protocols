@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "handover — the unfinished, uncommitted work a colleague left in the tree",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["files", "summary"],
+  "properties": {
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "description": "CHECKABLE — every untracked file left behind, with its exact contents. This manifest IS the handover: each node runs in its own disposable microVM, so the files themselves cannot survive to the next step and are re-staged there from this list.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "content"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Repository-relative path, under `.notes/`."
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The file's exact contents. The final step consumes these bytes and compares them against what survived downstream."
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JUDGMENT — where the colleague got to and what is left to do. Never adjudicated."
+    }
+  }
+}

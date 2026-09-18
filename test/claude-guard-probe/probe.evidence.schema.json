@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "claude guard probe — what the agent attempted and what it observed",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["attempted", "outcome"],
+  "properties": {
+    "attempted": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CHECKABLE — what the agent tried to do. Never quote a refused command verbatim: the guard matches command text, so quoting it gets the report itself refused."
+    },
+    "outcome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JUDGMENT — what the agent observed. Never adjudicated. The guard's OWN records settle whether it fired; this field only shows whether the agent's account agrees with them."
+    }
+  }
+}
