@@ -12,6 +12,10 @@ bumping the submodule pointer.
 commons/workflows/          agent units shared by more than one protocol
 demo/                       the end-to-end demo packages (see the engine repo's docs/DEMO.md)
   demo/  grumpy/  hello/  toy/
+test/                       probes that exercise the ENGINE's own behaviour rather than
+                            doing useful work — today, the agent-security pipeline
+  cedar-recovered-demo/  cedar-denied-demo/
+  guardians-violation-demo/  claude-guard-probe/
 use-cases/                  real protocols, grouped by what they are for
   code-cleanup/duplicate-code-remover/
   code-review/code-review/
