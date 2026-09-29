@@ -58,7 +58,11 @@ pre-agent-steps:
       # claude CLI, installed by the compiled lock, for synthesis.)
       git clone --depth 1 https://github.com/radinshayanfar/codeset-vibing.git /tmp/codeset-src || \
         echo "[mm-codeset] codeset clone failed" >&2
-      python3 -m pip install --quiet -e /tmp/codeset-src || \
+      # The runner's python3 is an OS-managed interpreter, so a bare `pip install`
+      # is refused by PEP 668 ("externally-managed-environment") and the leg then
+      # runs with no codeset at all. This is a disposable runner container, not a
+      # machine whose system Python is worth protecting, so opt out explicitly.
+      python3 -m pip install --quiet --break-system-packages -e /tmp/codeset-src || \
         echo "[mm-codeset] codeset-vibing install failed — python -m codeset will be unavailable" >&2
   - name: Run codeset and stage output
     env:
