@@ -2,7 +2,7 @@
 
 Recovers a codebase's mental model with four parallel methods (`legion` ∥ `codeset` ∥ `ubiquitous-language` ∥ a `socratic` sub-pipeline) → `join` → a `combine` code node that pushes the result to an orphan `_mental_model` branch. Fully automated; started via the `manual` trigger against a ref.
 
-**Engine floor:** `min_engine_version` 7.0.0 · **Protocol version:** 1.0.0
+**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 1.0.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
 

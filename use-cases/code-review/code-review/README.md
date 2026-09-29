@@ -2,7 +2,7 @@
 
 The production review pipeline: `preflight` (six adherence legs + judges) → `preflight-verdict` → `overview` → `review` (five dimension legs) → `triage` → `fix` → `post-fix` (context ∥ mental-model update) → `mrp`. Opens one issue per finding, fixes and verifies each behind a honesty verdict.
 
-**Engine floor:** `min_engine_version` 7.0.0 · **Protocol version:** 0.2.0
+**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 0.2.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
 

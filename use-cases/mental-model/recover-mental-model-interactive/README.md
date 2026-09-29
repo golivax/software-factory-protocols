@@ -2,7 +2,7 @@
 
 The interactive twin of `recover-mental-model`: the socratic `answering` step is a human task on a dedicated issue (`/answer <id>: <value>`) instead of an agent; `phase2` resumes once every open question is answered.
 
-**Engine floor:** `min_engine_version` 7.0.0 · **Protocol version:** 1.0.0
+**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 1.0.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
 
