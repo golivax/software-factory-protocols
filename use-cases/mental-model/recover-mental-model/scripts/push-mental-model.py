@@ -35,9 +35,30 @@ import subprocess
 import sys
 import tempfile
 
-# Import lib from the engine dir (same pattern as the other publish hooks).
-sys.path.insert(0, os.path.join(os.path.dirname(__file__),
-                                "..", "..", "..", "engine"))
+# Locate the engine so `lib` is importable. $ENGINE_DIR is set by the engine for
+# every hook it spawns (lib.hook_base_env / the conclude env); the walk-up is the
+# fallback for a hook run by hand or by a harness that is not the engine, and it
+# searches rather than guessing a fixed depth -- the package sits at
+# `use-cases/<category>/<name>/` in the library but `.softwarefactory/protocols/<name>/`
+# in a customer repo, so no single `../../..` is right everywhere.
+def _engine_dir():
+    d = os.environ.get("ENGINE_DIR")
+    if d and os.path.isfile(os.path.join(d, "lib.py")):
+        return d
+    here = os.path.dirname(os.path.abspath(__file__))
+    while True:
+        cand = os.path.join(here, "engine")
+        if os.path.isfile(os.path.join(cand, "lib.py")):
+            return cand
+        parent = os.path.dirname(here)
+        if parent == here:
+            return None
+        here = parent
+
+
+_ED = _engine_dir()
+if _ED:
+    sys.path.insert(0, _ED)
 import lib  # noqa: E402
 
 BRANCH = "_mental_model"
