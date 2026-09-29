@@ -4,16 +4,18 @@ run-name: "MM Socratic Phase-1 Agent · cid:[${{ fromJSON(github.event.inputs.aw
 on:
   workflow_dispatch:
 strict: false
-sandbox:
-  agent: false
-features:
-  dangerously-disable-sandbox-agent: "POC custom Anthropic endpoint cannot be expressed in AWF static egress allowlist; agent stays read-only and never holds the state PAT"
 engine:
   id: claude
   model: claude-sonnet-4-6
   env:
     ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
     ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+    # Every model call goes through AWF's api-proxy to the gateway above, and the
+    # compiler (gh-aw >= v0.89) drops api.anthropic.com from the firewall allowlist
+    # once a custom target is set. Claude Code still makes non-essential calls
+    # (feature flags / update checks) straight to Anthropic; those get denied and
+    # surface as a "Firewall blocked 1 domain" warning. Switch them off.
+    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
 # INFRA PREREQUISITE: runs phase 1 of the socratic-code-theory-recovery skill
 # (https://github.com/LLM-Coding/Semantic-Anchors) against the PR head. The runner
 # must have the `claude` CLI with that skill installed + the ANTHROPIC_* secrets.
