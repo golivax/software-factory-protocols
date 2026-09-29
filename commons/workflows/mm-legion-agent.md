@@ -41,9 +41,14 @@ pre-agent-steps:
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
   - name: Checkout target ref
+    # The engine pins the commit under review and passes it as `aw_context.sha`;
+    # `.ref` is only ever set for a branch-shaped run, so checking it out means
+    # checking out nothing and letting actions/checkout fall back to the ambient
+    # `github.sha` — which, off a real forge, is a synthetic the remote has never
+    # heard of ("upload-pack: not our ref"). Take the sha, fall back to the ref.
     uses: actions/checkout@v5
     with:
-      ref: ${{ fromJSON(github.event.inputs.aw_context || '{}').ref }}
+      ref: ${{ fromJSON(github.event.inputs.aw_context || '{}').sha || fromJSON(github.event.inputs.aw_context || '{}').ref }}
       path: target
       persist-credentials: false
       fetch-depth: 0
