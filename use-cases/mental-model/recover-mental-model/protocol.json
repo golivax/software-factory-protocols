@@ -2,7 +2,12 @@
   "name": "recover-mental-model",
   "version": "1.0.0",
   "min_engine_version": "7.1.0",
-  "triggers": [],
+  "triggers": [
+    {
+      "on": "manual",
+      "command": "start"
+    }
+  ],
   "states": [
     {
       "id": "recover",
