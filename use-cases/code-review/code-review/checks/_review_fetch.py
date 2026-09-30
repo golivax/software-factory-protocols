@@ -3,7 +3,7 @@
 local-review-evidence check.
 
 The checks job (engine zone 3) runs with a read-only token (GH_TOKEN, scoped
-`pull-requests: read`) and run-checks.py forwards the job env to every check, so
+`pull-requests: read`) and run_checks.py forwards the job env to every check, so
 a check can fetch its own ground truth here — the same way the checks job already
 re-fetches `gh pr diff`. Keeping this in the protocol (not the engine) means the
 generic engine never needs to know that code-review's preflight wants review
