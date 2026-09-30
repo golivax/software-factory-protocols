@@ -137,11 +137,12 @@
       "id": "combine",
       "kind": "code",
       "script": "push-mental-model",
-      "_note": "Force-pushes the orphan _mental_model branch and downloads leg artifacts, so it needs a write-capable token + the target remote. Everything not listed here is withheld (lib.hook_base_env).",
+      "_note": "Force-pushes the orphan _mental_model branch, assembled from the four legs' collected `outputs:` trees (staged by the engine as inputs/<as>/). It needs a write-capable token, the target remote, and the forge kind that decides the credential shape in the push URL. Everything not listed here is withheld (lib.hook_base_env).",
       "env": [
         "PUBLISH_TOKEN",
         "GH_TOKEN",
         "MM_TARGET_REMOTE",
+        "FORGE_KIND",
         "PR_HEAD_SHA"
       ],
       "inputs": [
