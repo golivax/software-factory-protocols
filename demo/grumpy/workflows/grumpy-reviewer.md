@@ -7,16 +7,18 @@
 #   * engine:      upstream leaves the engine to the installer's default; we
 #                  name ours (claude + model) and point it at the deployment's
 #                  LLM gateway. Every client does this; it is not a compatibility gap.
-#   * strategy:    `slash_command.strategy: centralized`. The Software Factory
-#                  receiver plays the part of gh-aw's generated central trigger
-#                  workflow (agentic_commands.yml): it matches the slash command
-#                  itself and dispatches the lock as `workflow_dispatch` with an
-#                  `aw_context` input. Only the centralized strategy compiles a
-#                  lock that listens on workflow_dispatch; the default (inline)
-#                  strategy listens on the comment events directly and gates
-#                  activation on the comment body, which our dispatch never sends.
-#                  (github/gh-aw's own — deprecated — grumpy also used centralized,
-#                  plus `cli-proxy: true`, an `otlp` import and a `pr-review-base`
+#   * on:          `on: workflow_dispatch` instead of upstream's `/grumpy` slash
+#                  command. Triggers belong to the protocol: protocol.json's
+#                  `triggers[]` matches `/grumpy`, and the dispatcher runs the lock
+#                  as `act workflow_dispatch` with an `aw_context` input. Nothing
+#                  reads a workflow's own `on:` here, and a slash command in the
+#                  default (inline) strategy compiles to a lock that listens only
+#                  on the comment events, which act would never run. The body's
+#                  `Comment:` line renders empty, as it already did under the
+#                  centralized slash command: gh-aw fills that text under
+#                  workflow_dispatch only from release inputs.
+#                  (github/gh-aw's own — deprecated — grumpy used a centralized
+#                  slash command, plus `cli-proxy: true`, an `otlp` import and a `pr-review-base`
 #                  import whose prose points the agent at pre-fetched files nothing
 #                  stages. The catalogue version has none of that: it reads the PR
 #                  through the GitHub MCP tools, which is what gh2gl serves.)
@@ -26,10 +28,7 @@
 description: Performs critical code review with a focus on edge cases, potential bugs, and code quality issues
 
 on:
-  slash_command:
-    strategy: centralized
-    name: grumpy
-    events: [pull_request_comment, pull_request_review_comment]
+  workflow_dispatch:
 
 engine:
   id: claude
