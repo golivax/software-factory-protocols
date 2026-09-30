@@ -16,7 +16,7 @@
 #                  on the comment events, which act would never run. The body's
 #                  `Comment:` line renders empty, as it already did under the
 #                  centralized slash command: gh-aw fills that text under
-#                  workflow_dispatch only from release inputs.
+#                  workflow_dispatch only from release inputs (github/gh-aw#64586).
 #                  (github/gh-aw's own — deprecated — grumpy used a centralized
 #                  slash command, plus `cli-proxy: true`, an `otlp` import and a `pr-review-base`
 #                  import whose prose points the agent at pre-fetched files nothing
