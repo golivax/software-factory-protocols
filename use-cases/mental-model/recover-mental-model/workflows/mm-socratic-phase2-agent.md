@@ -71,6 +71,14 @@ pre-agent-steps:
     env:
       ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
       ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+      # `claude -p --permission-mode bypassPermissions` refuses to run as root
+      # unless it is told it is in a sandbox, and every step here runs as root
+      # inside the act job container. Without this the CLI exits immediately,
+      # the leg stages an empty tree, and the form-only artifacts check passes
+      # anyway -- a green leg that did no work. The refusal guards a developer
+      # machine; this is a disposable container inside a disposable microVM,
+      # which is exactly the case the escape hatch exists for.
+      IS_SANDBOX: "1"
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REPO: ${{ github.repository }}
     run: |
