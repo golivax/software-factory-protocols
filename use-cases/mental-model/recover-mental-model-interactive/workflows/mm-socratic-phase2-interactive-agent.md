@@ -120,6 +120,30 @@ pre-agent-steps:
       PY
       cat /tmp/gh-aw/evidence.json
 post-steps:
+  - name: Publish evidence where the engine reads it
+    # The engine reads a dispatched node's evidence from
+    # $GITHUB_WORKSPACE/evidence-out.json (conductor._read_evidence), absent =>
+    # {}. `act` runs --bind from the node workspace, so GITHUB_WORKSPACE IS that
+    # workspace -- writing the file here is what hands the verdict back.
+    #
+    # Uploading `evidence` as an Actions artifact does NOT: act's artifact server
+    # is per-run and in-VM, and the forge behind gh2gl has no Actions artifacts
+    # at all. Without this every leg landed evidence {} and its form-only check
+    # failed -- and a `questions_from` gate read no questions, because
+    # advance.py sources them from the producing node's evidence too.
+    #
+    # A post-step, for the same reason the outputs publish is one: the agent's
+    # verify-and-repair pass rewrites /tmp/gh-aw/evidence.json, and only what
+    # survives THAT is the node's real verdict.
+    if: always()
+    run: |
+      set -uo pipefail
+      if [ -s /tmp/gh-aw/evidence.json ]; then
+        cp /tmp/gh-aw/evidence.json "$GITHUB_WORKSPACE/evidence-out.json"
+        echo "[evidence] published $(wc -c < "$GITHUB_WORKSPACE/evidence-out.json") bytes"
+      else
+        echo "[evidence] /tmp/gh-aw/evidence.json missing or empty" >&2
+      fi
   - name: Publish the tree to the engine's outputs dir
     # Declared `outputs:` (issue #68). The engine created $SF_OUTPUTS_DIR before
     # the run and collects it off the workspace after the reap, staging it for the
