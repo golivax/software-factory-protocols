@@ -97,6 +97,27 @@ pre-agent-steps:
       PY
       cat /tmp/gh-aw/evidence.json
 post-steps:
+  - name: Publish the tree to the engine's outputs dir
+    # Declared `outputs:` (issue #68). The engine created $SF_OUTPUTS_DIR before
+    # the run and collects it off the workspace after the reap, staging it for the
+    # `combine` node as inputs/<leg>/ -- which is how the tree reaches the merge
+    # hook now that it no longer downloads artifacts. A post-step, not part of the
+    # method step, because the agent's verify-and-repair pass edits /tmp/gh-aw/out
+    # and only what survives THAT is the leg's real product. A plain `run:` so it
+    # reads the process env directly (act forwards SF_OUTPUTS_DIR as a container
+    # --env; `${{ env.* }}` would not resolve it). Unset => a standalone harness
+    # run with no engine to collect for: skip rather than fail.
+    if: always()
+    run: |
+      set -uo pipefail
+      if [ -z "${SF_OUTPUTS_DIR:-}" ]; then
+        echo "[outputs] SF_OUTPUTS_DIR unset — nothing to publish" >&2
+        exit 0
+      fi
+      mkdir -p "$SF_OUTPUTS_DIR"
+      cp -a /tmp/gh-aw/out/. "$SF_OUTPUTS_DIR"/ 2>/dev/null || \
+        echo "[outputs] nothing staged at /tmp/gh-aw/out" >&2
+      find "$SF_OUTPUTS_DIR" -type f | head -50
   - name: Upload evidence artifact
     if: always()
     uses: actions/upload-artifact@v4

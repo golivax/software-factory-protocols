@@ -78,12 +78,16 @@ pre-agent-steps:
       OUT=/tmp/gh-aw/out
       mkdir -p "$OUT"
       cd "$GITHUB_WORKSPACE/target"
-      # Restore the ANSWERED tree from the answering step's artifact (its run_id is
-      # carried in the staged `answers` input the engine materialized for this leg).
-      ANS_RUN=$(python3 -c "import json; d=json.load(open('/tmp/gh-aw/task-context.json')); print((d.get('inputs',{}).get('answers') or {}).get('run_id',''))" 2>/dev/null || true)
-      if [ -n "$ANS_RUN" ]; then
-        gh run download "$ANS_RUN" --repo "$REPO" -n mm-tree-socratic-answering -D . || \
-          echo "[mm-socratic-2] could not download answered tree (run $ANS_RUN)" >&2
+      # Restore the ANSWERED tree. `answering` declares `outputs: true` and this
+      # leg declares `inputs: [{from: answering, as: answers}]`, so the ENGINE
+      # already staged it at $GITHUB_WORKSPACE/inputs/answers/ (issue #68) -- no
+      # artifact download. The old `gh run download` path cannot work off GitHub:
+      # act's artifact server is per-run and in-VM, and gh2gl fronts a forge that
+      # has no Actions artifacts at all.
+      if [ -d "$GITHUB_WORKSPACE/inputs/answers" ]; then
+        cp -a "$GITHUB_WORKSPACE/inputs/answers/." . 2>/dev/null || true
+      else
+        echo "[mm-socratic-2] no staged answered tree at inputs/answers" >&2
       fi
       # Synthesize from the answered tree (QUESTION_TREE + answered OPEN_QUESTIONS).
       claude -p "we used socratic code-theory recovery and the OPEN_QUESTIONS*.adoc are already answered. Continue with phase 2: synthesize docs/specs (prd, use-cases, adrs) and docs/arc42 from the answered Question Tree. Do not ask anything." \
@@ -108,6 +112,27 @@ pre-agent-steps:
       PY
       cat /tmp/gh-aw/evidence.json
 post-steps:
+  - name: Publish the tree to the engine's outputs dir
+    # Declared `outputs:` (issue #68). The engine created $SF_OUTPUTS_DIR before
+    # the run and collects it off the workspace after the reap, staging it for the
+    # `combine` node as inputs/<leg>/ -- which is how the tree reaches the merge
+    # hook now that it no longer downloads artifacts. A post-step, not part of the
+    # method step, because the agent's verify-and-repair pass edits /tmp/gh-aw/out
+    # and only what survives THAT is the leg's real product. A plain `run:` so it
+    # reads the process env directly (act forwards SF_OUTPUTS_DIR as a container
+    # --env; `${{ env.* }}` would not resolve it). Unset => a standalone harness
+    # run with no engine to collect for: skip rather than fail.
+    if: always()
+    run: |
+      set -uo pipefail
+      if [ -z "${SF_OUTPUTS_DIR:-}" ]; then
+        echo "[outputs] SF_OUTPUTS_DIR unset — nothing to publish" >&2
+        exit 0
+      fi
+      mkdir -p "$SF_OUTPUTS_DIR"
+      cp -a /tmp/gh-aw/out/. "$SF_OUTPUTS_DIR"/ 2>/dev/null || \
+        echo "[outputs] nothing staged at /tmp/gh-aw/out" >&2
+      find "$SF_OUTPUTS_DIR" -type f | head -50
   - name: Upload evidence artifact
     if: always()
     uses: actions/upload-artifact@v4
