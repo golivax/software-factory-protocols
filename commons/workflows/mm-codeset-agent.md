@@ -58,11 +58,22 @@ pre-agent-steps:
       # claude CLI, installed by the compiled lock, for synthesis.)
       git clone --depth 1 https://github.com/radinshayanfar/codeset-vibing.git /tmp/codeset-src || \
         echo "[mm-codeset] codeset clone failed" >&2
-      # The runner's python3 is an OS-managed interpreter, so a bare `pip install`
-      # is refused by PEP 668 ("externally-managed-environment") and the leg then
-      # runs with no codeset at all. This is a disposable runner container, not a
-      # machine whose system Python is worth protecting, so opt out explicitly.
-      python3 -m pip install --quiet --break-system-packages -e /tmp/codeset-src || \
+      # Two things this install has to get past, both of which used to end with
+      # `No module named codeset` and a leg that ran anyway:
+      #   --break-system-packages: the runner's python3 is an OS-managed
+      #     interpreter, so a bare `pip install` is refused by PEP 668
+      #     ("externally-managed-environment"). This is a disposable runner
+      #     container, not a machine whose system Python is worth protecting.
+      #   --no-build-isolation: pip's default isolated build env is populated
+      #     from PyPI, and the sandbox's egress policy does not reach pypi.org
+      #     (the fetch dies as `SSLError(SSLEOFError)` and pip reports
+      #     "No matching distribution found for setuptools>=61"). The image
+      #     already carries setuptools 68, which satisfies the one build
+      #     requirement, so build against it instead of a downloaded copy.
+      #     codeset itself needs nothing from PyPI — `dependencies = []`, it
+      #     shells out to the `git` and `claude` CLIs.
+      python3 -m pip install --quiet --break-system-packages --no-build-isolation \
+        -e /tmp/codeset-src || \
         echo "[mm-codeset] codeset-vibing install failed — python -m codeset will be unavailable" >&2
   - name: Run codeset and stage output
     env:
