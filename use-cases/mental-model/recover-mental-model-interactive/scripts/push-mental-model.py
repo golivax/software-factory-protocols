@@ -14,16 +14,23 @@ golivax2/yuanrong-datasystem@_mental_model:
       socratic/             <- socratic leg (phase-2) tree
 
 ABI: <hook> <workdir> <instance>
-  <workdir>/inputs/{legion,codeset,ubiquitous-language,socratic}.json  leg evidence (engine-materialized);
-                                                    each carries a `run_id`.
-Env: ENGINE_LOCAL, GITHUB_REPOSITORY, PUBLISH_TOKEN, PR, PR_HEAD_SHA (inherited).
+  <workdir>/inputs/{legion,codeset,ubiquitous-language,socratic}/  leg file trees
+  (the sibling <leg>.json evidence files are staged too; the checks already
+  gated on them, so this hook only needs the trees)
+Env: ENGINE_LOCAL, GITHUB_REPOSITORY, FORGE_KIND, PUBLISH_TOKEN,
+     MM_TARGET_REMOTE, PR, PR_HEAD_SHA (inherited).
 
-Where the actual file trees come from:
-  * CI (ENGINE_LOCAL unset): `gh run download <run_id> -n mm-tree-<leg>` per leg,
-    using PUBLISH_TOKEN (needs actions:read + contents:write).
-  * Local (ENGINE_LOCAL=1): trees are pre-staged at <workdir>/trees/<leg>/ by the
-    caller (the pytest hook test) and the push targets the bare origin in
-    MM_TARGET_REMOTE — no network.
+Where the actual file trees come from: the ENGINE stages them. Each leg declares
+`outputs: true`, so its unit writes into `$SF_OUTPUTS_DIR`, the engine collects
+that directory off the sandbox before teardown, and `inputs[].from` naming the leg
+hands this hook its own copy at `inputs/<as>/` beside the evidence at
+`inputs/<as>.json` (issue #68).
+
+This replaced a `gh run download -n mm-tree-<leg>` per leg, which only ever worked
+on github.com: the factory's runner is `act`, whose artifact server is per-run and
+in-VM, and the forge behind gh2gl (GitLab/CodeHub) has no Actions artifacts at all.
+The legs still upload those artifacts for a human to inspect — they are no longer
+the transport.
 
 Prints {"conclusion","summary"} to stdout. This hook runs TRUSTED in zone 4 (NOT a
 sandboxed check) — it holds the publish token.
@@ -63,12 +70,14 @@ import lib  # noqa: E402
 
 BRANCH = "_mental_model"
 
-# leg name -> (input json basename, artifact name, destination dir in the branch)
+# leg name -> (input alias, destination dir in the branch). The alias is what the
+# `combine` node's `inputs[].as` calls the leg, which is what names both halves of
+# its staging: inputs/<alias>.json and inputs/<alias>/.
 LEGS = [
-    ("legion", "legion", "mm-tree-legion", "legion-map"),
-    ("codeset", "codeset", "mm-tree-codeset", "vibed-codeset"),
-    ("ubiquitous-language", "ubiquitous-language", "mm-tree-ubiquitous-language", "ubiquitous-language"),
-    ("socratic", "socratic", "mm-tree-socratic", "socratic"),
+    ("legion", "legion", "legion-map"),
+    ("codeset", "codeset", "vibed-codeset"),
+    ("ubiquitous-language", "ubiquitous-language", "ubiquitous-language"),
+    ("socratic", "socratic", "socratic"),
 ]
 
 METHOD_LINES = {
@@ -83,57 +92,74 @@ def _local():
     return os.environ.get("ENGINE_LOCAL", "0") == "1"
 
 
-def _read_input(workdir, name):
-    p = os.path.join(workdir, "inputs", f"{name}.json")
-    if not os.path.isfile(p):
-        return {}
-    try:
-        with open(p) as f:
-            return json.load(f)
-    except (json.JSONDecodeError, ValueError):
-        return {}
-
-
 def _git(cwd, *args, token=None):
     """Run git; never echo the token. Returns CompletedProcess (check=True)."""
     return subprocess.run(["git", *args], cwd=cwd, check=True,
                           text=True, capture_output=True)
 
 
-def _fetch_tree(workdir, leg, run_id, artifact):
-    """Materialize a leg's file tree at <workdir>/trees/<leg>/.
+def _leg_tree(workdir, alias):
+    """A leg's collected file tree at `inputs/<alias>/`, or None if it produced none.
 
-    Local mode: trees are already staged there. CI mode: download the artifact."""
-    dest = os.path.join(workdir, "trees", leg)
-    if _local():
-        return dest if os.path.isdir(dest) else None
-    os.makedirs(dest, exist_ok=True)
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
-    env = dict(os.environ)
-    # gh authenticates from GH_TOKEN; prefer the publish token.
-    env["GH_TOKEN"] = os.environ.get("PUBLISH_TOKEN", os.environ.get("GH_TOKEN", ""))
-    r = subprocess.run(
-        ["gh", "run", "download", str(run_id), "--repo", repo,
-         "-n", artifact, "-D", dest],
-        text=True, capture_output=True, env=env)
-    if r.returncode != 0:
-        sys.stderr.write(f"[push-mm] gh run download {artifact} (run {run_id}) "
-                         f"failed: {r.stderr}\n")
-        return None
-    return dest
+    The directory sits beside that leg's evidence at `inputs/<alias>.json`. The two
+    halves are independent -- a leg can write a verdict and no files, or the
+    reverse -- so a missing tree is a skipped leg here, not an error."""
+    d = os.path.join(workdir, "inputs", alias)
+    return d if os.path.isdir(d) else None
+
+
+def _with_credential(url, token, forge):
+    """`url` carrying `token` as a git-over-HTTP credential, per forge.
+
+    Same shape the engine's own clone builder uses (service/protocol/fetch.py
+    `clone_url`): GitLab and its CodeHub fork accept `oauth2:<token>`, GitHub wants
+    `x-access-token:<token>`. Kept OUT of MM_TARGET_REMOTE deliberately — the
+    remote is a plain URL an operator can read in a config file and this hook can
+    name in an error, and the secret arrives separately in PUBLISH_TOKEN. A URL
+    that already carries a credential is returned untouched."""
+    if not token:
+        return url
+    scheme, sep, rest = url.partition("://")
+    if not sep or "@" in rest.split("/", 1)[0]:
+        return url                                 # not http(s), or already credentialed
+    user = "x-access-token" if forge in ("", "github") else "oauth2"
+    return f"{scheme}://{user}:{token}@{rest}"
 
 
 def _target_remote():
-    """Authenticated push URL for the orphan branch."""
-    if _local():
-        return os.environ.get("MM_TARGET_REMOTE", "")
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
+    """Authenticated push URL for the orphan branch, or "".
+
+    MM_TARGET_REMOTE is the forge-agnostic seam (the node declares it in `env`):
+    any git URL — an internal GitLab over plain http, a CodeHub instance, a bare
+    repo on disk in the hook test. Only when it is unset does this fall back to
+    deriving a github.com URL from GITHUB_REPOSITORY, which is what this function
+    used to do unconditionally — and which silently pushed nowhere useful on every
+    non-GitHub deployment, the forges this engine exists to be agnostic about.
+
+    The token is injected here rather than baked into the remote so the two can be
+    configured (and logged) separately."""
+    forge = os.environ.get("FORGE_KIND", "").strip()
     token = os.environ.get("PUBLISH_TOKEN", "")
+    explicit = os.environ.get("MM_TARGET_REMOTE", "").strip()
+    if explicit:
+        return _with_credential(explicit, token, forge)
+    if _local():
+        return ""
+    repo = os.environ.get("GITHUB_REPOSITORY", "")
     if not repo:
         return ""
-    if token:
-        return f"https://x-access-token:{token}@github.com/{repo}.git"
-    return f"https://github.com/{repo}.git"
+    return _with_credential(f"https://github.com/{repo}.git", token, "github")
+
+
+def _public_url(remote):
+    """`remote` with any embedded credential stripped — safe to print or link."""
+    scheme, sep, rest = remote.partition("://")
+    if not sep:
+        return remote
+    host_part, slash, path = rest.partition("/")
+    if "@" in host_part:
+        host_part = host_part.split("@", 1)[1]
+    return f"{scheme}://{host_part}{slash}{path}"
 
 
 def main():
@@ -141,11 +167,9 @@ def main():
     instance = sys.argv[2] if len(sys.argv) > 2 else ""
 
     present = []          # (leg, dest_dir, tree_path)
-    for leg, inp, artifact, dest_dir in LEGS:
-        ev = _read_input(workdir, inp)
-        run_id = str(ev.get("run_id", "") or "")
-        tree = _fetch_tree(workdir, leg, run_id, artifact)
-        if tree and os.path.isdir(tree) and os.listdir(tree):
+    for leg, inp, dest_dir in LEGS:
+        tree = _leg_tree(workdir, inp)
+        if tree and os.listdir(tree):
             present.append((leg, dest_dir, tree))
         else:
             sys.stderr.write(f"[push-mm] leg '{leg}' produced no tree — skipping\n")
@@ -158,7 +182,8 @@ def main():
     remote = _target_remote()
     if not remote:
         print(json.dumps({"conclusion": "neutral",
-                          "summary": "No push remote resolved (need GITHUB_REPOSITORY + PUBLISH_TOKEN)."}))
+                          "summary": "No push remote resolved (set MM_TARGET_REMOTE, "
+                                     "or GITHUB_REPOSITORY on a github deployment)."}))
         return
 
     sha = os.environ.get("PR_HEAD_SHA", "") or instance
@@ -192,8 +217,13 @@ def main():
 
     legs_done = ", ".join(leg for leg, _, _ in present)
     pr = os.environ.get("PR", "")
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
-    link = f"https://github.com/{repo}/tree/{BRANCH}" if repo else BRANCH
+    # Derived from the remote that was actually pushed to, credential stripped —
+    # not rebuilt from github.com, which on a GitLab deployment linked a URL that
+    # does not exist. A non-http remote (the hook test's bare repo on disk) has no
+    # browsable form, so the branch name stands alone.
+    base = _public_url(remote)
+    link = f"{base[:-4] if base.endswith('.git') else base}/tree/{BRANCH}" \
+        if base.startswith("http") else BRANCH
     # Ref-targeted runs (UI/workflow_dispatch) have no PR to comment on — status is
     # served by the visibility API; the branch + this verdict are the output.
     if pr:
