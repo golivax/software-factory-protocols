@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Settle the claim that the `facts` code node actually ran and reported facts.
 
-Check ABI (the real engine's): `<check> <evidence.json> <diff.txt> <changed-files.txt>`
+Check ABI (the real engine's): `<check> <evidence.json>`, ground truth in `$CHECK_CTX`
 -> one JSON object `{"check","pass","feedback"}` on stdout, ALWAYS exit 0 (a
 non-zero exit is reserved for a genuine runner error, not a failed claim).
 

@@ -15,7 +15,7 @@ FORM: a gate held with no well-formed question would open asking nothing, which
 a human cannot answer. So this check keeps the gate answerable; `mm-route` keeps
 it mandatory.
 
-ABI: mm-questions-present.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: mm-questions-present.py <evidence.json>  (ground truth: $CHECK_CTX)
 Prints one {"check","pass","feedback"} to stdout and always exits 0.
 """
 import json

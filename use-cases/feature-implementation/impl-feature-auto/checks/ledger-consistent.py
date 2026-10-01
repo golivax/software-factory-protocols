@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ledger-consistent (layer 2) — rule-based contradictions (deterministic, not
 judgments). R1: UNKNOWN ⇒ confidence==low. R2: ledger ids unique.
-Usage: <ev.json> <diff> <changed-files>; exits 0."""
+Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import sys

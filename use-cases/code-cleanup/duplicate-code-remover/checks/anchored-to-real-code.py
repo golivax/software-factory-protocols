@@ -3,7 +3,7 @@
 matches the file at path[start_line:end_line], read from SCAN_ROOT (the checked-
 out scanned ref). Trailing-whitespace-insensitive per line. This is the anti-
 hallucination gate: duplication is a CHECKED claim, not trusted prose.
-Usage: <ev.json> <diff> <changed-files>; exits 0. Empty patterns -> pass."""
+Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0. Empty patterns -> pass."""
 import os
 import sys
 

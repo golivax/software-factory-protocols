@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """spec-present (block) — the bundled spec.md exists and carries the 5 required
-sections. Usage: <ev.json> <diff> <changed-files>; exits 0."""
+sections. Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import sys

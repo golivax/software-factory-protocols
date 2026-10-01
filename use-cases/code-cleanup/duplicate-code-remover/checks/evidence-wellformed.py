@@ -3,7 +3,7 @@
 object; non-empty `scanned`; `patterns` an array; each pattern has id/name/
 rationale, a severity in the configured enum, and >= min_locations locations,
 each with path + positive start<=end lines + non-empty existing_code.
-Usage: <ev.json> <diff> <changed-files>; exits 0."""
+Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import os
 import sys
 

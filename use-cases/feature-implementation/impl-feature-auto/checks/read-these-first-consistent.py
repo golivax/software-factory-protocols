@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """read-these-first-consistent (layer 3) — honest triage over the typed risk axes
 + spec cross-reference. Reads the bundled spec.md (sibling of evidence.json).
-Usage: <ev.json> <diff> <changed-files>; exits 0."""
+Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import sys

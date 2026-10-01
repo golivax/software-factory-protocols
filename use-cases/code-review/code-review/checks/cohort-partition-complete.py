@@ -2,18 +2,19 @@
 """Check: the agent's cohorts form a COMPLETE PARTITION of the PR's changed files —
 every changed file belongs to exactly one cohort. Custody's guided-overview workflow
 only prompt-asserts this; the engine receives the independent changed-files list at
-check time (argv[3], from `gh pr diff --name-only`), so we enforce it deterministically.
+check time ($CHECK_CTX/files.txt, fetched by the service), so we enforce it deterministically.
 
 A gap (changed file in no cohort) or overlap (file claimed by >1 cohort) corrupts the
 downstream diffusion inputs (NS/ND/NF) that the risk scorer derives from cohort files,
 so this is an iterate-severity defect: re-dispatch the agent with the offending paths.
 
-Usage: cohort-partition-complete.py <evidence.json> <diff.txt> <changed-files.txt>"""
+Usage: cohort-partition-complete.py <evidence.json>  (ground truth: $CHECK_CTX)"""
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _ctx  # noqa: E402
 import _paths  # noqa: E402
 
 
@@ -41,7 +42,7 @@ def main():
     union = set(counts)
     overlap = sorted(f for f, n in counts.items() if n > 1)
 
-    changed = set(_paths.read_changed_files(sys.argv[3] if len(sys.argv) > 3 else ""))
+    changed = set(_paths.read_changed_files(_ctx.path("files.txt")))
 
     problems = []
     if overlap:

@@ -3,7 +3,7 @@
 claimed snippet in the independently-fetched diff, and every `examined`
 identifier appears in that file's diff hunks.
 
-Usage: traces-exist-in-diff.py <evidence.json> <diff.txt> <changed-files.txt>
+Usage: traces-exist-in-diff.py <evidence.json>  (ground truth: $CHECK_CTX)
 
 This replaces the former "snippet appears somewhere in the diff" check: a finding
 must now name the exact line(s) it critiques (RIGHT = new-file line numbers,
@@ -16,6 +16,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _ctx  # noqa: E402
 import _trace  # noqa: E402
 
 verify_finding = _trace.verify_finding
@@ -23,15 +24,15 @@ findings_anchor_errors = _trace.findings_anchor_errors
 
 
 def main():
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 2:
         print(json.dumps({
             "check": "traces-exist-in-diff",
             "pass": False,
-            "feedback": "usage: traces-exist-in-diff.py <evidence.json> <diff.txt> <changed-files.txt>",
+            "feedback": "usage: traces-exist-in-diff.py <evidence.json>  (ground truth: $CHECK_CTX)",
         }))
         sys.exit(0)
-    # _files (changed-files.txt) is unused: the diff is the source of truth here.
-    ev_path, diff_path, _files = sys.argv[1], sys.argv[2], sys.argv[3]
+    # files.txt is unused: the diff is the source of truth here.
+    ev_path, diff_path = sys.argv[1], _ctx.path("diff.patch")
     try:
         with open(ev_path) as fh:
             evidence = json.load(fh)

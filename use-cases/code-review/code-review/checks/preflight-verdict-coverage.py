@@ -9,7 +9,7 @@ A cell is well-formed iff it is an object with a non-empty `leg`, a non-empty
 `verdict`, and a `scope` object. Every declared leg must appear exactly once;
 no cell may name an undeclared leg.
 
-ABI: preflight-verdict-coverage.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: preflight-verdict-coverage.py <evidence.json>  (ground truth: $CHECK_CTX)
 """
 import json
 import os
