@@ -11,7 +11,7 @@ Config (CHECK_PARAMS env, the node's `params`):
   require:   [str]  top-level keys that MUST be present (any value, incl. empty)
   non_empty: [str]  subset that must additionally be non-empty/truthy
 
-ABI: evidence-present.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: evidence-present.py <evidence.json>  (ground truth: $CHECK_CTX)
 Prints one {"check","pass","feedback"} object to stdout and always exits 0.
 """
 import json

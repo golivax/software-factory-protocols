@@ -2,7 +2,7 @@
 
 The interactive twin of `recover-mental-model`: the socratic `answering` step is a human task on a dedicated issue (`/answer <id>: <value>`) instead of an agent; `phase2` resumes once every open question is answered.
 
-**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 1.0.0
+**Engine floor:** `min_engine_version` 8.0.0 · **Protocol version:** 1.0.0
 
 **Status.** Runs on the deployed service. The legs' file trees travel on the engine's `outputs:` transport (issue #68) — declared `outputs: true`, collected by the engine, handed to `combine` as `inputs/<leg>/` — not in Actions artifacts, which no non-GitHub forge has.
 

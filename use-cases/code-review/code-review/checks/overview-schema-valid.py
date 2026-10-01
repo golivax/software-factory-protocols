@@ -10,7 +10,7 @@ draft-07 contract documented for the merged guided-overview agent. Emptiness of 
 top-level cohorts/summary keys is also gated by `evidence-present` (params.non_empty);
 this check owns the deep structure + vocabularies.
 
-Usage: overview-schema-valid.py <evidence.json> <diff.txt> <changed-files.txt>"""
+Usage: overview-schema-valid.py <evidence.json>  (ground truth: $CHECK_CTX)"""
 import json
 import sys
 

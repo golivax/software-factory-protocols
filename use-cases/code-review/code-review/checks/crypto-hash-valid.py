@@ -27,7 +27,7 @@ guard, not the live trust anchor — the live anchor is the leg's trusted
 `post-steps:` assemble step, which rebuilds `evidence.json` itself from the
 recognized run rather than trusting the agent's copy.
 
-ABI: crypto-hash-valid.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: crypto-hash-valid.py <evidence.json>  (ground truth: $CHECK_CTX)
 Prints one {"check","pass","feedback"} object to stdout and always exits 0.
 """
 import json

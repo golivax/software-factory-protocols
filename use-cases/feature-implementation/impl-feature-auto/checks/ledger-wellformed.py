@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ledger-wellformed (layer 1) — per-item completeness + valid enums + justified
 blast_radius/reversibility + ASSUMPTION ⇒ verified:true. Form only; never judges
-whether a rating is calibrated. Usage: <ev.json> <diff> <changed-files>; exits 0."""
+whether a rating is calibrated. Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import sys

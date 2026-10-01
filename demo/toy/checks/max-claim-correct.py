@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """Check: the agent's max claim is settled against the code node's ground truth.
 
-Toy check ABI (this test-drive): `check <evidence.json> <ground_truth.json>`,
-prints one `{"check","pass","feedback"}` object and ALWAYS exits 0 — matching the
-real engine's contract (non-zero is reserved for a runner error).
+Check ABI: `check <evidence.json>` with `$CHECK_CTX` set (engine >= 8.0.0),
+prints one `{"check","pass","feedback"}` object and ALWAYS exits 0 (non-zero is
+reserved for a runner error). The ground truth is the node's declared input
+`compute-facts`, at `$CHECK_CTX/inputs/compute-facts.json`.
 
 It settles the two CHECKABLE claims (`claimed_max_id`, `claimed_max_value`)
 against `compute`'s facts. It deliberately does NOT touch `assessment` — that is a
 judgment, and checks settle claims, never adjudicate judgments.
 """
 import json
+import os
 import sys
+
+GROUND_TRUTH = os.path.join(os.environ.get("CHECK_CTX", ""), "inputs", "compute-facts.json")
 
 
 def emit(ok, feedback=""):
@@ -24,7 +28,7 @@ def main():
     except (OSError, ValueError, IndexError) as exc:
         emit(False, f"evidence unreadable/not JSON: {exc}")
     try:
-        facts = json.load(open(sys.argv[2]))
+        facts = json.load(open(GROUND_TRUTH))
     except (OSError, ValueError, IndexError) as exc:
         emit(False, f"ground-truth unreadable: {exc}")
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Check: honesty sub evidence validates against honesty-check.evidence.schema.json.
-ABI: honesty-check-valid <evidence.json> <diff.txt> <changed-files.txt> -> {check,pass,feedback}, exit 0."""
+ABI: honesty-check-valid <evidence.json>  (ground truth: $CHECK_CTX) -> {check,pass,feedback}, exit 0."""
 import json, os, sys
 
 def main(argv):

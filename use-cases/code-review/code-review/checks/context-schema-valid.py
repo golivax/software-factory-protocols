@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check: context evidence has the SessionExport-derived evidence shape.
 
-ABI: context-schema-valid.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: context-schema-valid.py <evidence.json>  (ground truth: $CHECK_CTX)
 Prints one {"check","pass","feedback"} object and always exits 0.
 """
 import json

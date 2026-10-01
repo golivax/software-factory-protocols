@@ -14,7 +14,7 @@ rollup's `graded_findings` as escalation-only (additive, can only block harder
 than the deterministic floor). Every declared leg must still appear exactly
 once; no cell may name an undeclared leg.
 
-ABI: cluster-coverage.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: cluster-coverage.py <evidence.json>  (ground truth: $CHECK_CTX)
 """
 import json
 import os
