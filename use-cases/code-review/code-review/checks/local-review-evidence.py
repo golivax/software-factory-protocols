@@ -14,7 +14,7 @@ Two ways (custody's demo thesis):
     transcripts are no longer committed into the PR, cf. context phase), or a
     `Reviewed-by:` trailer in the PR body (read from PR_BODY).
 
-Usage: local-review-evidence.py <evidence.json> <diff.txt> <changed-files.txt>;
+Usage: local-review-evidence.py <evidence.json>  (ground truth: $CHECK_CTX);
 reads GITHUB_REPOSITORY + PR (to fetch review activity) and PR_BODY env."""
 import json
 import os

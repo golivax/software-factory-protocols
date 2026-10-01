@@ -5,6 +5,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _ctx  # noqa: E402
 import _diff  # noqa: E402
 
 
@@ -22,7 +23,7 @@ def main():
         return
 
     try:
-        maps = _diff.parse_diff(sys.argv[2]) if len(sys.argv) > 2 else {}
+        maps = _diff.parse_diff(_ctx.path("diff.patch"))
     except OSError as exc:
         _emit([f"diff unreadable: {exc}"])
         return

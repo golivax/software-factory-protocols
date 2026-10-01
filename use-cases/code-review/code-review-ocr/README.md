@@ -2,7 +2,7 @@
 
 A review that fans out dynamically per changed file: `plan` decides the per-file legs, `filter` prunes them, `main-review` runs one leg per file and the results are joined.
 
-**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** ?
+**Engine floor:** `min_engine_version` 8.0.0 · **Protocol version:** ?
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
 

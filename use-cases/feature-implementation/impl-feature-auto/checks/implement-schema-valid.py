@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """implement-schema-valid — the implement node's only check: evidence carries a
 non-trivial summary and a pr_branch of the form impl-feature-auto/issue-<N> (so
-post-summary can resolve the PR). Usage: <ev.json> <diff> <changed-files>; exits 0."""
+post-summary can resolve the PR). Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import re

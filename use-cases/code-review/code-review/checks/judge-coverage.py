@@ -18,7 +18,7 @@ Validates:
     non-empty `ref` and a `severity` in {blocking, advisory, noise}. An absent
     graded_findings is treated as "nothing to grade" and passes.
 
-ABI: judge-coverage.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: judge-coverage.py <evidence.json>  (ground truth: $CHECK_CTX)
 Reads CHECK_PARAMS env. Zone 3 — holds no creds. ALWAYS exit 0.
 """
 import json

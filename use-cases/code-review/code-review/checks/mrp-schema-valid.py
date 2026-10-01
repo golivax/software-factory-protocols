@@ -6,7 +6,7 @@ the pack): the four judgment slices + the deterministic acceptance_plan + accept
 recommendation. Advisory — prints one {"check","pass","feedback"} object and always
 exits 0.
 
-ABI: mrp-schema-valid.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: mrp-schema-valid.py <evidence.json>  (ground truth: $CHECK_CTX)
 """
 import json
 import sys

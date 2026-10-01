@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Settle the claim that the `summarize` agent produced a usable summary.
 
-Check ABI (the real engine's): `<check> <evidence.json> <diff.txt> <changed-files.txt>`
+Check ABI (the real engine's): `<check> <evidence.json>`, ground truth in `$CHECK_CTX`
 -> one JSON object `{"check","pass","feedback"}` on stdout, ALWAYS exit 0.
 
 Self-contained: it settles two CHECKABLE claims from the agent's OWN evidence —

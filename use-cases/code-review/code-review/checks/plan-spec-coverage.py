@@ -3,7 +3,7 @@
 quote is verbatim in the self-fetched spec/plan text, the verdict is consistent
 with the cells, and the leg's scope matches an independent recompute.
 
-ABI: plan-spec-coverage.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: plan-spec-coverage.py <evidence.json>  (ground truth: $CHECK_CTX)
 Reads PR_BODY, GITHUB_REPOSITORY env; self-fetches spec/plan text at the PR head.
 """
 import json
@@ -11,6 +11,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _ctx  # noqa: E402
 import _artifact_fetch  # noqa: E402
 import _diff  # noqa: E402
 import _locate  # noqa: E402
@@ -138,8 +139,8 @@ def main():
     body = os.environ.get("PR_BODY", "") or ""
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     pr = os.environ.get("PR", "")
-    diff_text = open(sys.argv[2]).read() if len(sys.argv) > 2 else ""
-    files = _paths.read_changed_files(sys.argv[3] if len(sys.argv) > 3 else "")
+    diff_text = _ctx.read("diff.patch")
+    files = _paths.read_changed_files(_ctx.path("files.txt"))
     ok, fb = evaluate(ev, diff_text, files, body=body, repo=repo, pr=pr)
     _emit(ok, fb)
 

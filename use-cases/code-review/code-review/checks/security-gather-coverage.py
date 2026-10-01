@@ -12,7 +12,7 @@ Verdict rule (deterministic — NOT a judgment):
   PASS              otherwise (violations present, none have locked:true)
 
 Zone 3 — read-only, holds no credentials.
-ABI: security-gather-coverage.py <evidence.json> <diff.txt> <changed-files.txt>
+ABI: security-gather-coverage.py <evidence.json>  (ground truth: $CHECK_CTX)
 """
 import json
 import os

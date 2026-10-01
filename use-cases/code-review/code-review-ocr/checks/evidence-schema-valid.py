@@ -13,7 +13,7 @@ minimal-but-real FORM check only — top-level `required` keys present + JSON
 type matches `properties[key].type` — never substance. That matches the
 engine's own thesis (checks verify form, not correctness).
 
-ABI: <evidence.json> <diff.txt> <changed-files.txt> -> one JSON object
+ABI: <evidence.json>  (ground truth: $CHECK_CTX) -> one JSON object
 {"check","pass","feedback"} on stdout, ALWAYS exit 0.
 """
 import json
@@ -75,7 +75,7 @@ def check_required(obj, schema, errs, where):
 
 def main():
     if len(sys.argv) < 2:
-        emit(False, "usage: evidence-schema-valid.py <evidence.json> <diff.txt> <changed-files.txt>")
+        emit(False, "usage: evidence-schema-valid.py <evidence.json>  (ground truth: $CHECK_CTX)")
 
     ev_path = sys.argv[1]
     try:

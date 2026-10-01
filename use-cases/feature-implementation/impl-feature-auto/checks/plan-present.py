@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """plan-present (block) — evidence.plan_path is set and a bundled plan.md exists
-and is non-empty. Usage: <ev.json> <diff> <changed-files>; exits 0."""
+and is non-empty. Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
 import sys

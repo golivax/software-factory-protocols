@@ -2,7 +2,7 @@
 
 Recovers a codebase's mental model with four parallel methods (`legion` ∥ `codeset` ∥ `ubiquitous-language` ∥ a `socratic` sub-pipeline) → `join` → a `combine` code node that pushes the result to an orphan `_mental_model` branch. Fully automated; started via the `manual` trigger against a ref.
 
-**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 1.0.0
+**Engine floor:** `min_engine_version` 8.0.0 · **Protocol version:** 1.0.0
 
 **Status.** Runs on the deployed service. The legs' file trees travel on the engine's `outputs:` transport (issue #68) — declared `outputs: true`, collected by the engine, handed to `combine` as `inputs/<leg>/` — not in Actions artifacts, which no non-GitHub forge has. Verified end to end against a GitLab deployment.
 
