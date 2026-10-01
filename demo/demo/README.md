@@ -2,7 +2,7 @@
 
 The authoring template: one dispatched **code** node (`facts`) feeding one **agent** node (`summarize`) whose source you compile yourself. Both nodes run under `act` inside a disposable microVM.
 
-**Engine floor:** `min_engine_version` 7.0.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 0.1.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 

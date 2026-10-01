@@ -2,7 +2,7 @@
 
 A single gh-aw agent (a deliberately grumpy reviewer) dispatched on a merge-request comment — the smallest possible agent-lane protocol.
 
-**Engine floor:** `min_engine_version` 7.0.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 7.1.0 · **Protocol version:** 0.1.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 
