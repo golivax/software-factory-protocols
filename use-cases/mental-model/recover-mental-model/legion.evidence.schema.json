@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Legion-map evidence",
-  "description": "Evidence produced by the legion leg: a manifest of the .planning artifacts produced by `/legion:map`, plus the GitHub run id whose `mm-tree-legion` artifact holds the actual files.",
+  "description": "Evidence produced by the legion leg: a manifest of the .planning artifacts produced by `/legion:map`. The files themselves travel on the engine's `outputs:` transport (issue #68), not in an Actions artifact.",
   "type": "object",
   "required": ["run_id", "files"],
   "properties": {
@@ -12,12 +12,12 @@
     "run_id": {
       "type": "string",
       "minLength": 1,
-      "description": "GitHub Actions run id of the leg run; the combine hook downloads its `mm-tree-legion` artifact."
+      "description": "GitHub Actions run id of the leg run — provenance only; the combine hook reads the files from the engine-staged tree, not from an artifact."
     },
     "files": {
       "type": "array",
       "minItems": 1,
-      "description": "Manifest of files uploaded in the mm-tree artifact (paths relative to the tree root).",
+      "description": "Manifest of the files the leg published to its `outputs:` tree (paths relative to the tree root); the engine collects that tree and stages it for the combine hook as inputs/<leg>/.",
       "items": {
         "type": "object",
         "required": ["path"],

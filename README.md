@@ -91,5 +91,5 @@ The DSL, the check ABI and the trust zones are documented in the engine repo und
 schema is `engine/protocol.schema.json` there; lint a package with
 
 ```bash
-python3 <software-factory>/engine/protocol-lint.py <name>/protocol.json
+python3 <software-factory>/engine/protocol_lint.py <name>/protocol.json
 ```

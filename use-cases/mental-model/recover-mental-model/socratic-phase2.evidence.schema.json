@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Socratic phase-2 evidence",
-  "description": "Evidence produced by the socratic phase-2 agent: a manifest of the synthesized docs (PRD, use-cases, ADRs, arc42), plus the run id whose `mm-tree-socratic` artifact holds the socratic leg's final tree (the one the combine hook pushes).",
+  "description": "Evidence produced by the socratic phase-2 agent: a manifest of the synthesized docs (PRD, use-cases, ADRs, arc42). The socratic leg's final tree — the one the combine hook pushes — travels on the engine's `outputs:` transport (issue #68), not in an Actions artifact.",
   "type": "object",
   "required": ["run_id", "files"],
   "properties": {
@@ -9,7 +9,7 @@
     "run_id": {
       "type": "string",
       "minLength": 1,
-      "description": "GitHub Actions run id of the phase-2 run; the combine hook downloads its `mm-tree-socratic` artifact."
+      "description": "GitHub Actions run id of the phase-2 run — provenance only; the combine hook reads the files from the engine-staged tree, not from an artifact."
     },
     "files": {
       "type": "array",
