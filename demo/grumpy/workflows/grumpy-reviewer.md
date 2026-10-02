@@ -32,7 +32,9 @@ on:
 
 engine:
   id: claude
-  model: claude-haiku-4-5-20251001
+  # A GPT model on the Claude Code engine: the gateway serves it on its
+  # Anthropic-compatible Messages endpoint (the Claude models there are deprecated).
+  model: gpt-6-luna
   env:
     # The deployment's LLM gateway base URL (the agent lane's only external creds
     # beyond the forge proxy). The ANTHROPIC token is supplied by run-under-act.sh
