@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: read
 engine:
   id: codex
   model: gpt-5.5
