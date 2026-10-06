@@ -60,6 +60,34 @@ tools:
     toolsets: [pull_requests, repos]
 
 safe-outputs:
+  # STAGED: gh-aw still schema-validates, sanitizes and threat-scans (the
+  # detection job) the review the agent proposes, but writes NOTHING to the
+  # forge. The step below (safe_outputs job: runs only once detection passed)
+  # hands the cleaned items to the engine as this node's evidence; the engine's
+  # checks settle them against the MR, and only then does the protocol's
+  # `publish` node (a dispatched code node, its own microVM) post the review.
+  staged: true
+  steps:
+    - name: Materialize the staged review as the node's evidence
+      if: always()
+      env:
+        AW_CONTEXT: ${{ github.event.inputs.aw_context }}
+      run: |
+        python3 - <<'PY'
+        import json, os
+
+        # gh-aw's staged items, verbatim: the evidence is exactly what gh-aw
+        # validated, sanitized and threat-scanned, nothing re-shaped.
+        out = os.environ.get("GH_AW_AGENT_OUTPUT") or "/tmp/gh-aw/agent_output.json"
+        staged = json.load(open(out)).get("items") or []
+        # The commit the agent was asked to review: the engine's, not the agent's word.
+        sha = json.loads(os.environ.get("AW_CONTEXT") or "{}").get("sha") or ""
+
+        evidence = {"sha": sha, "staged": staged}
+        with open(os.path.join(os.environ["GITHUB_WORKSPACE"], "evidence-out.json"), "w") as fh:
+            json.dump(evidence, fh)
+        print(json.dumps(evidence, indent=1))
+        PY
   create-pull-request-review-comment:
     max: 5
     side: "RIGHT"

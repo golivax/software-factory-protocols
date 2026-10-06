@@ -2,7 +2,7 @@
 
 One dispatched **code** node (`survey`) and no LLM at all: proves the whole control plane (webhook → conductor → microVM → check → status → Postgres).
 
-**Engine floor:** `min_engine_version` 8.0.0 · **Protocol version:** 0.2.0
+**Engine floor:** `min_engine_version` 9.0.0 · **Protocol version:** 0.2.0
 
 **Status.** Verified live on the deployed factory (GitLab).
 
