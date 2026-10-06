@@ -9,18 +9,19 @@ bumping the submodule pointer.
 ## Layout
 
 ```
-commons/workflows/          agent units shared by more than one protocol
 demo/                       the end-to-end demo packages (see the engine repo's docs/DEMO.md)
   demo/  grumpy/  hello/  toy/
 use-cases/                  real protocols, grouped by what they are for
   code-cleanup/duplicate-code-remover/
-  code-review/code-review/
   code-review/code-review-ocr/
   feature-implementation/impl-feature-auto/
-  mental-model/recover-mental-model/
-  mental-model/recover-mental-model-interactive/
 .github/aw/actions-lock.json   gh-aw's action pin table (used by `gh aw compile`)
 ```
+
+`code-review`, `recover-mental-model`, `recover-mental-model-interactive` and the
+shared `commons/` units they use moved to the factory-owned catalogue,
+golivax/software-factory-protocols-private: the factory serves them to a target as
+a service; they are not copied into a repo.
 
 Every protocol directory is one self-contained package with the shape the factory's
 `ProtocolFetch` expects:
@@ -31,7 +32,7 @@ Every protocol directory is one self-contained package with the shape the factor
   protocol.json              states, checks, transitions (DATA — the engine interprets it)
   *.evidence.schema.json     the rubric each agent must fill (the CONTRACT)
   checks/                    deterministic checks (any language)
-  scripts/                   inline `code` node bodies + trusted `conclude` hooks
+  scripts/                   inline `code` node bodies (deprecated) + trusted `conclude` hooks
   expand/                    dynamic fan-out expanders (where used)
   workflows/                 the dispatched units: `<wf>.md` (gh-aw agent SOURCE)
                              or `<wf>.yml` (a plain GitHub-Actions workflow, code lane)
@@ -39,8 +40,8 @@ Every protocol directory is one self-contained package with the shape the factor
 
 The nested `demo/` and `use-cases/<category>/` grouping is for browsing only. The
 factory resolves packages by **directory name** under a flat
-`<repo>/.softwarefactory/protocols/<name>/`, with `commons/` beside them — so install a
-protocol by copying its directory (and `commons/` if its README says so) to that path.
+`<repo>/.softwarefactory/protocols/<name>/` — so install a protocol by copying its
+directory to that path.
 
 ## gh-aw version
 
@@ -55,7 +56,7 @@ compile before you install:
 
 ```bash
 gh extension install github/gh-aw@v0.89.0     # or: gh extension upgrade gh-aw
-gh aw compile --dir use-cases/code-review/code-review/workflows
+gh aw compile --dir demo/grumpy/workflows
 # → <unit>.lock.yml beside each <unit>.md
 ```
 

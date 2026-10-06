@@ -22,12 +22,7 @@ Nested legs (forks, sub-pipelines, dynamic fan-outs) are declared in `protocol.j
 
 - `workflows/survey.yml`
 
-Agent units are gh-aw markdown **sources**; compile them with gh-aw **v0.89.0**
-before use (see the top-level README):
-
-```bash
-gh aw compile --dir <path-to-this-protocol>/workflows
-```
+`survey.yml` is a plain workflow (a dispatched `code` node): no agent, nothing to compile.
 
 ## Install
 

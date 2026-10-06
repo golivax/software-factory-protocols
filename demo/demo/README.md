@@ -1,6 +1,6 @@
 # demo
 
-The authoring template: one dispatched **code** node (`facts`) feeding one **agent** node (`summarize`) whose source you compile yourself. Both nodes run under `act` inside a disposable microVM.
+The authoring template: one dispatched **code** node (`facts`) feeding one **agent** node (`summarize`) whose source you compile yourself. Each runs in its own disposable microVM (the agent node: one per gh-aw job).
 
 **Engine floor:** `min_engine_version` 9.0.0 · **Protocol version:** 0.1.0
 
