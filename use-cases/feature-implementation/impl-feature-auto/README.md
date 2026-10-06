@@ -2,7 +2,7 @@
 
 Implements a feature from an issue end to end: `design` (spec + ledger + plan, iterated until the ledger checks pass) → `implement` (TDD + open a PR) → `post-summary` (comment the PR link on the issue).
 
-**Engine floor:** `min_engine_version` 9.0.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 9.1.0 · **Protocol version:** 0.1.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
 
