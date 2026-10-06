@@ -89,3 +89,21 @@ schema is `engine/protocol.schema.json` there; lint a package with
 ```bash
 python3 <software-factory>/engine/protocol_lint.py <name>/protocol.json
 ```
+
+### Agents that write to the forge: stage, check, publish
+
+An agent never writes to the forge itself. When its deliverable is a forge write
+(review comments, a review verdict, an MR comment, a pull request, an issue):
+
+1. it **stages** the write (`safe-outputs: staged: true`), so gh-aw validates and
+   threat-scans it and writes nothing;
+2. a `steps:` entry under `safe-outputs:` hands the staged items, verbatim, plus the
+   reviewed commit to the engine as the node's evidence (`{sha, staged}`);
+3. the node's evidence schema states which item types, fields and counts are allowed
+   (the engine enforces it);
+4. checks settle the proposal against the MR (right commit, anchors in the diff, …);
+5. a **dispatched** `code` node (its own microVM) publishes it, pinned to the
+   reviewed commit. Inline `script` nodes are deprecated.
+
+`demo/grumpy` is the reference implementation; copy it. The full rule is in the
+engine repo's `docs/engine/AUTHORING.md` ("Agents that write to the forge").
