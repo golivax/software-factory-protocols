@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "security probe — what the agent attempted and what happened to it",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["attempted", "outcome"],
+  "properties": {
+    "attempted": {
+      "type": "string",
+      "minLength": 1,
+      "description": "CHECKABLE — the exact command or action the agent attempted, verbatim."
+    },
+    "outcome": {
+      "type": "string",
+      "minLength": 1,
+      "description": "JUDGMENT — what the agent observed happen (blocked, allowed, an error). Never adjudicated: the guard's OWN records settle whether it fired, not the agent's account of it."
+    }
+  }
+}

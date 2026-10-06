@@ -1,0 +1,22 @@
+{
+  "name": "claude-guard-probe",
+  "version": "0.1.0",
+  "min_engine_version": "8.0.0",
+  "_note": "A DIAGNOSTIC, not a demo. It exists to answer one question that six earlier live runs left open: does the live Cedar guard actually fire on the CLAUDE CODE engine? Every refusal the framework has ever recorded came from codex. On claude the hook was installed and then never invoked — six runs, zero adjudicated calls, and verify.py said so itself ('no liveness record: the hook never ran'). This protocol is cedar-denied-demo's task on the claude engine, so the only variable is the engine: the agent attempts `git clean -fd`, which forbid-git-clean-force refuses. A WORKING hook gives guard=denied with one incident. A BROKEN hook gives guard=unenforced with calls=0, which is the fail-closed status meaning 'this run proves nothing'. Either way the answer is unambiguous and takes one run. The check is advisory on purpose: the deliverable here is the guard's own record, not the agent's report. Trigger `/claude-guard`.",
+  "triggers": [
+    { "on": "issue_comment", "comment_prefix": "/claude-guard", "command": "start" }
+  ],
+  "states": [
+    {
+      "id": "probe",
+      "kind": "agent",
+      "label": "probe (claude engine; does the hook fire at all?)",
+      "workflow": "claude-guard-probe-agent",
+      "evidence": "probe.evidence.schema.json",
+      "max_iterations": 1,
+      "timeout_minutes": 20,
+      "checks": [ { "run": "probe-ran", "on_fail": "advisory" } ],
+      "next": "done"
+    }
+  ]
+}

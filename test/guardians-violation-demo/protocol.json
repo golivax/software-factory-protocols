@@ -1,0 +1,23 @@
+{
+  "name": "guardians-violation-demo",
+  "version": "0.1.0",
+  "min_engine_version": "8.0.0",
+  "_note": "A PROBE, not a useful protocol. The mirror of cedar-violation-demo: its agent performs a REAL locked taint flow (read_external -> run_command.argv, rule no_injected_text_to_command): it reads the merge request's author-supplied title and substitutes that text into a shell command line, which is the classic injection shape. Every call it makes is an `echo`, so the runtime guard stays clean. A first attempt merely ASKED the agent to declare the flow; it honestly declared `read_repo_file` with literal arguments instead, because the plan-first contract makes the plan a manifest of what the agent actually does — so the flow has to be real, not requested — so the live Cedar guard stays clean and a red run isolates the PLAN verifier as the cause. Together the two probes show the two enforcement points failing independently. Expected under SF_SECURITY_MODE=enforce: guard `clean`, plan `fail` with one LOCKED violation, the run red. max_iterations 1. Trigger `/guardians-probe` on an MR comment.",
+  "triggers": [
+    { "on": "issue_comment", "comment_prefix": "/guardians-probe", "command": "start" }
+  ],
+  "states": [
+    {
+      "id": "probe",
+      "kind": "agent",
+      "label": "probe (agent; deliberately trips the Guardians plan verifier)",
+      "workflow": "guardians-probe-agent",
+      "evidence": "probe.evidence.schema.json",
+      "max_iterations": 1,
+      "checks": [
+        { "run": "probe-reported", "on_fail": "advisory" }
+      ],
+      "next": "done"
+    }
+  ]
+}
