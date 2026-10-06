@@ -1,17 +1,47 @@
 {
   "name": "grumpy",
-  "version": "0.1.0",
-  "min_engine_version": "8.0.0",
-  "_note": "A COMPATIBILITY demo: one agent node that runs a near-verbatim port of gh-aw's own grumpy-reviewer.md (github/gh-aw .github/workflows/grumpy-reviewer.md). Its purpose is to prove a simple, real gh-aw workflow runs on our substrate with only the adaptations every adopter makes (engine block -> our LLM gateway; cli-proxy off; sudo sandbox; drop the otlp observability import) plus ONE content change: Step 2 reads the PR via the forge-agnostic `pull_request_read` tool instead of the `gh` CLI, whose --json/diff calls become GitHub-specific GraphQL our REST-first gh2gl proxy doesn't serve. Everything else — the review flow, the `create-pull-request-review-comment` / `submit-pull-request-review` safe-outputs — is reused unchanged; gh2gl translates those to GitLab MR discussions/approvals. UNLIKE toy/demo, this node has NO custom `evidence` safe-output and NO checks: grumpy's deliverable IS the review comments it posts to the forge (a STANDARD gh-aw safe-output), so success is observed as a clean run + comments landing on the MR, not settled from an evidence JSON. It is therefore a terminal, check-less agent node. Known no-op preserved faithfully: grumpy's body reads/writes /tmp/gh-aw/cache-memory/, but neither grumpy nor anything in its import closure declares `tools: cache-memory:` (and it is not implicit), so that memory is ephemeral scratch upstream too. Trigger `/grumpy` on an MR comment.",
+  "version": "0.2.0",
+  "min_engine_version": "9.0.0",
+  "_note": "The factory's pattern for an agent that writes to the forge: AGENT PROPOSES -> DETERMINISTIC CHECKS VERIFY -> A TRUSTED STEP PUBLISHES. The agent is a near-verbatim port of gh-aw's catalogue grumpy-reviewer.md (adaptations: engine block -> our LLM gateway; the PR read through the forge-agnostic `pull_request_read` tool) with ONE change: `safe-outputs: staged: true`. gh-aw still schema-validates, sanitizes and threat-scans (detection job) the review it proposes, but writes nothing; the safe_outputs job — which runs only once detection passed, with no forge write permission — hands the staged items, verbatim, to the engine as this node's evidence. The engine validates them against review.evidence.schema.json (only review items or gh-aw's reporting items, required fields, the workflow's maxes), then the checks settle them against the MR (`review-coherent`: reviewed the checked commit, says something, no duplicate anchors; `anchors-in-diff`: every comment sits on a diff line). A failed check iterates the agent with the feedback. Only a passing review reaches `publish`, a DISPATCHED code node (its own microVM) that posts it through gh2gl, pinned to the reviewed commit, and posts nothing if the MR moved. Trigger `/grumpy` on an MR comment.",
   "triggers": [
-    { "on": "issue_comment", "comment_prefix": "/grumpy", "command": "start" }
+    {
+      "on": "issue_comment",
+      "comment_prefix": "/grumpy",
+      "command": "start"
+    }
   ],
   "states": [
     {
       "id": "review",
       "kind": "agent",
-      "label": "grumpy review (gh-aw/codex agent, disposable sbx)",
+      "label": "grumpy review, staged (gh-aw writes nothing)",
       "workflow": "grumpy-reviewer",
+      "evidence": "review.evidence.schema.json",
+      "checks": [
+        {
+          "run": "review-coherent",
+          "on_fail": "iterate"
+        },
+        {
+          "run": "anchors-in-diff",
+          "on_fail": "iterate"
+        }
+      ],
+      "max_iterations": 2,
+      "next": "publish"
+    },
+    {
+      "id": "publish",
+      "kind": "code",
+      "label": "publish the checked review (dispatched code, its own microVM)",
+      "workflow": "publish-review",
+      "inputs": [
+        {
+          "from": "review",
+          "as": "evidence"
+        }
+      ],
+      "max_iterations": 1,
       "next": "done"
     }
   ]

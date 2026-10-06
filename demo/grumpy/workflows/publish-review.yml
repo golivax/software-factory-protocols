@@ -1,0 +1,73 @@
+name: publish-review
+# A dispatched CODE node: the ONLY forge write in this protocol. It runs under
+# act in its own microVM, after the engine's checks passed on the review node's
+# evidence (gh-aw's sanitized, detection-approved staged review). It reaches the
+# forge through gh2gl ($GITHUB_API_URL); the review is pinned to the commit the
+# checks saw, and nothing is posted if the MR has moved since.
+on:
+  workflow_dispatch:
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: post the checked review
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, urllib.request
+
+          ctl = os.environ["SF_CONTROL_DIR"]
+          ctx = json.load(open(os.path.join(ctl, "protocol_context.json")))
+          ev = json.load(open(os.path.join(os.environ["SF_INPUTS_DIR"], "evidence.json")))
+          repo, pr, sha = os.environ["GITHUB_REPOSITORY"], str(ctx["pr"]), ctx["sha"]
+          api = os.environ.get("GITHUB_API_URL", "")
+          if not api:
+              sys.exit("no forge access ($GITHUB_API_URL unset): nothing published")
+
+          def call(method, path, body=None):
+              req = urllib.request.Request(
+                  f"{api}/{path}", method=method,
+                  data=json.dumps(body).encode() if body is not None else None,
+                  headers={"Accept": "application/vnd.github+json",
+                           "Content-Type": "application/json", "X-SF-Pr-Iid": pr})
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  raw = r.read()
+              return json.loads(raw) if raw.strip() else {}
+
+          def done(published, summary, **extra):
+              with open(os.environ["SF_EVIDENCE_OUT"], "w") as fh:
+                  json.dump({"published": published, "summary": summary, **extra}, fh)
+              print(summary)
+              sys.exit(0 if published else 1)
+
+          head = (call("GET", f"repos/{repo}/pulls/{pr}").get("head") or {}).get("sha", "")
+          if head != sha:
+              done(False, f"not published: the MR moved from {sha[:12]} (reviewed and "
+                          f"checked) to {head[:12]}", reviewed=sha, head=head)
+
+          # The review, read from gh-aw's staged items (the evidence the engine
+          # validated against review.evidence.schema.json and the checks passed).
+          def as_int(v):
+              return int(v) if isinstance(v, str) and v.isdigit() else v
+
+          staged = ev.get("staged") or []
+          comments = []
+          for it in staged:
+              if it.get("type") != "create_pull_request_review_comment":
+                  continue
+              c = {"path": it["path"], "line": as_int(it["line"]),
+                   "side": it.get("side") or "RIGHT", "body": it["body"]}
+              if it.get("start_line"):
+                  c.update(start_line=as_int(it["start_line"]), start_side=c["side"])
+              comments.append(c)
+          verdict = next((it for it in staged if it.get("type") == "submit_pull_request_review"),
+                         {"event": "COMMENT", "body": ""})
+          body = (verdict.get("body") or "").strip()
+          body += ("\n\n> 🧪 *Published by the factory after gh-aw's staged safe outputs, "
+                   "threat detection and the protocol's checks.*")
+          review = call("POST", f"repos/{repo}/pulls/{pr}/reviews", {
+              "commit_id": sha, "event": verdict.get("event") or "COMMENT",
+              "body": body.strip(), "comments": comments})
+          done(True, f"posted review {review.get('id')} ({verdict.get('event') or 'COMMENT'}, "
+                     f"{len(comments)} inline) on {repo}!{pr} @ {sha[:12]}",
+               review_id=review.get("id"), comments=len(comments), sha=sha)
+          PY
