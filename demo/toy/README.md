@@ -4,7 +4,7 @@ A **code** node (`compute`) produces records; an **agent** node (`assess`) claim
 
 **Engine floor:** `min_engine_version` 9.0.0 · **Protocol version:** 1.0.0
 
-**Status.** Verified live on the deployed factory (GitLab).
+**Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 
 ## Triggers
 
