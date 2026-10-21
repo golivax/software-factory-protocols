@@ -16,10 +16,7 @@
         "hook": "expand-files",
         "as": "file",
         "id_from": "$.path",
-        "max_legs": 32,
-        "matrix_fields": [
-          "path"
-        ]
+        "max_legs": 32
       },
       "each": {
         "states": [
