@@ -43,19 +43,18 @@
     {
       "id": "file-issues",
       "kind": "code",
-      "script": "file-issues",
-      "_note": "Files one GitHub issue per duplication pattern and comments /impl-feature-auto on each. The comment MUST be posted with the PAT: the default GITHUB_TOKEN cannot trigger the downstream workflow.",
+      "_note": "Files one issue per duplication pattern and comments /impl-feature-auto on each, from its own microVM with its job token (issues: write). params.max_patterns caps how many patterns are filed per run.",
       "inputs": [
         {
           "from": "detect",
           "as": "evidence"
         }
       ],
-      "env": [
-        "PUBLISH_TOKEN",
-        "DUP_MAX_PATTERNS"
-      ],
-      "next": "done"
+      "next": "done",
+      "workflow": "file-issues",
+      "params": {
+        "max_patterns": 3
+      }
     }
   ]
 }

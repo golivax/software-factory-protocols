@@ -102,13 +102,13 @@
           {
             "id": "reduce",
             "kind": "code",
-            "script": "reduce-file",
             "inputs": [
               {
                 "from_fork": "findings",
                 "as": "findings"
               }
-            ]
+            ],
+            "workflow": "reduce-file"
           }
         ],
         "kind": "sequence"
@@ -125,17 +125,14 @@
     {
       "id": "merge",
       "kind": "code",
-      "script": "post-review",
-      "_note": "post-review.py delegates to _review.run, which posts a PR review with PUBLISH_TOKEN. Code hooks get a least-privilege env, so the token must be declared here or the post silently no-ops on live Actions.",
-      "env": [
-        "PUBLISH_TOKEN"
-      ],
+      "_note": "Posts one review of every file's surviving findings, from its own microVM with its job token (pull-requests: write). REQUEST_CHANGES is a failure conclusion: the run goes red and ends.",
       "inputs": [
         {
           "from_fork": "review",
           "as": "files"
         }
-      ]
+      ],
+      "workflow": "post-review"
     }
   ]
 }

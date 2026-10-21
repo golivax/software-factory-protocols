@@ -67,18 +67,15 @@
     {
       "id": "post-summary",
       "kind": "code",
-      "script": "post-summary",
-      "_note": "Resolves the PR gh-aw's safe-outputs opened and comments the link on the originating issue. Reads the PR list and posts with the PAT.",
+      "_note": "Resolves the PR gh-aw's safe-outputs opened and comments the link on the originating issue, from its own microVM with its job token.",
       "inputs": [
         {
           "from": "implement",
           "as": "evidence"
         }
       ],
-      "env": [
-        "PUBLISH_TOKEN"
-      ],
-      "next": "done"
+      "next": "done",
+      "workflow": "post-summary"
     }
   ]
 }
