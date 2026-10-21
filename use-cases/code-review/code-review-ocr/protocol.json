@@ -1,6 +1,6 @@
 {
   "name": "code-review-ocr",
-  "min_engine_version": "11.0.0",
+  "min_engine_version": "11.1.0",
   "triggers": [
     {
       "on": "issue_comment",
