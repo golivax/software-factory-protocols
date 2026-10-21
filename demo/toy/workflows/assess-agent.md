@@ -8,9 +8,9 @@ permissions:
   pull-requests: read
 engine:
   id: codex
-  model: gpt-5.5
+  model: gpt-6-luna
   env:
-    OPENAI_BASE_URL: https://arcyleung-ubuntu.tailb940e6.ts.net/v1/
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 safe-outputs:
   # Evidence is a FIRST-CLASS custom safe-output (a gh-aw "safe-job"), not a
   # noop message the orchestrator scrapes from the log. Declaring it here:
