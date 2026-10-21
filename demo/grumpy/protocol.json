@@ -1,7 +1,7 @@
 {
   "name": "grumpy",
   "version": "0.2.0",
-  "min_engine_version": "11.0.0",
+  "min_engine_version": "11.1.0",
   "_note": "The factory's pattern for an agent that writes to the forge: AGENT PROPOSES -> DETERMINISTIC CHECKS VERIFY -> A TRUSTED STEP PUBLISHES. The agent is a near-verbatim port of gh-aw's catalogue grumpy-reviewer.md (adaptations: engine block -> our LLM gateway; the PR read through the forge-agnostic `pull_request_read` tool) with ONE change: `safe-outputs: staged: true`. gh-aw still schema-validates, sanitizes and threat-scans (detection job) the review it proposes, but writes nothing; the safe_outputs job — which runs only once detection passed, with no forge write permission — hands the staged items, verbatim, to the engine as this node's evidence. The engine validates them against review.evidence.schema.json (only review items or gh-aw's reporting items, required fields, the workflow's maxes), then the checks settle them against the MR (`review-coherent`: reviewed the checked commit, says something, no duplicate anchors; `anchors-in-diff`: every comment sits on a diff line). A failed check iterates the agent with the feedback. Only a passing review reaches `publish`, a DISPATCHED code node (its own microVM) that posts it through gh2gl, pinned to the reviewed commit, and posts nothing if the MR moved. Trigger `/grumpy` on an MR comment.",
   "triggers": [
     {
