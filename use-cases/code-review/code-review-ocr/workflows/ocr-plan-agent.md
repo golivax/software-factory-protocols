@@ -7,22 +7,21 @@ run-name: "OCR Plan Agent · cid:[${{ fromJSON(github.event.inputs.aw_context ||
 on:
   workflow_dispatch:
 strict: false
-sandbox:
-  agent: false
 engine:
-  id: claude
-  model: claude-sonnet-4-6
+  id: codex
+  model: gpt-6.1-sol
   env:
-    ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
-    ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 permissions:
   contents: read
   pull-requests: read
 tools:
   cli-proxy: true
   edit: true
-  bash:
-    - "gh pr diff *"
+  bash: ["*"]
 safe-outputs:
   # The agent's only output is the evidence.json artifact (post-steps), NOT a
   # gh-aw safe-output — so gh-aw's default conclusion job files a spurious

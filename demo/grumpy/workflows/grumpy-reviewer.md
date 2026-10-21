@@ -5,7 +5,7 @@
 # with only the adaptations every adopter makes. The body below is the
 # catalogue's, verbatim. What changed in the frontmatter vs. upstream, and why:
 #   * engine:      upstream leaves the engine to the installer's default; we
-#                  name ours (claude + model) and point it at the deployment's
+#                  name ours (codex + model) and point it at the deployment's
 #                  LLM gateway. Every client does this; it is not a compatibility gap.
 #   * on:          `on: workflow_dispatch` instead of upstream's `/grumpy` slash
 #                  command. Triggers belong to the protocol: protocol.json's
@@ -31,23 +31,14 @@ on:
   workflow_dispatch:
 
 engine:
-  id: claude
-  # A GPT model on the Claude Code engine: the gateway serves it on its
-  # Anthropic-compatible Messages endpoint (the Claude models there are deprecated).
+  id: codex
+  # gpt-6-luna on the codex engine: the gateway serves it on its OpenAI API.
   model: gpt-6-luna
   env:
-    # The deployment's LLM gateway base URL (the agent lane's only external creds
-    # beyond the forge proxy). The ANTHROPIC token is supplied by run-under-act.sh
-    # from the staged agent secrets dotenv. Must match an entry in deploy/.env
-    # LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it.
-    ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
-    # Every model call goes through AWF's api-proxy to the gateway above, and the
-    # compiler (gh-aw >= v0.89) drops api.anthropic.com from the firewall allowlist
-    # once a custom target is set. Claude Code still makes non-essential calls
-    # (feature flags / update checks) straight to Anthropic; those get denied and
-    # surface as a "Firewall blocked 1 domain" warning on every comment. Switch
-    # them off — nothing the review needs is behind them.
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 
 permissions:
   contents: read

@@ -11,20 +11,14 @@ concurrency:
   group: "impl-feature-auto-design-${{ fromJSON(github.event.inputs.aw_context || '{}').cid }}"
   cancel-in-progress: false
 strict: false
-sandbox:
-  agent: false
-features:
-  dangerously-disable-sandbox-agent: "POC custom Anthropic endpoint cannot be expressed in AWF static egress allowlist; agent stays read-only and never holds the state PAT"
 engine:
-  id: claude
-  model: claude-opus-4-8
-  # GitHub Actions IS the sandbox — grant wide permissions so the agent is never
-  # blocked on a permission prompt (which, under `claude --print`, can't be answered
-  # and returns "requires approval"). bypassPermissions == --dangerously-skip-permissions.
-  permission-mode: bypassPermissions
+  id: codex
+  model: gpt-6.1-sol
   env:
-    ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
-    ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 permissions:
   contents: read
   issues: read
@@ -76,7 +70,7 @@ pre-agent-steps:
   - name: Stage superpowers skills (pinned release tag)
     run: |
       set -euo pipefail
-      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.claude/skills"
+      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.agents/skills"
       mkdir -p "$DEST"
       curl -fsSL "https://github.com/obra/superpowers/archive/refs/tags/${SP_VERSION}.tar.gz" -o /tmp/sp.tgz
       tar -xzf /tmp/sp.tgz --strip-components=2 -C "$DEST" "superpowers-${SP_VERSION#v}/skills"
@@ -143,7 +137,7 @@ verified. **READ THESE FIRST** lists the ledger ids risk-sorted (low-confidence 
 high/irreversible first).
 
 ## 3. Produce the plan
-Use the `writing-plans` skill on the spec to write a plan to
+Use the `$writing-plans` skill on the spec to write a plan to
 `target/docs/superpowers/plans/<YYYY-MM-DD>-<topic>.md`.
 
 ## 4. Emit evidence — then STOP (do not implement)

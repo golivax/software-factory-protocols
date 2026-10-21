@@ -4,17 +4,14 @@ run-name: "Duplicate-Code-Remover Detect · cid:[${{ fromJSON(github.event.input
 on:
   workflow_dispatch:
 strict: false
-sandbox:
-  agent: false
-features:
-  dangerously-disable-sandbox-agent: "POC custom Anthropic endpoint cannot be expressed in AWF static egress allowlist; agent stays read-only and never holds the state PAT"
 engine:
-  id: claude
-  model: claude-opus-4-8
-  permission-mode: bypassPermissions
+  id: codex
+  model: gpt-6.1-sol
   env:
-    ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
-    ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 permissions:
   contents: read
   issues: read

@@ -10,20 +10,18 @@ concurrency:
   group: "impl-feature-auto-implement-${{ fromJSON(github.event.inputs.aw_context || '{}').cid }}"
   cancel-in-progress: false
 strict: false
-sandbox:
-  agent: false
-features:
-  dangerously-disable-sandbox-agent: "POC custom Anthropic endpoint cannot be expressed in AWF static egress allowlist; agent stays read-only and never holds the state PAT"
 engine:
-  id: claude
-  model: claude-sonnet-4-6
-  # GitHub Actions IS the sandbox — grant wide permissions so the agent is never
-  # blocked on a permission prompt (which, under `claude --print`, can't be answered
-  # and returns "requires approval"). bypassPermissions == --dangerously-skip-permissions.
-  permission-mode: bypassPermissions
+  id: codex
+  model: gpt-6.1-sol
+  # superpowers' subagent-driven-development dispatches subagents; on codex that is
+  # spawn_agent / wait_agent / close_agent, which exist only with multi-agent on
+  # (superpowers v6.0.3, skills/using-superpowers/references/codex-tools.md).
+  args: ["-c", "features.multi_agent=true"]
   env:
-    ANTHROPIC_BASE_URL: https://bmc-bz1.tail22da2e.ts.net
-    ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_API_KEY }}
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 permissions:
   contents: read
   issues: read
@@ -58,13 +56,14 @@ pre-agent-steps:
   - name: Stage superpowers skills (pinned release tag)
     run: |
       set -euo pipefail
-      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.claude/skills"
+      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.agents/skills"
       mkdir -p "$DEST"
       curl -fsSL "https://github.com/obra/superpowers/archive/refs/tags/${SP_VERSION}.tar.gz" -o /tmp/sp.tgz
       tar -xzf /tmp/sp.tgz --strip-components=2 -C "$DEST" "superpowers-${SP_VERSION#v}/skills"
-      # Keep the staged skills OUT of the PR diff: exclude .claude/ locally so
+      # Codex reads repo skills from .agents/skills (every dir from the cwd up to the
+      # repo root). Keep the staged skills OUT of the PR diff: exclude .agents/ locally so
       # neither the agent's `git add` nor safe-outputs ever commits them.
-      echo '.claude/' >> "$GITHUB_WORKSPACE/.git/info/exclude"
+      echo '.agents/' >> "$GITHUB_WORKSPACE/.git/info/exclude"
   - name: Download design spec + plan (by design run_id)
     env:
       GH_TOKEN: ${{ secrets.POC_DISPATCH_TOKEN }}
@@ -111,17 +110,21 @@ spec + plan.
 ## 2. Create the feature branch
 In the repo root: `git checkout -b impl-feature-auto/issue-<N>` (N = the issue number).
 
-## 3. Implement the plan — via a skill, invoked with the Skill tool
+## 3. Implement the plan — via a skill
 The plan tells you to use `subagent-driven-development` (recommended) or
-`executing-plans`. You MUST invoke that skill with the **`Skill` tool** using its
-**bare name** — e.g. `Skill(subagent-driven-development)`. The plan may write it as
-`superpowers:subagent-driven-development`; the `superpowers:` prefix does NOT resolve
-here, so drop it. Do NOT hand the work to the `Workflow` or `Task` tools, and do NOT
-inline the plan yourself — both bypass the skill. Any mid-implementation ledger
-appends go into the spec doc that ships in the PR.
+`executing-plans`. Load that skill by its **bare name** with a `$` —
+**`$subagent-driven-development`** or `$executing-plans` — and follow it. The plan
+may write it as `superpowers:subagent-driven-development`; the `superpowers:` prefix
+does NOT resolve here, so drop it. Do NOT inline the plan yourself — that bypasses
+the skill.
+
+When the skill dispatches a subagent (`spawn_agent`), ALWAYS set its model to
+**`gpt-6.1-sol`** — whatever role the skill's Model Selection describes. It is the
+only model this deployment's gateway serves for you; any other name fails. Any
+mid-implementation ledger appends go into the spec doc that ships in the PR.
 
 ## 4. Finish the branch + open the PR
-Use `finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
+Use `$finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
 repo** on `impl-feature-auto/issue-<N>` (the changes must be committed here for
 safe-outputs to capture them). Open ONE pull request via safe-outputs. The PR body
 MUST carry the Accountability Ledger and the READ-THESE-FIRST list (from the design
