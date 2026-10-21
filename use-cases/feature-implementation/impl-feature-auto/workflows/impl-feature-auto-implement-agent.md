@@ -52,13 +52,14 @@ pre-agent-steps:
   - name: Stage superpowers skills (pinned release tag)
     run: |
       set -euo pipefail
-      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.claude/skills"
+      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.agents/skills"
       mkdir -p "$DEST"
       curl -fsSL "https://github.com/obra/superpowers/archive/refs/tags/${SP_VERSION}.tar.gz" -o /tmp/sp.tgz
       tar -xzf /tmp/sp.tgz --strip-components=2 -C "$DEST" "superpowers-${SP_VERSION#v}/skills"
-      # Keep the staged skills OUT of the PR diff: exclude .claude/ locally so
+      # Codex reads repo skills from .agents/skills (every dir from the cwd up to the
+      # repo root). Keep the staged skills OUT of the PR diff: exclude .agents/ locally so
       # neither the agent's `git add` nor safe-outputs ever commits them.
-      echo '.claude/' >> "$GITHUB_WORKSPACE/.git/info/exclude"
+      echo '.agents/' >> "$GITHUB_WORKSPACE/.git/info/exclude"
   - name: Download design spec + plan (by design run_id)
     env:
       GH_TOKEN: ${{ secrets.POC_DISPATCH_TOKEN }}
@@ -105,17 +106,16 @@ spec + plan.
 ## 2. Create the feature branch
 In the repo root: `git checkout -b impl-feature-auto/issue-<N>` (N = the issue number).
 
-## 3. Implement the plan — via a skill, invoked with the Skill tool
-The plan tells you to use `subagent-driven-development` (recommended) or
-`executing-plans`. You MUST invoke that skill with the **`Skill` tool** using its
-**bare name** — e.g. `Skill(subagent-driven-development)`. The plan may write it as
-`superpowers:subagent-driven-development`; the `superpowers:` prefix does NOT resolve
-here, so drop it. Do NOT hand the work to the `Workflow` or `Task` tools, and do NOT
-inline the plan yourself — both bypass the skill. Any mid-implementation ledger
-appends go into the spec doc that ships in the PR.
+## 3. Implement the plan — via the `executing-plans` skill
+Use **`$executing-plans`** to implement the plan, following that skill's
+instructions. The plan may name `subagent-driven-development` (or a
+`superpowers:`-prefixed name): use `$executing-plans` instead — that skill
+dispatches subagents, which this engine cannot. Do NOT inline the plan yourself
+without the skill. Any mid-implementation ledger appends go into the spec doc that
+ships in the PR.
 
 ## 4. Finish the branch + open the PR
-Use `finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
+Use `$finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
 repo** on `impl-feature-auto/issue-<N>` (the changes must be committed here for
 safe-outputs to capture them). Open ONE pull request via safe-outputs. The PR body
 MUST carry the Accountability Ledger and the READ-THESE-FIRST list (from the design

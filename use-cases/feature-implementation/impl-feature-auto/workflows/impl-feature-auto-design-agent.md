@@ -70,7 +70,7 @@ pre-agent-steps:
   - name: Stage superpowers skills (pinned release tag)
     run: |
       set -euo pipefail
-      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.claude/skills"
+      SP_VERSION="v6.0.3"; DEST="$GITHUB_WORKSPACE/.agents/skills"
       mkdir -p "$DEST"
       curl -fsSL "https://github.com/obra/superpowers/archive/refs/tags/${SP_VERSION}.tar.gz" -o /tmp/sp.tgz
       tar -xzf /tmp/sp.tgz --strip-components=2 -C "$DEST" "superpowers-${SP_VERSION#v}/skills"
@@ -137,7 +137,7 @@ verified. **READ THESE FIRST** lists the ledger ids risk-sorted (low-confidence 
 high/irreversible first).
 
 ## 3. Produce the plan
-Use the `writing-plans` skill on the spec to write a plan to
+Use the `$writing-plans` skill on the spec to write a plan to
 `target/docs/superpowers/plans/<YYYY-MM-DD>-<topic>.md`.
 
 ## 4. Emit evidence — then STOP (do not implement)
