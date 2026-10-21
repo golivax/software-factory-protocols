@@ -8,12 +8,12 @@ permissions:
   pull-requests: read
 engine:
   id: codex
-  model: gpt-5.5
+  model: gpt-6-luna
   env:
-    # [HOST-VERIFY] your LLM gateway base URL (the agent lane's only external creds
-    # beyond the forge proxy). ANTHROPIC/OPENAI token is supplied by run-under-act.sh
-    # from OPENAI_KEY_FILE.
-    OPENAI_BASE_URL: https://YOUR-LLM-GATEWAY/v1/
+    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
+    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
+    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 safe-outputs:
   # Evidence is a first-class gh-aw safe-output: declaring it exposes an MCP tool
   # `evidence` whose input schema is generated from `inputs`, shape/type-checks +
