@@ -13,6 +13,10 @@ strict: false
 engine:
   id: codex
   model: gpt-6.1-sol
+  # superpowers' subagent-driven-development dispatches subagents; on codex that is
+  # spawn_agent / wait_agent / close_agent, which exist only with multi-agent on
+  # (superpowers v6.0.3, skills/using-superpowers/references/codex-tools.md).
+  args: ["-c", "features.multi_agent=true"]
   env:
     # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
     # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
@@ -106,13 +110,18 @@ spec + plan.
 ## 2. Create the feature branch
 In the repo root: `git checkout -b impl-feature-auto/issue-<N>` (N = the issue number).
 
-## 3. Implement the plan — via the `executing-plans` skill
-Use **`$executing-plans`** to implement the plan, following that skill's
-instructions. The plan may name `subagent-driven-development` (or a
-`superpowers:`-prefixed name): use `$executing-plans` instead — that skill
-dispatches subagents, which this engine cannot. Do NOT inline the plan yourself
-without the skill. Any mid-implementation ledger appends go into the spec doc that
-ships in the PR.
+## 3. Implement the plan — via a skill
+The plan tells you to use `subagent-driven-development` (recommended) or
+`executing-plans`. Load that skill by its **bare name** with a `$` —
+**`$subagent-driven-development`** or `$executing-plans` — and follow it. The plan
+may write it as `superpowers:subagent-driven-development`; the `superpowers:` prefix
+does NOT resolve here, so drop it. Do NOT inline the plan yourself — that bypasses
+the skill.
+
+When the skill dispatches a subagent (`spawn_agent`), ALWAYS set its model to
+**`gpt-6.1-sol`** — whatever role the skill's Model Selection describes. It is the
+only model this deployment's gateway serves for you; any other name fails. Any
+mid-implementation ledger appends go into the spec doc that ships in the PR.
 
 ## 4. Finish the branch + open the PR
 Use `$finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
