@@ -11,7 +11,7 @@ Modes:
                                     -> read findings.fixture.json beside this
                                        script (deterministic offline test —
                                        mirrors expand-files' ENGINE_LOCAL mode;
-                                       lib.run_expander's env allowlist does not
+                                       the expand round's env allowlist does not
                                        forward EXPAND_FINDINGS_EVIDENCE, so this
                                        is how the offline engine walk supplies a
                                        fixture through the real `continue` path).
@@ -24,7 +24,7 @@ import json, os, sys
 def _load():
     # 1) explicit test injection wins; 2) ENGINE_LOCAL fixture keeps the offline
     # engine walk deterministic; 3) EXPAND_PRIOR_EVIDENCE_PATH is the LIVE per-leg
-    # main-review evidence path exported by lib.run_expander (Task-8 wiring).
+    # main-review evidence, staged into the expand round (Task-8 wiring).
     p = os.environ.get("EXPAND_FINDINGS_EVIDENCE")
     if p and os.path.isfile(p):
         with open(p) as f:

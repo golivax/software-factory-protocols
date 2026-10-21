@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Real diff-parsing expander for dyn-fanout-stub (and, verbatim, code-review-ocr
-in Spec B). Emits one item per changed file: {"path","diff"}. OCR-style pre-filters
-skip binary, vendored/generated, and oversized-diff files. Fails loud on a gh error.
+"""Real diff-parsing expander for dyn-fanout-stub (and, verbatim, code-review-ocr).
+Emits one item per changed file: {"path","diff"}. OCR-style pre-filters skip
+binary, vendored/generated, and oversized-diff files.
+
+It reads the MR diff the factory already fetched, $CHECK_CTX/diff.patch: an
+expander runs in an expand round (engine 11.0.0, #211) with the same ground
+truth as a check, so it fetches nothing itself.
 
 Modes:
-  ENGINE_LOCAL=1  -> read items.json beside this script (deterministic offline test).
-  EXPAND_FILES_DIFF_FILE=<path> -> parse that file (test injection, no gh needed).
-  otherwise       -> parse `gh pr diff <PR>` (live, zone 1, read-only token).
+  $CHECK_CTX/diff.patch non-empty -> parse it.
+  ENGINE_LOCAL=1 and no diff      -> read items.json beside this script
+                                     (deterministic offline walk).
+  otherwise                       -> no items (a PR with no diff has no files).
 
 Thresholds come from EXPAND_PARAMS (JSON of the node's `expand` object) with defaults.
 """
-import json, os, re, subprocess
+import json, os, re
 
 VENDOR_RE = re.compile(
     r'(^|/)(vendor|node_modules|dist|build|third_party|\.venv)(/|$)'
@@ -23,15 +28,13 @@ def _params():
     except (json.JSONDecodeError, ValueError):
         return {}
 
-def _load_diff(pr):
-    inj = os.environ.get("EXPAND_FILES_DIFF_FILE")
-    if inj:
-        with open(inj) as f:
+def _load_diff():
+    ctx = os.environ.get("CHECK_CTX", "")
+    try:
+        with open(os.path.join(ctx, "diff.patch")) as f:
             return f.read()
-    r = subprocess.run(["gh", "pr", "diff", str(pr)], capture_output=True, text=True)
-    if r.returncode != 0:
-        raise SystemExit(f"expand-files: gh pr diff {pr} failed: {r.stderr.strip()}")
-    return r.stdout
+    except OSError:
+        return ""
 
 def _split_files(diff_text):
     """Yield (path, chunk) per `diff --git a/<p> b/<p>` header."""
@@ -52,15 +55,15 @@ def _diff_lines(chunk):
                if (ln.startswith("+") or ln.startswith("-")) and not ln.startswith(("+++", "---")))
 
 def main():
-    pr = os.environ.get("PR", "")
     max_diff_lines = int(_params().get("max_diff_lines", 1500))
-    if os.environ.get("ENGINE_LOCAL"):
+    diff = _load_diff()
+    if not diff.strip() and os.environ.get("ENGINE_LOCAL"):
         here = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(here, "items.json")) as f:
             print(json.dumps({"items": json.load(f)}))
         return
     items = []
-    for path, chunk in _split_files(_load_diff(pr)):
+    for path, chunk in _split_files(diff):
         if _is_binary(chunk):
             continue
         if VENDOR_RE.search(path):
