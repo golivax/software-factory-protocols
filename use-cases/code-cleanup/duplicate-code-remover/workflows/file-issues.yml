@@ -1,0 +1,20 @@
+name: file-issues
+# duplicate-code-remover's last step: file one issue per duplication pattern and
+# comment /impl-feature-auto on each (file-issues.py beside this file). Its job
+# token can read and write issues, nothing else.
+on:
+  workflow_dispatch:
+    inputs:
+      protocol_context:
+        type: string
+        required: false
+permissions:
+  contents: read
+  issues: write
+jobs:
+  file:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: file the issues
+        run: python3 "$SF_CONTROL_DIR/.github/workflows/file-issues.py"

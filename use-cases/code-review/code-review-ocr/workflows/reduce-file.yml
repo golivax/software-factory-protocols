@@ -1,0 +1,16 @@
+name: reduce-file
+# code-review-ocr's per-file `reduce`: keep the findings its filter legs kept
+# (reduce-file.py beside this file). No forge access.
+on:
+  workflow_dispatch:
+    inputs:
+      protocol_context:
+        type: string
+        required: false
+jobs:
+  reduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: reduce this file's findings
+        run: python3 "$SF_CONTROL_DIR/.github/workflows/reduce-file.py"

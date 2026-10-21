@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
-"""file-issues (zone 4, trusted) — after detect's checks pass, file one GitHub
-issue per duplication pattern (dedup by fingerprint marker), then post a
-`/impl-feature-auto` comment on each so the auto-fixer opens a PR.
+"""duplicate-code-remover `file-issues`: a dispatched code node (its own
+microVM). After detect's checks pass, it files one issue per duplication pattern
+(dedup by a fingerprint marker in the body), then comments `/impl-feature-auto`
+on each so the auto-fixer picks it up.
 
-A `code` node (BPMN Script Task) following `detect` as its sibling. ABI:
-file-issues.py <workdir> <instance-key>, with detect's evidence materialized at
-<workdir>/inputs/evidence.json by the declared
-`inputs: [{"from": "detect", "as": "evidence"}]`.
-
-CRITICAL: the comment is posted with PUBLISH_TOKEN (a PAT). The default
-GITHUB_TOKEN cannot trigger downstream workflows, so a comment posted by it
-would silently fail to fire impl-feature-auto. A `code` node's env is a
-least-privilege allowlist, so the node must NAME that secret —
-`env: ["PUBLISH_TOKEN", "DUP_MAX_PATTERNS"]` (the second is the pattern cap this
-hook reads, not a secret). Prints {"conclusion","summary"}."""
+Reads detect's evidence at $SF_INPUTS_DIR/evidence.json and its cap from the
+node's `params.max_patterns` (protocol_context.params, default 3). `gh` reaches
+the forge through gh2gl with this job's own token (GH_HOST / GH_ENTERPRISE_TOKEN,
+set by the code lane), scoped by `issues: write`. Writes {conclusion, summary} to
+$SF_EVIDENCE_OUT.
+"""
 import hashlib
 import json
 import os
@@ -23,10 +19,6 @@ import sys
 
 _SEV_ORDER = {"high": 0, "medium": 1, "low": 2}
 _WS = re.compile(r"\s+")
-
-
-def _local():
-    return os.environ.get("ENGINE_LOCAL", "0") == "1"
 
 
 def _collapse(s):
@@ -78,14 +70,6 @@ def issue_body(pattern, fp):
     return "\n".join(lines)
 
 
-def _gh_env():
-    env = dict(os.environ)
-    tok = os.environ.get("PUBLISH_TOKEN", "")
-    if tok:
-        env["GH_TOKEN"] = tok
-    return env
-
-
 def _existing_fingerprints(repo):
     """Open issues whose body carries a dup-fp marker -> set of markers (dedupe).
 
@@ -97,7 +81,7 @@ def _existing_fingerprints(repo):
     r = subprocess.run(
         ["gh", "issue", "list", "--repo", repo, "--state", "open",
          "--search", "dup-fp in:body", "--json", "body", "--limit", "100"],
-        text=True, capture_output=True, env=_gh_env(),
+        text=True, capture_output=True,
     )
     if r.returncode != 0:
         sys.stderr.write(f"[file-issues] list failed: {(r.stderr or '').strip()}\n")
@@ -123,7 +107,7 @@ def _ensure_labels(repo, labels):
         subprocess.run(
             ["gh", "label", "create", name, "--repo", repo, "--force",
              "--color", "ededed", "--description", "duplicate-code-remover"],
-            text=True, capture_output=True, env=_gh_env(),
+            text=True, capture_output=True,
         )
 
 
@@ -132,7 +116,7 @@ def _create_issue(repo, title, body, labels):
         return subprocess.run(
             ["gh", "issue", "create", "--repo", repo, "--title", title,
              "--body", body, *extra],
-            text=True, capture_output=True, env=_gh_env(),
+            text=True, capture_output=True,
         )
     r = _run(["--label", ",".join(labels)] if labels else [])
     if r.returncode != 0:
@@ -151,7 +135,7 @@ def _create_issue(repo, title, body, labels):
 def _post_comment(repo, number, body):
     r = subprocess.run(
         ["gh", "api", f"repos/{repo}/issues/{number}/comments", "-f", f"body={body}"],
-        text=True, capture_output=True, env=_gh_env(),
+        text=True, capture_output=True,
     )
     if r.returncode != 0:
         sys.stderr.write(f"[file-issues] comment failed: {r.stderr.strip()}\n")
@@ -159,69 +143,39 @@ def _post_comment(repo, number, body):
 
 def main():
     try:
-        _main()
-    except Exception as e:  # belt-and-suspenders: the ABI requires exactly one
-        # JSON {"conclusion","summary"} on stdout, always — even on a malformed
-        # pattern that slipped past the checks (e.g. a non-list `locations`).
-        # `failure`, not `neutral`: as a `code` node this step's conclusion is a
-        # real verdict, and a hook that threw has objected.
-        print(json.dumps({"conclusion": "failure", "summary": f"publish hook error: {e}"}))
+        conclusion, summary = _main()
+    except Exception as e:  # a malformed pattern that slipped past the checks
+        conclusion, summary = "failure", f"file-issues error: {e}"
+    with open(os.environ["SF_EVIDENCE_OUT"], "w") as fh:
+        json.dump({"conclusion": conclusion, "summary": summary}, fh)
+    print(summary)
 
 
 def _main():
-    arg = sys.argv[1] if len(sys.argv) > 1 else ""
-    # <workdir>/inputs/evidence.json is the `code` ABI; a bare evidence path is
-    # also accepted so the hook stays directly invocable (the unit tests do that).
-    _staged = os.path.join(arg, "inputs", "evidence.json")
-    ev_path = _staged if os.path.isfile(_staged) else arg
-    instance = sys.argv[2] if len(sys.argv) > 2 else ""
     try:
-        with open(ev_path) as fh:
+        with open(os.path.join(os.environ["SF_INPUTS_DIR"], "evidence.json")) as fh:
             ev = json.load(fh)
     except (OSError, ValueError):
         ev = {}
+    with open(os.path.join(os.environ["SF_CONTROL_DIR"], "protocol_context.json")) as fh:
+        ctx = json.load(fh)
     patterns = [p for p in (ev.get("patterns") or []) if isinstance(p, dict)]
     if not patterns:
-        # "Nothing to file" is a clean, successful scan, and this node is the
-        # LAST state of the protocol — so its conclusion colours the aggregate
-        # check-run. It printed `neutral` as a publish hook, where the engine's
-        # retired shim only ever reddened on `failure` and neutral was green;
-        # `lib.finalize_code_result` instead fails ANY non-{success,failure}
-        # conclusion closed, so keeping `neutral` here would report a clean scan
-        # of a duplication-free repo as a FAILED run.
-        print(json.dumps({"conclusion": "success",
-                          "summary": f"No duplication patterns to file ({instance})."}))
-        return
-
+        # a clean scan of a duplication-free repo is a success
+        return "success", "No duplication patterns to file."
     patterns.sort(key=lambda p: _SEV_ORDER.get(p.get("severity"), 9))
     try:
-        cap = int(os.environ.get("DUP_MAX_PATTERNS", "3"))
-    except ValueError:
+        cap = int((ctx.get("params") or {}).get("max_patterns", 3))
+    except (TypeError, ValueError):
         cap = 3
     patterns = patterns[:cap]
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     labels = ["code-quality", "automated-analysis"]
-
-    if _local():
-        for p in patterns:
-            fp = fingerprint(p)
-            sys.stderr.write(f"[ENGINE_LOCAL] would create issue '{issue_title(p)}' [{fp}]\n")
-            sys.stderr.write(f"[ENGINE_LOCAL] would comment: {comment_body().splitlines()[0]}\n")
-        print(json.dumps({"conclusion": "success",
-                          "summary": f"[local] {len(patterns)} issue(s) + /impl-feature-auto for {instance}."}))
-        return
-
     seen = _existing_fingerprints(repo)
     if seen is None:
-        # Dedupe query failed: fail safe -> file nothing this run rather than risk
-        # re-creating already-filed issues (this hook runs on a daily cron).
-        # `failure`, not `neutral`: the run did NOT do its job, and as a `code`
-        # node an explicit conclusion is the verdict that colours the aggregate.
-        print(json.dumps({
-            "conclusion": "failure",
-            "summary": f"dedupe query failed; skipped issue creation to avoid duplicates ({instance})",
-        }))
-        return
+        # the dedupe query failed: file nothing rather than risk re-filing issues
+        # this cron already filed
+        return "failure", "dedupe query failed; skipped issue creation to avoid duplicates"
     _ensure_labels(repo, labels)
     created, skipped = [], 0
     for p in patterns:
@@ -234,8 +188,7 @@ def _main():
             _post_comment(repo, num, comment_body())
             created.append(num)
     summary = f"Filed {len(created)} issue(s) (#{', #'.join(created) or '—'}); {skipped} deduped."
-    print(json.dumps({"conclusion": "success" if created or skipped else "failure",
-                      "summary": summary}))
+    return ("success" if created or skipped else "failure"), summary
 
 
 if __name__ == "__main__":
