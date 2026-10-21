@@ -12,6 +12,11 @@ on:
       protocol_context:
         description: "engine-supplied run context (JSON string)"
         required: false
+# The job's token (gh2gl's job listener, minted from this block) can read the
+# repository and comment on the merge request, nothing else.
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   survey:
     runs-on: ubuntu-latest
@@ -39,7 +44,8 @@ jobs:
           # Post the greeting to the MR via the forge API. We speak the GitHub REST
           # surface against $GITHUB_API_URL; the gh2gl proxy translates it to the
           # real forge (GitLab/CodeHub) and authenticates with its own token, so
-          # this is forge-agnostic and the node holds no forge credential.
+          # this is forge-agnostic and the node holds no forge credential — only
+          # this job's own token, scoped by `permissions:` above.
           ctx = json.loads(os.environ.get("SF_PROTOCOL_CONTEXT") or "{}")
           pr = str(ctx.get("pr", "")).strip()
           iid = pr[3:] if pr.startswith("pr-") else pr        # "pr-7" -> "7"
@@ -54,9 +60,9 @@ jobs:
                   headers={
                       "Content-Type": "application/json",
                       "Accept": "application/vnd.github+json",
-                      # gh2gl ignores caller auth (it uses its own token), but send
-                      # a value so any client/proxy that expects one is satisfied.
-                      "Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', 'x')}",
+                      # this job's token: gh2gl's job listener checks it against
+                      # `permissions:` (it then calls the forge with its own token)
+                      "Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}",
                       # Tell the proxy this iid is the MR (its own comments set this),
                       # so `issues/<iid>/comments` resolves to the merge request.
                       "X-SF-Pr-Iid": iid,

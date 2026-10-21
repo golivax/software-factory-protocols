@@ -3,9 +3,14 @@ name: publish-review
 # act in its own microVM, after the engine's checks passed on the review node's
 # evidence (gh-aw's sanitized, detection-approved staged review). It reaches the
 # forge through gh2gl ($GITHUB_API_URL); the review is pinned to the commit the
-# checks saw, and nothing is posted if the MR has moved since.
+# checks saw, and nothing is posted if the MR has moved since. Its job token
+# (gh2gl's job listener, minted from this block) can post the review and nothing
+# else.
 on:
   workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -28,7 +33,8 @@ jobs:
                   f"{api}/{path}", method=method,
                   data=json.dumps(body).encode() if body is not None else None,
                   headers={"Accept": "application/vnd.github+json",
-                           "Content-Type": "application/json", "X-SF-Pr-Iid": pr})
+                           "Content-Type": "application/json", "X-SF-Pr-Iid": pr,
+                           "Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}"})
               with urllib.request.urlopen(req, timeout=60) as r:
                   raw = r.read()
               return json.loads(raw) if raw.strip() else {}
