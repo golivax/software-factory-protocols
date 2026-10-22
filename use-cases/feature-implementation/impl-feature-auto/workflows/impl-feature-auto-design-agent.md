@@ -28,8 +28,8 @@ tools:
   edit: true
   bash: [":*"]
 safe-outputs:
-  # The design agent produces NO GitHub writes — its only output is the evidence
-  # artifact (post-steps). But gh-aw auto-injects a default `create-issue` (a per-run
+  # The design agent produces NO GitHub writes — its only output is its final
+  # answer (the evidence) plus the spec + plan artifact (post-steps). But gh-aw auto-injects a default `create-issue` (a per-run
   # status issue) whenever an agent declares no real safe-output. Declaring one
   # real output suppresses that auto-injection; the agent's prompt forbids it from
   # emitting a comment, so this capability stays unused (no status issue, no comment).
@@ -47,19 +47,6 @@ pre-agent-steps:
       if [ -z "$CTX" ]; then CTX='{}'; fi
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
-  - name: Materialize the design evidence schema
-    run: |
-      set -uo pipefail
-      mkdir -p /tmp/gh-aw/agent
-      # The evidence contract ships with the protocol in the workflow repo, which
-      # gh-aw already checked out at $GITHUB_WORKSPACE (before pre-agent-steps). Copy
-      # it to a fixed /tmp path so the prompt can point the agent straight at it —
-      # same pattern as issue.json / task-context.json.
-      SRC="$GITHUB_WORKSPACE/.github/agent-factory/protocols/impl-feature-auto/design.evidence.schema.json"
-      cp "$SRC" /tmp/gh-aw/agent/design.evidence.schema.json \
-        && echo "materialized design.evidence.schema.json" \
-        || echo "WARN: schema not found at $SRC"
-      cat /tmp/gh-aw/agent/design.evidence.schema.json 2>/dev/null || true
   - name: Checkout target ref
     uses: actions/checkout@v5
     with:
@@ -86,21 +73,20 @@ pre-agent-steps:
         --json number,title,body,labels,author,url > /tmp/gh-aw/agent/issue.json
       cat /tmp/gh-aw/agent/issue.json
 post-steps:
-  - name: Bundle + upload evidence (json + spec.md + plan.md)
+  - name: Bundle the spec + plan
     if: always()
     run: |
       set -uo pipefail
       OUT=/tmp/gh-aw/evidence
       mkdir -p "$OUT"
-      # The agent wrote evidence.json to /tmp/gh-aw/evidence.json and recorded
-      # spec_path/plan_path (repo-relative, under target/). Copy them in by fixed name.
-      cp /tmp/gh-aw/evidence.json "$OUT/evidence.json" 2>/dev/null || echo '{}' > "$OUT/evidence.json"
-      SPEC=$(python3 -c 'import json,sys;print(json.load(open("/tmp/gh-aw/evidence.json")).get("spec_path",""))' 2>/dev/null || true)
-      PLAN=$(python3 -c 'import json,sys;print(json.load(open("/tmp/gh-aw/evidence.json")).get("plan_path",""))' 2>/dev/null || true)
-      [ -n "$SPEC" ] && cp "$GITHUB_WORKSPACE/target/$SPEC" "$OUT/spec.md" 2>/dev/null || true
-      [ -n "$PLAN" ] && cp "$GITHUB_WORKSPACE/target/$PLAN" "$OUT/plan.md" 2>/dev/null || true
+      # The agent wrote them under target/ at the paths the prompt names (§2, §3);
+      # copy the newest of each in by fixed name.
+      SPEC=$(ls -t "$GITHUB_WORKSPACE"/target/docs/superpowers/specs/*-design.md 2>/dev/null | head -1)
+      PLAN=$(ls -t "$GITHUB_WORKSPACE"/target/docs/superpowers/plans/*.md 2>/dev/null | head -1)
+      [ -n "$SPEC" ] && cp "$SPEC" "$OUT/spec.md" || true
+      [ -n "$PLAN" ] && cp "$PLAN" "$OUT/plan.md" || true
       ls -la "$OUT"
-  - name: Upload evidence artifact
+  - name: Upload the spec + plan artifact
     if: always()
     uses: actions/upload-artifact@v4
     with:
@@ -140,18 +126,20 @@ high/irreversible first).
 Use the `$writing-plans` skill on the spec to write a plan to
 `target/docs/superpowers/plans/<YYYY-MM-DD>-<topic>.md`.
 
-## 4. Emit evidence — then STOP (do not implement)
-Read the evidence contract at `/tmp/gh-aw/agent/design.evidence.schema.json` first, then
-write `/tmp/gh-aw/evidence.json` as ONE JSON object matching it:
+## 4. Give your evidence — then STOP (do not implement)
+Call `noop`, then give your final answer: it IS the evidence, ONE JSON object matching
+the evidence schema (the factory constrains it to that schema and hands it to the engine):
 `{"spec_path","plan_path","summary","run_id","ledger":[…],"read_these_first":[…]}`
 - `spec_path`/`plan_path`: the repo-relative paths under `target/` you just wrote
   (e.g. `docs/superpowers/specs/…-design.md`).
+- `summary`: one line on the design, or `null`.
 - `run_id`: the value of the `GITHUB_RUN_ID` environment variable.
 - `ledger`: the SAME ledger as structured data — one object per gap, fields exactly
   as in §2 (`id` like "L1", `category`, `what`, `why`, `what_i_did`, `confidence`,
   `blast_radius:{level,why}`, `reversibility:{level,why}`, `revisit_if`, and
-  `verified:true` on any ASSUMPTION asserting a code fact). Every ledger `id` MUST
-  also appear in the spec's Ledger section (a check cross-references ids); the spec
-  prose may paraphrase each item's `what` — it need not be verbatim.
+  `verified`: `true` on any ASSUMPTION asserting a code fact, otherwise `null`).
+  Every ledger `id` MUST also appear in the spec's Ledger section (a check
+  cross-references ids); the spec prose may paraphrase each item's `what` — it need
+  not be verbatim.
 - `read_these_first`: ledger ids, risk-descending.
-Write nothing else. Do NOT write code, do NOT open a PR, do NOT comment on GitHub.
+Do NOT write code, do NOT open a PR, do NOT comment on GitHub.

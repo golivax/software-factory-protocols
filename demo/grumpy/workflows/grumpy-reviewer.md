@@ -67,10 +67,13 @@ safe-outputs:
         python3 - <<'PY'
         import json, os
 
-        # gh-aw's staged items, verbatim: the evidence is exactly what gh-aw
-        # validated, sanitized and threat-scanned, nothing re-shaped.
+        # gh-aw's staged items, each projected onto the evidence schema's
+        # fields (null where its type has none; values verbatim): the evidence
+        # is exactly what gh-aw validated, sanitized and threat-scanned.
         out = os.environ.get("GH_AW_AGENT_OUTPUT") or "/tmp/gh-aw/agent_output.json"
-        staged = json.load(open(out)).get("items") or []
+        fields = ("type", "path", "line", "start_line", "side", "body", "event")
+        staged = [{k: it.get(k) for k in fields}
+                  for it in json.load(open(out)).get("items") or [] if isinstance(it, dict)]
         # The commit the agent was asked to review: the engine's, not the agent's word.
         sha = json.loads(os.environ.get("AW_CONTEXT") or "{}").get("sha") or ""
 

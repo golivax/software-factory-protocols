@@ -20,13 +20,11 @@ permissions:
   pull-requests: read
 tools:
   cli-proxy: true
-  edit: true
   bash: ["*"]
 safe-outputs:
-  # The agent's only output is the evidence.json artifact (post-steps), NOT a
-  # gh-aw safe-output — so gh-aw's default conclusion job files a spurious
-  # "No Safe Outputs Generated" issue per leg. noop.report-as-issue:false
-  # suppresses it.
+  # The agent's only output is its final answer (the evidence), NOT a gh-aw
+  # safe-output — so gh-aw's default conclusion job files a spurious "No Safe
+  # Outputs Generated" issue per leg. noop.report-as-issue:false suppresses it.
   noop:
     report-as-issue: false
   threat-detection: false
@@ -39,14 +37,6 @@ pre-agent-steps:
       if [ -z "$CTX" ]; then CTX='{}'; fi
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
-post-steps:
-  - name: Upload evidence artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: evidence
-      path: /tmp/gh-aw/evidence.json
-      if-no-files-found: warn
 timeout-minutes: 10
 ---
 
@@ -70,7 +60,9 @@ Read `/tmp/gh-aw/task-context.json`. It contains:
 1. Fetch the PR diff: `gh pr diff <pr> --repo ${{ github.repository }}`.
 2. Find the hunk(s) for `inputs.file.path` (the section starting
    `diff --git a/<path> b/<path>`) and read it.
-3. Write `/tmp/gh-aw/evidence.json`:
+3. Call `noop`, then give your final answer: it IS the evidence, ONE JSON object
+   matching the evidence schema (the factory constrains it to that schema and
+   hands it to the engine):
 
 ```json
 { "examined": ["<inputs.file.path value, verbatim>"],
@@ -85,6 +77,6 @@ Read `/tmp/gh-aw/task-context.json`. It contains:
   scoping notes for the main-review phase (risk areas, functions touched,
   things worth double-checking). Do not fabricate findings or issue verdicts
   here — that is the next phase's job.
-- Your only output is `/tmp/gh-aw/evidence.json`. Do not comment on the PR or
+- Your only output is your final answer. Do not comment on the PR or
   post any other GitHub interaction; the engine publishes the eventual review
   for you once every phase's evidence passes checks.

@@ -10,9 +10,9 @@ Writes {conclusion, summary, survivors} to $SF_EVIDENCE_OUT. The engine persists
 that evidence as this file leg's output, so the top `merge` (post-review) reads
 each file's `evidence.survivors` through its own `from_fork: review`.
 
-filter.evidence.schema.json requires only finding_id + keep (+ anchor when kept);
-path / existing_code / comment are read defensively so a filter agent that echoes
-them round-trips a complete finding. No forge access.
+filter.evidence.schema.json carries finding_id, keep, the anchor (null when
+dropped) and the finding's path / existing_code / comment echoed back, so a kept
+finding round-trips complete. No forge access.
 """
 import json
 import os
@@ -28,15 +28,13 @@ def survivors(rows):
         s = {
             "finding_id": ev.get("finding_id"),
             "path": ev.get("path"),
-            "existing_code": ev.get("existing_code", ""),
-            "comment": ev.get("comment", ""),
-            "side": a.get("side", ev.get("side", "RIGHT")),
-            "line": a.get("line", ev.get("line")),
+            "existing_code": ev.get("existing_code") or "",
+            "comment": ev.get("comment") or "",
+            "side": a.get("side") or "RIGHT",
+            "line": a.get("line"),
         }
-        if "start_line" in a:
+        if a.get("start_line") is not None:
             s["start_line"] = a["start_line"]
-        elif "start_line" in ev:
-            s["start_line"] = ev["start_line"]
         out.append(s)
     return out
 

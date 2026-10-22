@@ -6,9 +6,10 @@ in `$CHECK_CTX`; prints one `{"check","pass","feedback"}` object and ALWAYS
 exits 0. Pure: it reads the evidence and `$CHECK_CTX/pr.json`, nothing else.
 
 The engine has already validated the evidence against its schema (item types,
-required fields, non-empty comment bodies, the maxes). This settles what a
-schema cannot:
+every item's fields). This settles what a schema cannot:
 
+  * each item type's required fields and the workflow's maxes
+    (`_review.form_errors`);
   * the review was made for the commit whose diff the engine fetched
     (`sha` == pr.json `diff_head_sha`): an anchor check against a different
     commit's diff proves nothing;
@@ -43,6 +44,9 @@ def main():
     except (OSError, ValueError) as exc:
         emit(False, f"no $CHECK_CTX/pr.json to check against: {exc}")
 
+    malformed = _review.form_errors(ev)
+    if malformed:
+        emit(False, "; ".join(malformed))
     head = pr.get("diff_head_sha") or ""
     sha = ev.get("sha") or ""
     if not head:

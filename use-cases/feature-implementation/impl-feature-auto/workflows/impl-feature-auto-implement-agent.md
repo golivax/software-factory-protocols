@@ -78,14 +78,6 @@ pre-agent-steps:
         gh run download "$RID" --repo "$REPO" -n evidence -D /tmp/gh-aw/design || echo "no design artifact"
       fi
       ls -la /tmp/gh-aw/design || true
-post-steps:
-  - name: Upload evidence artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: evidence
-      path: /tmp/gh-aw/evidence.json
-      if-no-files-found: warn
 timeout-minutes: 60
 ---
 
@@ -130,7 +122,7 @@ safe-outputs to capture them). Open ONE pull request via safe-outputs. The PR bo
 MUST carry the Accountability Ledger and the READ-THESE-FIRST list (from the design
 spec) so the PR is self-describing, and reference the issue (`Closes #<N>`).
 
-## 5. Emit evidence
-Write `/tmp/gh-aw/evidence.json` as ONE JSON object:
-`{"summary":"<one line>","pr_branch":"impl-feature-auto/issue-<N>","run_id":"<GITHUB_RUN_ID>"}`
-Write nothing else.
+## 5. Give your evidence
+Give your final answer: it IS the evidence, ONE JSON object matching the evidence
+schema (the factory constrains it to that schema and hands it to the engine):
+`{"summary":"<one line>","pr_branch":"impl-feature-auto/issue-<N>"}`

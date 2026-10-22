@@ -20,13 +20,11 @@ permissions:
   pull-requests: read
 tools:
   cli-proxy: true
-  edit: true
   bash: ["*"]
 safe-outputs:
-  # The agent's only output is the evidence.json artifact (post-steps), NOT a
-  # gh-aw safe-output — so gh-aw's default conclusion job files a spurious
-  # "No Safe Outputs Generated" issue per leg. noop.report-as-issue:false
-  # suppresses it.
+  # The agent's only output is its final answer (the evidence), NOT a gh-aw
+  # safe-output — so gh-aw's default conclusion job files a spurious "No Safe
+  # Outputs Generated" issue per leg. noop.report-as-issue:false suppresses it.
   noop:
     report-as-issue: false
   threat-detection: false
@@ -39,14 +37,6 @@ pre-agent-steps:
       if [ -z "$CTX" ]; then CTX='{}'; fi
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
-post-steps:
-  - name: Upload evidence artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: evidence
-      path: /tmp/gh-aw/evidence.json
-      if-no-files-found: warn
 timeout-minutes: 10
 ---
 
@@ -79,12 +69,14 @@ Read `/tmp/gh-aw/task-context.json`. `inputs.finding` is the candidate:
      would not bother commenting on, or it's a near-duplicate of a more
      specific concern about the same code.
    - keep (`keep: true`) otherwise.
-4. Write `/tmp/gh-aw/evidence.json`:
+4. Call `noop`, then give your final answer: it IS the evidence, ONE JSON object
+   matching the evidence schema (the factory constrains it to that schema and
+   hands it to the engine):
 
 ```json
 { "finding_id": "<inputs.finding.finding_id, verbatim>",
   "keep": true,
-  "anchor": { "side": "RIGHT", "line": 42 },
+  "anchor": { "side": "RIGHT", "line": 42, "start_line": null },
   "reason": "short justification",
   "path": "<inputs.finding.path>",
   "existing_code": "<inputs.finding.existing_code (or the relocated snippet)>",
@@ -94,17 +86,16 @@ Read `/tmp/gh-aw/task-context.json`. `inputs.finding` is the candidate:
 ## Evidence rules (deterministic checks WILL verify these)
 
 - `finding_id` MUST echo `inputs.finding.finding_id` verbatim.
-- `keep` is a boolean. When `keep` is `true`, `anchor` is REQUIRED:
-  `{ "side": "RIGHT"|"LEFT", "line": <int>[, "start_line": <int>] }`, and it
+- `keep` is a boolean. When `keep` is `true`, `anchor` is
+  `{ "side": "RIGHT"|"LEFT", "line": <int>, "start_line": <int>|null }`, and it
   must resolve to the real `existing_code` snippet in the independently
   -fetched diff (same rules as the main-review phase: `+`/`-`/context lines
   advance RIGHT/LEFT/both from each hunk's `@@ -OLD +NEW @@` header). When
-  `keep` is `false`, `anchor` may be omitted.
+  `keep` is `false`, `anchor` is `null`.
 - Also echo `path`, `existing_code`, and `comment` back — verbatim, or the
-  relocated `existing_code` if you moved the anchor — even though the schema
-  does not require them: the downstream reduce/post-review step needs them to
-  render the review comment.
+  relocated `existing_code` if you moved the anchor: the downstream
+  reduce/post-review step needs them to render the review comment.
 - `reason` is a short (one sentence) justification for the decision.
-- Your only output is `/tmp/gh-aw/evidence.json`. Do not comment on the PR or
+- Your only output is your final answer. Do not comment on the PR or
   post any other GitHub interaction; the engine publishes the eventual review
   for you.

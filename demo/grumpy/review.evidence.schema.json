@@ -1,83 +1,46 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "grumpy review evidence: gh-aw's staged review, verbatim",
-  "description": "What gh-aw staged (sanitized, threat-scanned, written nowhere) for the review the agent proposes, plus the commit the engine asked it to review. The engine validates this before any check; the `publish` node posts exactly these items.",
+  "title": "grumpy review evidence: gh-aw's staged review",
+  "description": "What gh-aw staged (sanitized, threat-scanned, written nowhere) for the review the agent proposes, each item projected onto the fields below (null where its type has none), plus the commit the engine asked it to review. The engine validates this before any check; each type's required fields and the workflow's maxes (5 comments, 1 submission) are the checks' (`checks/_review.py` form_errors); the `publish` node posts exactly these items.",
   "type": "object",
+  "additionalProperties": false,
   "required": ["sha", "staged"],
   "properties": {
     "sha": {
       "type": "string",
-      "pattern": "^[0-9a-f]{40}$",
       "description": "The commit the agent was asked to review (the engine's aw_context.sha, not the agent's word)."
     },
     "staged": {
       "type": "array",
-      "description": "gh-aw's staged safe-output items (agent_output.json .items), verbatim.",
-      "items": { "$ref": "#/$defs/item" },
-      "allOf": [
-        {
-          "contains": { "properties": { "type": { "const": "create_pull_request_review_comment" } } },
-          "minContains": 0,
-          "maxContains": 5,
-          "description": "the workflow's `create-pull-request-review-comment: max: 5`"
-        },
-        {
-          "contains": { "properties": { "type": { "const": "submit_pull_request_review" } } },
-          "minContains": 0,
-          "maxContains": 1,
-          "description": "the workflow's `submit-pull-request-review: max: 1`"
-        }
-      ]
-    }
-  },
-  "$defs": {
-    "line": {
-      "anyOf": [
-        { "type": "integer", "minimum": 1 },
-        { "type": "string", "pattern": "^[1-9][0-9]*$" }
-      ]
-    },
-    "item": {
-      "type": "object",
-      "required": ["type"],
-      "properties": {
-        "type": {
-          "enum": [
-            "create_pull_request_review_comment",
-            "submit_pull_request_review",
-            "noop",
-            "missing_tool",
-            "missing_data",
-            "report_incomplete"
-          ],
-          "description": "The two review types this workflow declares, or one of gh-aw's own reporting items (which publish nothing)."
-        }
-      },
-      "allOf": [
-        {
-          "if": { "properties": { "type": { "const": "create_pull_request_review_comment" } } },
-          "then": {
-            "required": ["path", "line", "body"],
-            "properties": {
-              "path": { "type": "string", "minLength": 1 },
-              "line": { "$ref": "#/$defs/line" },
-              "start_line": { "$ref": "#/$defs/line" },
-              "side": { "enum": ["LEFT", "RIGHT"] },
-              "body": { "type": "string", "minLength": 1, "maxLength": 65536 }
-            }
-          }
-        },
-        {
-          "if": { "properties": { "type": { "const": "submit_pull_request_review" } } },
-          "then": {
-            "required": ["event"],
-            "properties": {
-              "event": { "enum": ["APPROVE", "REQUEST_CHANGES", "COMMENT"] },
-              "body": { "type": ["string", "null"], "maxLength": 65536 }
-            }
+      "description": "gh-aw's staged safe-output items (agent_output.json .items), projected onto these fields.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "path", "line", "start_line", "side", "body", "event"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "create_pull_request_review_comment",
+              "submit_pull_request_review",
+              "noop",
+              "missing_tool",
+              "missing_data",
+              "report_incomplete"
+            ],
+            "description": "The two review types this workflow declares, or one of gh-aw's own reporting items (which publish nothing)."
+          },
+          "path": { "type": ["string", "null"], "description": "a review comment's file" },
+          "line": { "type": ["integer", "string", "null"], "description": "a review comment's (last) line" },
+          "start_line": { "type": ["integer", "string", "null"], "description": "a multi-line review comment's first line" },
+          "side": { "type": ["string", "null"], "enum": ["LEFT", "RIGHT", null] },
+          "body": { "type": ["string", "null"], "description": "a review comment's text, or the submission's" },
+          "event": {
+            "type": ["string", "null"],
+            "enum": ["APPROVE", "REQUEST_CHANGES", "COMMENT", null],
+            "description": "the review submission's verdict"
           }
         }
-      ]
+      }
     }
   }
 }

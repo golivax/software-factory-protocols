@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""ledger-wellformed (layer 1) — per-item completeness + valid enums + justified
-blast_radius/reversibility + ASSUMPTION ⇒ verified:true. Form only; never judges
-whether a rating is calibrated. Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
+"""ledger-wellformed (layer 1) — per-item completeness + ids of the form L<n> +
+valid enums + justified blast_radius/reversibility + ASSUMPTION ⇒ verified:true.
+Form only; never judges whether a rating is calibrated. Usage: <ev.json>  (ground truth: $CHECK_CTX); exits 0."""
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -14,6 +15,7 @@ CONF = {"high", "medium", "low"}
 BLAST = {"low", "medium", "high"}
 REV = {"reversible", "costly", "irreversible"}
 SCALARS = ("what", "why", "what_i_did", "revisit_if")
+ID_RE = re.compile(r"^L[0-9]+$")
 
 
 def emit(ok, feedback):
@@ -31,6 +33,8 @@ def main():
         tag = it.get("id", f"[{i}]") if isinstance(it, dict) else f"[{i}]"
         if not isinstance(it, dict):
             problems.append(f"{tag}: not an object"); continue
+        if not isinstance(it.get("id"), str) or not ID_RE.match(it["id"]):
+            problems.append(f"{tag}: id {it.get('id')!r} not of the form L<n>")
         if it.get("category") not in CATEGORIES:
             problems.append(f"{tag}: category {it.get('category')!r} not in {sorted(CATEGORIES)}")
         for f in SCALARS:

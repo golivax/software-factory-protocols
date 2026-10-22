@@ -91,6 +91,26 @@ schema is `engine/protocol.schema.json` there; lint a package with
 python3 <software-factory>/engine/protocol_lint.py <name>/protocol.json
 ```
 
+### An agent's evidence is its final answer
+
+Every `agent` node's evidence schema is in the **structured-output subset**
+(engine 13.0.0; `protocol_lint` refuses a package otherwise): the root is
+`type: object`; every object has fixed `properties`, all of them `required`, and
+`additionalProperties: false`; an optional field is nullable instead
+(`type: [T, "null"]`, or `anyOf` with `{"type": "null"}` for an object or array);
+only `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`,
+`anyOf`, `description` and `title`. What the subset cannot say (a minimum length, a
+pattern, a count) is a check's job.
+
+On a `codex` or `claude` engine the factory constrains the agent's final answer to
+that schema and hands it to the engine as the evidence. So a prompt says *"call
+`noop`, then give your final answer: it IS the evidence"*, and the unit writes no
+evidence file and has no post-step to copy one (`demo/demo`, `demo/toy` and the
+`use-cases/` agents). A unit whose evidence is not its agent's answer hands it over
+itself: the staged-review pattern below (whatever its engine: the factory leaves its
+lock alone), and any unit on an engine without native structured output (copilot,
+gemini, pi), whose post-step copies the evidence to `evidence-out.json`.
+
 ### Agents that write to the forge: stage, check, publish
 
 An agent never writes to the forge itself. When its deliverable is a forge write
@@ -98,11 +118,13 @@ An agent never writes to the forge itself. When its deliverable is a forge write
 
 1. it **stages** the write (`safe-outputs: staged: true`), so gh-aw validates and
    threat-scans it and writes nothing;
-2. a `steps:` entry under `safe-outputs:` hands the staged items, verbatim, plus the
-   reviewed commit to the engine as the node's evidence (`{sha, staged}`);
-3. the node's evidence schema states which item types, fields and counts are allowed
-   (the engine enforces it);
-4. checks settle the proposal against the MR (right commit, anchors in the diff, …);
+2. a `steps:` entry under `safe-outputs:` hands the staged items, each projected
+   onto the evidence schema's fields (values verbatim), plus the reviewed commit to
+   the engine as the node's evidence (`{sha, staged}`);
+3. the node's evidence schema states which item types and fields are allowed (the
+   engine enforces it);
+4. checks settle each type's required fields, the counts, and the proposal against
+   the MR (right commit, anchors in the diff, …);
 5. a **dispatched** `code` node (its own microVM) publishes it, pinned to the
    reviewed commit. Inline `script` nodes are deprecated.
 

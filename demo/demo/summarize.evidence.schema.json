@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "demo summarize — the agent node's evidence",
   "type": "object",
   "additionalProperties": false,
@@ -7,12 +6,10 @@
   "properties": {
     "saw_token": {
       "type": "string",
-      "minLength": 1,
       "description": "CHECKABLE — the `token` the agent received from `facts` via inputs, echoed back verbatim. Proves the input round-tripped through the dispatch boundary."
     },
     "summary": {
       "type": "string",
-      "minLength": 1,
       "description": "JUDGMENT — the agent's short summary of the MR. Passed through; a check settles that it is present, never adjudicates its content."
     }
   }

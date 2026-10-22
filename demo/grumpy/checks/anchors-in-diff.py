@@ -67,7 +67,10 @@ def main():
         ev = json.load(open(sys.argv[1]))
     except (OSError, ValueError, IndexError) as exc:
         emit(False, f"evidence unreadable/not JSON: {exc}")
-    # the staged review comments (shape already validated by the engine)
+    # the staged review comments (each type's fields: _review.form_errors)
+    malformed = _review.form_errors(ev)
+    if malformed:
+        emit(False, "; ".join(malformed))
     findings = _review.comments(ev)
     try:
         maps = diff_maps()
