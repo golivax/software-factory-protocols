@@ -106,8 +106,10 @@ On a `codex` or `claude` engine the factory constrains the agent's final answer 
 that schema and hands it to the engine as the evidence. So a prompt says *"call
 `noop`, then give your final answer: it IS the evidence"*, and the unit writes no
 evidence file and has no post-step to copy one (`demo/demo`, `demo/toy` and the
-`use-cases/` agents). On any other engine the unit hands its evidence over itself, as
-the staged-review pattern below does.
+`use-cases/` agents). A unit whose evidence is not its agent's answer hands it over
+itself: the staged-review pattern below (whatever its engine: the factory leaves its
+lock alone), and any unit on an engine without native structured output (copilot,
+gemini, pi), whose post-step copies the evidence to `evidence-out.json`.
 
 ### Agents that write to the forge: stage, check, publish
 
