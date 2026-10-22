@@ -1,5 +1,5 @@
-{ "$schema": "http://json-schema.org/draft-07/schema#", "type": "object",
+{ "type": "object", "additionalProperties": false,
   "required": ["examined", "plan_items"],
   "properties": {
-    "examined": { "type": "array", "items": {"type": "string"}, "minItems": 1 },
+    "examined": { "type": "array", "items": {"type": "string"} },
     "plan_items": { "type": "array", "items": {"type": "string"} } } }

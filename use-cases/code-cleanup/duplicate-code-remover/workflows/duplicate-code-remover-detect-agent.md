@@ -18,7 +18,6 @@ permissions:
   pull-requests: read
 tools:
   cli-proxy: true
-  edit: true
   bash: [":*"]
 mcp-servers:
   serena:
@@ -48,14 +47,6 @@ pre-agent-steps:
       if [ -z "$CTX" ]; then CTX='{}'; fi
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
-  - name: Materialize the detect evidence schema
-    run: |
-      set -uo pipefail
-      mkdir -p /tmp/gh-aw/agent
-      SRC="$GITHUB_WORKSPACE/.github/agent-factory/protocols/duplicate-code-remover/detect.evidence.schema.json"
-      cp "$SRC" /tmp/gh-aw/agent/detect.evidence.schema.json \
-        && echo "materialized detect.evidence.schema.json" \
-        || echo "WARN: schema not found at $SRC"
   - name: Checkout target ref
     uses: actions/checkout@v5
     with:
@@ -63,22 +54,6 @@ pre-agent-steps:
       path: target
       persist-credentials: false
       fetch-depth: 0
-post-steps:
-  - name: Bundle + upload evidence
-    if: always()
-    run: |
-      set -uo pipefail
-      OUT=/tmp/gh-aw/evidence
-      mkdir -p "$OUT"
-      cp /tmp/gh-aw/evidence.json "$OUT/evidence.json" 2>/dev/null || echo '{}' > "$OUT/evidence.json"
-      ls -la "$OUT"
-  - name: Upload evidence artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: evidence
-      path: /tmp/gh-aw/evidence
-      if-no-files-found: warn
 timeout-minutes: 40
 ---
 
@@ -86,16 +61,15 @@ timeout-minutes: 40
 
 Working directory of the analyzed code: `target/` (checked out at the requested ref).
 
-## 1. Read the contract
-Read `/tmp/gh-aw/agent/detect.evidence.schema.json`. Your ONLY output is a JSON file
-at `/tmp/gh-aw/evidence.json` matching that schema. Do NOT create issues or comments.
-Read `/tmp/gh-aw/task-context.json` (`iteration`, `feedback`); on iteration > 1 fold
+## 1. Read the task
+Your ONLY output is your final answer: the evidence (step 5). Do NOT create issues or
+comments. Read `/tmp/gh-aw/task-context.json` (`iteration`, `feedback`); on iteration > 1 fold
 the `feedback` (failed checks) into this pass.
 
 ## 2. Activate Serena for C++
 Call `activate_project` with path `${GITHUB_WORKSPACE}/target`. Serena is configured
 for C/C++ via clangd. If Serena/clangd is unavailable, fall back to `search_for_pattern`
-+ bash (`grep -rn`, `find target -name '*.cpp'`) — still emit valid evidence.
++ bash (`grep -rn`, `find target -name '*.cpp'`) — still give valid evidence.
 
 ## 3. Scope — BOUNDED (this is a large repo; do NOT scan it all)
 Analyze ONLY C++ sources under `target/`:
@@ -109,14 +83,14 @@ Analyze ONLY C++ sources under `target/`:
   `git -C target log --name-only -20` to pick candidates. Do NOT attempt to index or
   read the whole tree.
 
-## TIME BUDGET — emit evidence promptly (hard requirement)
-You have a limited wall-clock budget and MUST finish by writing `/tmp/gh-aw/evidence.json`.
+## TIME BUDGET — give your evidence promptly (hard requirement)
+You have a limited wall-clock budget and MUST finish with your evidence as your final answer.
 - **Prefer `search_for_pattern`** (fast, grep-like) and targeted `get_symbols_overview`
   on your bounded file set. AVOID `find_referencing_symbols` and whole-repo indexing —
   they are slow here (no compilation database) and not needed to find duplication.
 - Stop as soon as you have **up to 3 solid patterns** (or have examined ~40 files with
-  none) and write evidence immediately. A prompt, correct, bounded result beats an
-  exhaustive one — an incomplete run that never writes evidence FAILS the check.
+  none) and give your evidence immediately. A prompt, correct, bounded result beats an
+  exhaustive one — an incomplete run that never answers FAILS the check.
 
 ## 4. Detect duplication
 Within your bounded slice, find true duplication with `search_for_pattern` +
@@ -125,8 +99,9 @@ blocks (>10 lines or 3+ occurrences), copy-paste with minor edits (e.g. repeated
 initializers / connection-config setup, near-identical client methods). Skip boilerplate,
 getters/setters, and small (<5 line) snippets unless highly repetitive.
 
-## 5. Emit evidence
-Write `/tmp/gh-aw/evidence.json`:
+## 5. Give your evidence
+Call `noop`, then give your final answer: it IS the evidence, ONE JSON object matching
+the evidence schema (the factory constrains it to that schema and hands it to the engine):
 - `scanned`: the files/symbols you actually examined (REQUIRED, non-empty, even if you
   find nothing).
 - `patterns`: ≤3 most significant patterns. Each: `id` (stable slug), `name`,

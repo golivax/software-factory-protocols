@@ -37,6 +37,10 @@ def emit(ok, feedback):
 
 
 def type_ok(value, declared_type):
+    if isinstance(declared_type, list):          # a nullable field: ["string", "null"]
+        return any(type_ok(value, t) for t in declared_type)
+    if declared_type == "null":
+        return value is None
     if declared_type == "integer":
         return isinstance(value, int) and not isinstance(value, bool)
     if declared_type == "number":

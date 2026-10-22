@@ -20,13 +20,11 @@ permissions:
   pull-requests: read
 tools:
   cli-proxy: true
-  edit: true
   bash: ["*"]
 safe-outputs:
-  # The agent's only output is the evidence.json artifact (post-steps), NOT a
-  # gh-aw safe-output — so gh-aw's default conclusion job files a spurious
-  # "No Safe Outputs Generated" issue per leg. noop.report-as-issue:false
-  # suppresses it.
+  # The agent's only output is its final answer (the evidence), NOT a gh-aw
+  # safe-output — so gh-aw's default conclusion job files a spurious "No Safe
+  # Outputs Generated" issue per leg. noop.report-as-issue:false suppresses it.
   noop:
     report-as-issue: false
   threat-detection: false
@@ -39,14 +37,6 @@ pre-agent-steps:
       if [ -z "$CTX" ]; then CTX='{}'; fi
       printf '%s' "$CTX" > /tmp/gh-aw/task-context.json
       cat /tmp/gh-aw/task-context.json
-post-steps:
-  - name: Upload evidence artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: evidence
-      path: /tmp/gh-aw/evidence.json
-      if-no-files-found: warn
 timeout-minutes: 10
 ---
 
@@ -77,14 +67,16 @@ Read `/tmp/gh-aw/task-context.json`. It contains:
    correctness issues, or clear risks. Do not invent findings to look busy;
    an empty `findings` array (nothing worth flagging) is a legitimate
    outcome.
-4. Write `/tmp/gh-aw/evidence.json`:
+4. Call `noop`, then give your final answer: it IS the evidence, ONE JSON object
+   matching the evidence schema (the factory constrains it to that schema and
+   hands it to the engine):
 
 ```json
 { "files": [
   { "path": "<the file path>", "findings": [
     { "finding_id": "<path>:<line>:1",
       "existing_code": "the exact line(s) from the diff",
-      "side": "RIGHT", "line": 42,
+      "side": "RIGHT", "line": 42, "start_line": null,
       "comment": "what's wrong and why" } ] } ] }
 ```
 
@@ -103,13 +95,13 @@ Read `/tmp/gh-aw/task-context.json`. It contains:
   unchanged line in the new file, `LEFT` for a removed line) and `line` (the
   line number that snippet sits on). For a multi-line snippet, also set
   `start_line` (the first line) — `line` is then the last line; both must be
-  on the same `side` and inside the same diff hunk. Omit `start_line` for a
-  single line.
+  on the same `side` and inside the same diff hunk. Set `start_line` to `null`
+  for a single line.
 - How to find line numbers: each diff hunk starts with `@@ -OLD,c +NEW,d @@`.
   Counting from there: `+` lines advance only the RIGHT (new-file) number; `-`
   lines advance only the LEFT (old-file) number; context (unprefixed) lines
   advance BOTH. Your `line` is the RIGHT number for `side: RIGHT`, the LEFT
   number for `side: LEFT`.
-- Your only output is `/tmp/gh-aw/evidence.json`. Do not comment on the PR or
+- Your only output is your final answer. Do not comment on the PR or
   post any other GitHub interaction; a later phase filters your findings and
   the engine publishes the eventual review for you.

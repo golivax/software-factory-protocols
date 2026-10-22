@@ -49,7 +49,7 @@ def main():
             it = {"finding_id": fi["finding_id"], "path": path,
                   "existing_code": fi.get("existing_code", ""), "side": fi.get("side", "RIGHT"),
                   "line": fi.get("line"), "comment": fi.get("comment", "")}
-            if "start_line" in fi:
+            if fi.get("start_line") is not None:
                 it["start_line"] = fi["start_line"]
             items.append(it)
     print(json.dumps({"items": items}))
