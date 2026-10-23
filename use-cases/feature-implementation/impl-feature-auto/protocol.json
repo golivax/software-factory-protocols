@@ -1,7 +1,7 @@
 {
   "name": "impl-feature-auto",
   "version": "0.1.0",
-  "min_engine_version": "13.2.0",
+  "min_engine_version": "13.2.1",
   "triggers": [
     {
       "on": "issue_comment",
