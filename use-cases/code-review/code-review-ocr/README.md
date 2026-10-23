@@ -4,7 +4,7 @@ A review that fans out dynamically per changed file: `plan` decides the per-file
 
 **Engine floor:** `min_engine_version` 13.0.0 · **Protocol version:** unversioned
 
-**Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked as follow-up work in the engine repo.
+**Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked in golivax/software-factory#269 (re-verify the ported use-case protocols live on microVM-per-job).
 
 ## Triggers
 
