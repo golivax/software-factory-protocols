@@ -78,8 +78,8 @@ deployed factory. The `use-cases/` protocols were ported from the engine's
 GitHub-Actions era and have **not** been re-verified on the deployed service: their
 units still reference in-repo `.github/agent-factory/...` paths and some checks assume
 that layout. They are kept here as the engine's regression corpus and as reference
-packages; bringing each one back to life is tracked as follow-up work in the engine
-repo. Each protocol's README states its own status.
+packages; bringing each one back to life is tracked in golivax/software-factory#269
+(re-verify the ported use-case protocols live on microVM-per-job). Each protocol's README states its own status.
 
 ## Authoring
 
