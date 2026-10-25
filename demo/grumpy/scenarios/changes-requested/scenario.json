@@ -1,0 +1,16 @@
+{
+  "purpose": "A developer asks grumpy to review an MR adding reporting helpers with two real bugs (a division by zero on an empty ledger, a top-N that returns one too many). The review it proposes passes both checks against the MR's diff (it is about the checked commit, every comment sits on a diff line), and the publish code node posts it on the MR as a request for changes.",
+  "mr": {"title": "Add reporting helpers over the ledger"},
+  "steps": [
+    {"post": "/grumpy"},
+    {"wait": "done"}
+  ],
+  "expect": {
+    "end": "done",
+    "notes": [
+      "Changes requested",
+      "An empty ledger divides by zero here",
+      "`range(0, n + 1)` walks `n + 1` positions"
+    ]
+  }
+}
