@@ -7,14 +7,6 @@ Modes:
   EXPAND_FINDINGS_EVIDENCE=<path>  -> read that main-review evidence file (test
                                        injection; also the live per-leg evidence
                                        path once the Task-8 live wiring lands).
-  ENGINE_LOCAL=1 (and no/unusable EXPAND_FINDINGS_EVIDENCE)
-                                    -> read findings.fixture.json beside this
-                                       script (deterministic offline test —
-                                       mirrors expand-files' ENGINE_LOCAL mode;
-                                       the expand round's env allowlist does not
-                                       forward EXPAND_FINDINGS_EVIDENCE, so this
-                                       is how the offline engine walk supplies a
-                                       fixture through the real `continue` path).
   otherwise                        -> fail loud (no main-review evidence).
 
 See docs/superpowers/sdd/task-4-report.md for the live-wiring design this task
@@ -22,23 +14,18 @@ deliberately scoped OUT (a Task 8 concern)."""
 import json, os, sys
 
 def _load():
-    # 1) explicit test injection wins; 2) ENGINE_LOCAL fixture keeps the offline
-    # engine walk deterministic; 3) EXPAND_PRIOR_EVIDENCE_PATH is the LIVE per-leg
-    # main-review evidence, staged into the expand round (Task-8 wiring).
+    # 1) explicit test injection wins; 2) EXPAND_PRIOR_EVIDENCE_PATH is the LIVE
+    # per-leg main-review evidence, staged into the expand round (Task-8 wiring).
     p = os.environ.get("EXPAND_FINDINGS_EVIDENCE")
     if p and os.path.isfile(p):
         with open(p) as f:
-            return json.load(f)
-    if os.environ.get("ENGINE_LOCAL"):
-        here = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(here, "findings.fixture.json")) as f:
             return json.load(f)
     prior = os.environ.get("EXPAND_PRIOR_EVIDENCE_PATH")
     if prior and os.path.isfile(prior):
         with open(prior) as f:
             return json.load(f)
     raise SystemExit("expand-findings: no main-review evidence "
-                     "(EXPAND_FINDINGS_EVIDENCE / EXPAND_PRIOR_EVIDENCE_PATH unset, not ENGINE_LOCAL)")
+                     "(EXPAND_FINDINGS_EVIDENCE / EXPAND_PRIOR_EVIDENCE_PATH unset)")
 
 def main():
     ev = _load()

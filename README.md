@@ -3,7 +3,8 @@
 The protocol library for the [software-factory](https://github.com/golivax/software-factory)
 engine: every protocol we ship, as a **source-only** package you copy into a repo the
 factory watches. The engine repo consumes this one as a git submodule at `protocols/`
-(its test suite walks these protocols), so a change here is picked up by the engine by
+(its test suite reads these protocols, and each package carries its own scenario walks
+in `scenarios/`), so a change here is picked up by the engine by
 bumping the submodule pointer.
 
 ## Layout

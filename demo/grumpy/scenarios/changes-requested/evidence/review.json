@@ -1,0 +1,32 @@
+{
+  "sha": "{{HEAD_SHA}}",
+  "staged": [
+    {
+      "type": "create_pull_request_review_comment",
+      "path": "inventory/report.py",
+      "line": 6,
+      "start_line": null,
+      "side": "RIGHT",
+      "body": "An empty ledger divides by zero here: `len(items)` is 0 and `average_unit_price` raises `ZeroDivisionError` instead of reporting anything. Decide what an empty inventory averages to (`None`, or `0.0` if the callers can live with it) and return that before dividing.",
+      "event": null
+    },
+    {
+      "type": "create_pull_request_review_comment",
+      "path": "inventory/report.py",
+      "line": 12,
+      "start_line": null,
+      "side": "RIGHT",
+      "body": "`range(0, n + 1)` walks `n + 1` positions: the default `top_by_value(ledger)` returns four items, not three, and any ledger with fewer than `n + 1` items raises `IndexError`. Filter out the excluded SKUs first, then slice: `[i for i in ranked if i.sku not in exclude][:n]`.",
+      "event": null
+    },
+    {
+      "type": "submit_pull_request_review",
+      "path": null,
+      "line": null,
+      "start_line": null,
+      "side": null,
+      "body": "Two of these three helpers break on ordinary input: an empty ledger crashes the average, and the top-N returns one item too many or runs off the end of the list. Fix both before this merges.",
+      "event": "REQUEST_CHANGES"
+    }
+  ]
+}

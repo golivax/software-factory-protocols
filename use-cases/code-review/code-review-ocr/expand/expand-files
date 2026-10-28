@@ -9,8 +9,6 @@ truth as a check, so it fetches nothing itself.
 
 Modes:
   $CHECK_CTX/diff.patch non-empty -> parse it.
-  ENGINE_LOCAL=1 and no diff      -> read items.json beside this script
-                                     (deterministic offline walk).
   otherwise                       -> no items (a PR with no diff has no files).
 
 Thresholds come from EXPAND_PARAMS (JSON of the node's `expand` object) with defaults.
@@ -57,11 +55,6 @@ def _diff_lines(chunk):
 def main():
     max_diff_lines = int(_params().get("max_diff_lines", 1500))
     diff = _load_diff()
-    if not diff.strip() and os.environ.get("ENGINE_LOCAL"):
-        here = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(here, "items.json")) as f:
-            print(json.dumps({"items": json.load(f)}))
-        return
     items = []
     for path, chunk in _split_files(diff):
         if _is_binary(chunk):
