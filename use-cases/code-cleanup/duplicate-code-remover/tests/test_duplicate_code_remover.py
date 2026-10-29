@@ -52,7 +52,7 @@ def test_run_checks_resolves_and_execs_detect_checks(tmp_path):
 def test_run_checks_exec_bit_guard_actually_guards(tmp_path):
     """Sanity-check the regression guard: strip +x from evidence-wellformed.py and
     confirm the check round surfaces the failure instead of silently succeeding. On
-    a COPY of the package: chmod-ing the shared file raced every other test that
+    a COPY of the protocol: chmod-ing the shared file raced every other test that
     runs detect's checks on another worker."""
     import shutil
     ev = tmp_path / "ev.json"
