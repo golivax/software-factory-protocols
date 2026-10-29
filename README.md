@@ -3,9 +3,12 @@
 The protocol library for the [software-factory](https://github.com/golivax/software-factory)
 engine: every protocol we ship, as a **source-only** package you copy into a repo the
 factory watches. The engine repo consumes this one as a git submodule at `protocols/`
-(its test suite reads these protocols, and each package carries its own scenario walks
-in `scenarios/`), so a change here is picked up by the engine by
-bumping the submodule pointer.
+(its test suite reads these protocols), so a change here is picked up by the engine by
+bumping the submodule pointer. A protocol carries its own unit tests in `tests/` (Python
+test dependencies, if any, in `tests/requirements.txt`; only the factory's protocol test
+API, `sf_protocol_testing`, is imported) and its scenario walks in `scenarios/`. Run one
+protocol's tests from the engine repo with `cd engine && uvx nox -s protocol --
+../protocols/<path to the protocol>`, every protocol's with `uvx nox -s protocols`.
 
 ## Layout
 
