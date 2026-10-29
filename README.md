@@ -1,8 +1,10 @@
 # software-factory-protocols
 
-The protocol library for the [software-factory](https://github.com/golivax/software-factory)
-engine: every protocol we ship, as a **source-only** package you copy into a repo the
-factory watches. The engine repo consumes this one as a git submodule at `protocols/`
+The template library for the [software-factory](https://github.com/golivax/software-factory)
+engine: protocol templates (`use-cases/`) and demos (`demo/`), each a **source-only**
+protocol package. A customer copies a protocol template into a repository the factory
+watches and adapts it as a customer protocol; a demo shows the factory end to end and
+backs its canary. The engine repo consumes this one as a git submodule at `protocols/`
 (its test suite reads these protocols), so a change here is picked up by the engine by
 bumping the submodule pointer. A protocol carries its own unit tests in `tests/` (Python
 test dependencies, if any, in `tests/requirements.txt`; only the factory's protocol test
@@ -13,9 +15,9 @@ protocol's tests from the engine repo with `cd engine && uvx nox -s protocol --
 ## Layout
 
 ```
-demo/                       the end-to-end demo packages (see the engine repo's docs/DEMO.md)
+demo/                       the end-to-end demos (see the engine repo's docs/DEMO.md)
   demo/  grumpy/  hello/  toy/
-use-cases/                  real protocols, grouped by what they are for
+use-cases/                  protocol templates, grouped by what they are for
   code-cleanup/duplicate-code-remover/
   code-review/code-review-ocr/
   feature-implementation/impl-feature-auto/
@@ -23,11 +25,11 @@ use-cases/                  real protocols, grouped by what they are for
 ```
 
 `code-review`, `recover-mental-model`, `recover-mental-model-interactive` and the
-shared `commons/` units they use moved to the factory-owned catalogue,
-golivax/software-factory-protocols-private: the factory serves them to a target as
-a service; they are not copied into a repo.
+shared `commons/` units they use moved to the factory's default catalogue,
+golivax/software-factory-protocols-private: they are factory protocols, which the
+factory serves to a target; they are not copied into a repo.
 
-Every protocol directory is one self-contained package with the shape the factory's
+Every protocol directory is one self-contained protocol package with the shape the factory's
 `ProtocolFetch` expects:
 
 ```
@@ -43,7 +45,7 @@ Every protocol directory is one self-contained package with the shape the factor
 ```
 
 The nested `demo/` and `use-cases/<category>/` grouping is for browsing only. The
-factory resolves packages by **directory name** under a flat
+factory resolves protocol packages by **directory name** under a flat
 `<repo>/.softwarefactory/protocols/<name>/` — so install a protocol by copying its
 directory to that path.
 
@@ -64,7 +66,7 @@ gh aw compile --dir demo/grumpy/workflows
 # → <unit>.lock.yml beside each <unit>.md
 ```
 
-`--dir` points at a package's `workflows/` directory; `.github/aw/actions-lock.json`
+`--dir` points at a protocol package's `workflows/` directory; `.github/aw/actions-lock.json`
 at this repo's root supplies the pinned action SHAs. This is the version the engine's
 runtime substrate is adapted to (the lock transforms in the engine repo's
 `runtime/factory/tools/run_under_act/` are anchored on v0.89.0 output — see
@@ -72,7 +74,7 @@ runtime substrate is adapted to (the lock transforms in the engine repo's
 substrate does not recognise; bump both together.
 
 A unit that `{{#runtime-import}}`s `shared/skill-preamble.md` carries that file under
-its own `workflows/shared/` (the dispatcher copies a package's whole `workflows/` dir
+its own `workflows/shared/` (the dispatcher copies a protocol package's whole `workflows/` dir
 next to the unit, nothing else).
 
 ## Status
@@ -81,15 +83,15 @@ next to the unit, nothing else).
 deployed factory. The `use-cases/` protocols were ported from the engine's
 GitHub-Actions era and have **not** been re-verified on the deployed service: their
 units still reference in-repo `.github/agent-factory/...` paths and some checks assume
-that layout. They are kept here as the engine's regression corpus and as reference
-packages; bringing each one back to life is tracked in golivax/software-factory#269
+that layout. They are kept here as the engine's regression corpus and as protocol
+templates; bringing each one back to life is tracked in golivax/software-factory#269
 (re-verify the ported use-case protocols live on microVM-per-job). Each protocol's README states its own status.
 
 ## Authoring
 
 The DSL, the check ABI and the trust zones are documented in the engine repo under
 `docs/engine/` (`PROTOCOL-DSL.md`, `AUTHORING.md`, `HOW-IT-WORKS.md`). The authoring
-schema is `engine/protocol.schema.json` there; lint a package with
+schema is `engine/protocol.schema.json` there; lint a protocol with
 
 ```bash
 python3 <software-factory>/engine/protocol_lint.py <name>/protocol.json
@@ -98,7 +100,7 @@ python3 <software-factory>/engine/protocol_lint.py <name>/protocol.json
 ### An agent's evidence is its final answer
 
 Every `agent` node's evidence schema is in the **structured-output subset**
-(engine 13.0.0; `protocol_lint` refuses a package otherwise): the root is
+(engine 13.0.0; `protocol_lint` refuses a protocol otherwise): the root is
 `type: object`; every object has fixed `properties`, all of them `required`, and
 `additionalProperties: false`; an optional field is nullable instead
 (`type: [T, "null"]`, or `anyOf` with `{"type": "null"}` for an object or array);

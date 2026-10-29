@@ -10,7 +10,7 @@ merge-request comment.
 
 ## How it works
 
-1. **`review`** (agent): gh-aw's catalogue `grumpy-reviewer.md`, near-verbatim,
+1. **`review`** (agent): the `grumpy-reviewer.md` of gh-aw's agentics collection (githubnext/agentics), near-verbatim,
    with `safe-outputs: staged: true`. gh-aw still validates, sanitizes and
    threat-scans (its detection job) the review the agent proposes, but writes
    nothing to the forge. Its safe_outputs job, which runs only once detection
