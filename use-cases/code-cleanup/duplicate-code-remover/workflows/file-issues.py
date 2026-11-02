@@ -6,7 +6,7 @@ on each so the auto-fixer picks it up.
 
 Reads detect's evidence at $SF_INPUTS_DIR/evidence.json and its cap from the
 node's `params.max_patterns` (protocol_context.params, default 3). `gh` reaches
-the forge through gh2gl with this job's own token (GH_HOST / GH_ENTERPRISE_TOKEN,
+the forge through gh2forge with this job's own token (GH_HOST / GH_ENTERPRISE_TOKEN,
 set by the code lane), scoped by `issues: write`. Writes {conclusion, summary} to
 $SF_EVIDENCE_OUT.
 """

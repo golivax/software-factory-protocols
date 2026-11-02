@@ -9,7 +9,7 @@ them across files by (path, side, line, existing_code), and posts them as inline
 comments in one review: REQUEST_CHANGES when anything survived, else APPROVE
 (retried once as COMMENT where the repo forbids self-approval).
 
-The forge is reached through gh2gl ($GITHUB_API_URL) with this job's own token
+The forge is reached through gh2forge ($GITHUB_API_URL) with this job's own token
 (`pull-requests: write`); the MR is protocol_context.pr. Writes
 {conclusion, summary, ...} to $SF_EVIDENCE_OUT: REQUEST_CHANGES is `failure` (an
 objection: the run goes red and continues), APPROVE is `success`. A review that

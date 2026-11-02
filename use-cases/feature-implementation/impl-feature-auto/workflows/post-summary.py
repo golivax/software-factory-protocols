@@ -5,7 +5,7 @@ safe outputs opened (by `pr_branch` prefix) and comments a link on the
 originating issue.
 
 Reads implement's evidence at $SF_INPUTS_DIR/evidence.json; the issue is
-protocol_context.pr. `gh` reaches the forge through gh2gl with this job's own
+protocol_context.pr. `gh` reaches the forge through gh2forge with this job's own
 token (GH_HOST / GH_ENTERPRISE_TOKEN, set by the code lane), scoped by the
 workflow's `permissions:`. Writes {conclusion, summary} to $SF_EVIDENCE_OUT:
 `failure` when implement produced no branch, or no PR or branch can be found.
