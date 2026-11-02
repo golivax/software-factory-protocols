@@ -21,7 +21,7 @@
 #                  slash command, plus `cli-proxy: true`, an `otlp` import and a `pr-review-base`
 #                  import whose prose points the agent at pre-fetched files nothing
 #                  stages. The catalogue version has none of that: it reads the PR
-#                  through the GitHub MCP tools, which is what gh2gl serves.)
+#                  through the GitHub MCP tools, which is what gh2forge serves.)
 # NOTE on memory: the catalogue version declares `tools: cache-memory: true`, so
 # the body's /tmp/gh-aw/cache-memory/ reads and writes are real (actions/cache
 # under act's cache server), not the no-op they were in the gh-aw-repo version.

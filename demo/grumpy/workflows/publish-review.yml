@@ -2,9 +2,9 @@ name: publish-review
 # A dispatched CODE node: the ONLY forge write in this protocol. It runs under
 # act in its own microVM, after the engine's checks passed on the review node's
 # evidence (gh-aw's sanitized, detection-approved staged review). It reaches the
-# forge through gh2gl ($GITHUB_API_URL); the review is pinned to the commit the
+# forge through gh2forge ($GITHUB_API_URL); the review is pinned to the commit the
 # checks saw, and nothing is posted if the MR has moved since. Its job token
-# (gh2gl's job listener, minted from this block) can post the review and nothing
+# (gh2forge's job listener, minted from this block) can post the review and nothing
 # else.
 on:
   workflow_dispatch:

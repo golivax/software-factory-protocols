@@ -28,7 +28,7 @@ merge-request comment.
      reason, no duplicate anchors;
    - `anchors-in-diff`: every comment sits on a line the MR diff shows.
 4. **`publish`** (dispatched code, its own microVM): posts the checked review
-   through gh2gl, pinned to the reviewed commit, and posts nothing if the MR has
+   through gh2forge, pinned to the reviewed commit, and posts nothing if the MR has
    moved since. It is the only forge write in the protocol.
 
 ## Triggers

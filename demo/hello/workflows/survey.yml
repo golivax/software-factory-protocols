@@ -12,7 +12,7 @@ on:
       protocol_context:
         description: "engine-supplied run context (JSON string)"
         required: false
-# The job's token (gh2gl's job listener, minted from this block) can read the
+# The job's token (gh2forge's job listener, minted from this block) can read the
 # repository and comment on the merge request, nothing else.
 permissions:
   contents: read
@@ -42,7 +42,7 @@ jobs:
           body = greeting
 
           # Post the greeting to the MR via the forge API. We speak the GitHub REST
-          # surface against $GITHUB_API_URL; the gh2gl proxy translates it to the
+          # surface against $GITHUB_API_URL; the gh2forge proxy translates it to the
           # real forge (GitLab/CodeHub) and authenticates with its own token, so
           # this is forge-agnostic and the node holds no forge credential — only
           # this job's own token, scoped by `permissions:` above.
@@ -60,7 +60,7 @@ jobs:
                   headers={
                       "Content-Type": "application/json",
                       "Accept": "application/vnd.github+json",
-                      # this job's token: gh2gl's job listener checks it against
+                      # this job's token: gh2forge's job listener checks it against
                       # `permissions:` (it then calls the forge with its own token)
                       "Authorization": f"Bearer {os.environ.get('GITHUB_TOKEN', '')}",
                       # Tell the proxy this iid is the MR (its own comments set this),
