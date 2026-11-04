@@ -6,14 +6,8 @@ on:
 permissions:
   contents: read
   pull-requests: read
-engine:
-  id: codex
-  model: gpt-6-luna
-  env:
-    # The deployment's LLM gateway, OpenAI API (the codex engine). The node's `egress` and the
-    # target's ceiling must list its host, or egress denies it;
-    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
-    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
+imports:
+  - shared/agent.md   # the agent slot: see README.md
 safe-outputs:
   # The evidence is the agent's final answer: the factory constrains it to the
   # node's evidence schema and hands it to the engine. Nothing is written.

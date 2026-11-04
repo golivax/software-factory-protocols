@@ -42,6 +42,8 @@ Every protocol directory is one self-contained protocol package with the shape t
   expand/                    dynamic fan-out expanders (where used)
   workflows/                 the dispatched units: `<wf>.md` (gh-aw agent SOURCE)
                              or `<wf>.yml` (a plain GitHub-Actions workflow, code lane)
+    shared/                  files the units import: the agent slots, filled by
+                             the installer (never committed here)
 ```
 
 The nested `demo/` and `use-cases/<category>/` grouping is for browsing only. The
@@ -72,6 +74,39 @@ runtime substrate is adapted to (the lock transforms in the engine repo's
 `runtime/factory/tools/run_under_act/` are anchored on v0.89.0 output — see
 `docs/compatibility/COMPATIBILITY.md` there). A newer compiler may produce locks the
 substrate does not recognise; bump both together.
+
+## Agent slots
+
+No protocol here names an agent, a model or an LLM gateway: those are the
+deployment's choices. An agent unit imports a **slot** instead,
+
+```yaml
+imports:
+  - shared/agent.md
+```
+
+and the installer fills each slot with a **profile**: a gh-aw import file,
+frontmatter only, holding one agent, model and gateway
+([`agent-profile.example.md`](agent-profile.example.md) is the template). gh-aw merges
+the profile's `engine:` (id, model, args, env) and `network.allowed` into every unit
+that imports the slot. An unfilled slot fails the compile ("import file not found");
+gh-aw never falls back to its default engine.
+
+- **The protocol names its slots.** A slot name means nothing outside its protocol:
+  one protocol may have `light` and `strong`, most have one. Every protocol here has
+  one, `shared/agent.md`; its README says what that slot needs (a small model is
+  enough, a strong coding model, a particular agent).
+- **A slot lives in the protocol's own `workflows/shared/`.** gh-aw resolves an
+  import only inside the unit's `workflows/` folder, so each protocol holds its own
+  copy, and `shared/` keeps it out of the `workflows/*.md` the factory reads as units.
+- **Fill, then compile.** Copy a profile to each slot the protocol's README lists,
+  then `gh aw compile`. The engine repo's live harness fills every slot with its
+  one default profile (`SF_LIVE_AGENT_PROFILE` in its `deploy/.env`).
+- **The gateway needs no `egress` entry.** The factory grants an agent node's job VMs
+  the gateway its compiled lock calls (`*_BASE_URL`), within the target's ceiling;
+  the target's `egress` ceiling must still allow it.
+- **The key stays out of the profile.** It comes from the deployment's agent secrets
+  file (`AGENT_SECRETS_FILE`).
 
 A unit that `{{#runtime-import}}`s `shared/skill-preamble.md` carries that file under
 its own `workflows/shared/` (the dispatcher copies a protocol package's whole `workflows/` dir

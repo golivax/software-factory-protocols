@@ -1,6 +1,6 @@
 {
   "name": "code-review-ocr",
-  "min_engine_version": "15.0.2",
+  "min_engine_version": "15.1.0",
   "triggers": [
     {
       "on": "issue_comment",
@@ -24,7 +24,6 @@
             "id": "plan",
             "kind": "agent",
             "workflow": "ocr-plan-agent",
-            "egress": ["bmc-bz1.tail22da2e.ts.net"],
             "evidence": "plan.evidence.schema.json",
             "max_iterations": 1,
             "params": {
@@ -41,7 +40,6 @@
             "id": "main-review",
             "kind": "agent",
             "workflow": "ocr-main-agent",
-            "egress": ["bmc-bz1.tail22da2e.ts.net"],
             "evidence": "main-review.evidence.schema.json",
             "max_iterations": 1,
             "inputs": [
@@ -74,7 +72,6 @@
             },
             "each": {
               "workflow": "ocr-filter-agent",
-              "egress": ["bmc-bz1.tail22da2e.ts.net"],
               "evidence": "filter.evidence.schema.json",
               "max_iterations": 1,
               "params": {

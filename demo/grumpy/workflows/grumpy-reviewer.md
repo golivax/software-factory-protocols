@@ -5,8 +5,10 @@
 # with only the adaptations every adopter makes. The body below is the
 # catalogue's, verbatim. What changed in the frontmatter vs. upstream, and why:
 #   * engine:      upstream leaves the engine to the installer's default; we
-#                  name ours (codex + model) and point it at the deployment's
-#                  LLM gateway. Every client does this; it is not a compatibility gap.
+#                  leave it to the deployment too, through the agent slot
+#                  `imports: shared/agent.md` (a profile: agent, model, gateway).
+#                  The installer fills the slot (README.md); it is not a
+#                  compatibility gap.
 #   * on:          `on: workflow_dispatch` instead of upstream's `/grumpy` slash
 #                  command. Triggers belong to the protocol: protocol.json's
 #                  `triggers[]` matches `/grumpy`, and the dispatcher runs the lock
@@ -30,15 +32,8 @@ description: Performs critical code review with a focus on edge cases, potential
 on:
   workflow_dispatch:
 
-engine:
-  id: codex
-  # gpt-6-luna on the codex engine: the gateway serves it on its OpenAI API.
-  model: gpt-6-luna
-  env:
-    # The deployment's LLM gateway, OpenAI API (the codex engine). The node's `egress` and the
-    # target's ceiling must list its host, or egress denies it;
-    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
-    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
+imports:
+  - shared/agent.md   # the agent slot: see README.md
 
 permissions:
   contents: read

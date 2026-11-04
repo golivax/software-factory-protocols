@@ -26,10 +26,16 @@ Nested legs (forks, sub-pipelines, dynamic fan-outs) are declared in `protocol.j
 - `workflows/ocr-main-agent.md`
 - `workflows/ocr-plan-agent.md`
 
-Agent units are gh-aw markdown **sources**; compile them with gh-aw **v0.89.0**
-before use (see the top-level README):
+## Agent slot
+
+All three agents (`ocr-plan-agent.md`, `ocr-main-agent.md`, `ocr-filter-agent.md`) import `shared/agent.md`, this protocol's one agent slot (see the top-level
+README, "Agent slots"). It needs a strong coding model; tested on codex with gpt-6.1-sol.
+
+Agent units are gh-aw markdown **sources**; fill the slot, then compile them with
+gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
+cp <your profile>.md <path-to-this-protocol>/workflows/shared/agent.md
 gh aw compile --dir <path-to-this-protocol>/workflows
 ```
 

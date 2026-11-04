@@ -26,10 +26,21 @@ Nested legs (forks, sub-pipelines, dynamic fan-outs) are declared in `protocol.j
 - `workflows/impl-feature-auto-implement-agent.md`
 - `workflows/shared/skill-preamble.md`
 
-Agent units are gh-aw markdown **sources**; compile them with gh-aw **v0.89.0**
-before use (see the top-level README):
+## Agent slot
+
+Both agents import `shared/agent.md`, this protocol's one agent slot (see the top-level
+README, "Agent slots"). It needs a strong coding model; tested on codex with gpt-6.1-sol.
+It also needs the **codex** agent, and the profile's `engine:` must carry
+`args: ["-c", "features.multi_agent=true"]`: both agents stage the superpowers skills
+into `.agents/skills`, where codex reads them, and the implement agent's
+`subagent-driven-development` dispatches subagents through codex's `spawn_agent`,
+which only multi-agent mode provides (golivax/software-factory#435).
+
+Agent units are gh-aw markdown **sources**; fill the slot, then compile them with
+gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
+cp <your profile>.md <path-to-this-protocol>/workflows/shared/agent.md
 gh aw compile --dir <path-to-this-protocol>/workflows
 ```
 

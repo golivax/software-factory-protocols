@@ -1,7 +1,7 @@
 {
   "name": "demo",
   "version": "0.1.0",
-  "min_engine_version": "15.0.2",
+  "min_engine_version": "15.1.0",
   "_note": "A minimal CUSTOMER protocol for the first live end-to-end: one dispatched CODE node (facts) -> one AGENT node (summarize) -> done. Both nodes run through act inside a disposable sbx microVM. `summarize` consumes `facts`'s evidence via inputs and echoes the token it received; each node's check settles a SELF-CONTAINED claim from that node's own evidence (the real check ABI passes evidence + the MR diff, not a sibling node's evidence). Trigger `/demo` on an MR comment.",
   "triggers": [
     { "on": "issue_comment", "comment_prefix": "/demo", "command": "start" }
@@ -24,7 +24,6 @@
       "kind": "agent",
       "label": "summarize (agent, under act in a microVM)",
       "workflow": "demo-summarize",
-      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "summarize.evidence.schema.json",
       "inputs": [
         { "from": "facts", "as": "facts" }
