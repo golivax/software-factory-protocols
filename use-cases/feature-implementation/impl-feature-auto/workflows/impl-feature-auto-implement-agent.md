@@ -18,8 +18,8 @@ engine:
   # (superpowers v6.0.3, skills/using-superpowers/references/codex-tools.md).
   args: ["-c", "features.multi_agent=true"]
   env:
-    # The deployment's LLM gateway, OpenAI API (the codex engine). Must match an entry
-    # in deploy/.env LLM_ENDPOINTS (set-egress.sh allowlists it) or egress denies it;
+    # The deployment's LLM gateway, OpenAI API (the codex engine). The node's `egress` and the
+    # target's ceiling must list its host, or egress denies it;
     # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
     OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
 permissions:

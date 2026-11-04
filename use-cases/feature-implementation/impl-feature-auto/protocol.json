@@ -1,7 +1,7 @@
 {
   "name": "impl-feature-auto",
   "version": "0.1.0",
-  "min_engine_version": "14.0.0",
+  "min_engine_version": "15.0.0",
   "triggers": [
     {
       "on": "issue_comment",
@@ -16,6 +16,7 @@
       "kind": "agent",
       "label": "design (spec + ledger + plan)",
       "workflow": "impl-feature-auto-design-agent",
+      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "design.evidence.schema.json",
       "max_iterations": 3,
       "checks": [
@@ -48,6 +49,7 @@
       "kind": "agent",
       "label": "implement (TDD + open PR)",
       "workflow": "impl-feature-auto-implement-agent",
+      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "implement.evidence.schema.json",
       "max_iterations": 1,
       "inputs": [
