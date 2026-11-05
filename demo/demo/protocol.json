@@ -24,7 +24,6 @@
       "kind": "agent",
       "label": "summarize (agent, under act in a microVM)",
       "workflow": "demo-summarize",
-      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "summarize.evidence.schema.json",
       "inputs": [
         { "from": "facts", "as": "facts" }

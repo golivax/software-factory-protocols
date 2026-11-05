@@ -7,14 +7,8 @@ run-name: "OCR Filter Agent · cid:[${{ fromJSON(github.event.inputs.aw_context 
 on:
   workflow_dispatch:
 strict: false
-engine:
-  id: codex
-  model: gpt-6.1-sol
-  env:
-    # The deployment's LLM gateway, OpenAI API (the codex engine). The node's `egress` and the
-    # target's ceiling must list its host, or egress denies it;
-    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
-    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
+imports:
+  - shared/agent.md   # the agent slot: see README.md
 permissions:
   contents: read
   pull-requests: read

@@ -6,3 +6,5 @@ node_modules/
 # Compiled gh-aw locks are NOT committed here: this repo carries the markdown
 # sources only. Compile with the pinned gh-aw version (see README.md).
 *.lock.yml
+# An agent slot is filled by the installer (README.md, "Agent slots"), never committed.
+**/workflows/shared/agent.md

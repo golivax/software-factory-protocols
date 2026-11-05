@@ -21,7 +21,6 @@
       "kind": "agent",
       "label": "assess (gh-aw/codex agent, disposable sbx)",
       "workflow": "assess-agent",
-      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "assess.evidence.schema.json",
       "inputs": [
         { "from": "compute", "as": "compute-facts" }

@@ -16,7 +16,6 @@
       "kind": "agent",
       "label": "grumpy review, staged (gh-aw writes nothing)",
       "workflow": "grumpy-reviewer",
-      "egress": ["bmc-bz1.tail22da2e.ts.net"],
       "evidence": "review.evidence.schema.json",
       "checks": [
         {

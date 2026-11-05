@@ -48,10 +48,17 @@ merge-request comment.
 - `workflows/publish-review.yml` (code)
 - `checks/review-coherent.py`, `checks/anchors-in-diff.py` (+ `checks/_review.py`, the shared reading of the staged items)
 
-Agent units are gh-aw markdown **sources**; compile them with gh-aw **v0.89.0**
-before use (see the top-level README):
+## Agent slot
+
+`grumpy-reviewer.md` imports `shared/agent.md`, this protocol's one agent slot (see the top-level
+README, "Agent slots"). It needs no more than a small model; tested on codex with gpt-6-luna.
+
+Agent units are gh-aw markdown **sources**. Fill the slot, add the profile's
+`network.allowed` hosts to the `egress` of the agent nodes that run it, then compile
+them with gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
+cp <your profile>.md <path-to-this-protocol>/workflows/shared/agent.md
 gh aw compile --dir <path-to-this-protocol>/workflows
 ```
 

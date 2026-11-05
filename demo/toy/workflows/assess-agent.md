@@ -6,11 +6,8 @@ on:
 permissions:
   contents: read
   pull-requests: read
-engine:
-  id: codex
-  model: gpt-6-luna
-  env:
-    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
+imports:
+  - shared/agent.md   # the agent slot: see README.md
 safe-outputs:
   # The evidence is the agent's final answer: the factory constrains it to the
   # node's evidence schema and hands it to the engine. Nothing is written.

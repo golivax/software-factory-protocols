@@ -10,18 +10,8 @@ concurrency:
   group: "impl-feature-auto-implement-${{ fromJSON(github.event.inputs.aw_context || '{}').cid }}"
   cancel-in-progress: false
 strict: false
-engine:
-  id: codex
-  model: gpt-6.1-sol
-  # superpowers' subagent-driven-development dispatches subagents; on codex that is
-  # spawn_agent / wait_agent / close_agent, which exist only with multi-agent on
-  # (superpowers v6.0.3, skills/using-superpowers/references/codex-tools.md).
-  args: ["-c", "features.multi_agent=true"]
-  env:
-    # The deployment's LLM gateway, OpenAI API (the codex engine). The node's `egress` and the
-    # target's ceiling must list its host, or egress denies it;
-    # the token (OPENAI_API_KEY) comes from the staged agent secrets dotenv.
-    OPENAI_BASE_URL: https://bmc-bz1.tail22da2e.ts.net/v1/
+imports:
+  - shared/agent.md   # the agent slot: see README.md
 permissions:
   contents: read
   issues: read
@@ -110,10 +100,10 @@ may write it as `superpowers:subagent-driven-development`; the `superpowers:` pr
 does NOT resolve here, so drop it. Do NOT inline the plan yourself — that bypasses
 the skill.
 
-When the skill dispatches a subagent (`spawn_agent`), ALWAYS set its model to
-**`gpt-6.1-sol`** — whatever role the skill's Model Selection describes. It is the
-only model this deployment's gateway serves for you; any other name fails. Any
-mid-implementation ledger appends go into the spec doc that ships in the PR.
+When the skill dispatches a subagent (`spawn_agent`), ALWAYS give it **the model you
+run on yourself** — whatever role the skill's Model Selection describes. It is the
+only model this deployment's model endpoint is known to serve you; any other name may fail.
+Any mid-implementation ledger appends go into the spec doc that ships in the PR.
 
 ## 4. Finish the branch + open the PR
 Use `$finishing-a-development-branch`. Commit spec + plan + code + tests **in the root
