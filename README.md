@@ -89,7 +89,10 @@ and the installer fills each slot with a **profile**: a gh-aw import file,
 frontmatter only, holding one agent, model and model endpoint
 ([`agent-profile.example.md`](agent-profile.example.md) is the template). gh-aw merges
 the profile's `engine:` (id, model, args, env) and `network.allowed` into every unit
-that imports the slot. An unfilled slot fails the compile ("import file not found");
+that imports the slot. A profile is frontmatter only: gh-aw also appends an imported
+file's markdown body to the prompt of every unit that imports it, so any text after
+the closing `---` would become part of those agents' instructions. An unfilled slot
+fails the compile ("import file not found");
 gh-aw never falls back to its default engine.
 
 - **The protocol names its slots.** A slot name means nothing outside its protocol:
