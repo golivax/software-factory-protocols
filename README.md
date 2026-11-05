@@ -107,8 +107,8 @@ gh-aw never falls back to its default engine.
   compares each agent node's `egress` with what its compiled lock's firewall
   allows, and refuses the protocol when a profile host is missing; the target's
   `egress` ceiling must allow the hosts too. The engine repo's live testing fills
-  every slot with its one default profile and adds its hosts
-  (`SF_LIVE_AGENT_PROFILE` in its `deploy/.env`).
+  every slot with its one committed profile and adds its hosts
+  (`runtime/live/agent-profile.md` in the engine repo).
 - **The key stays out of the profile.** It comes from the deployment's agent secrets
   file (`AGENT_SECRETS_FILE`).
 
