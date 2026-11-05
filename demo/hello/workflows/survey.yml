@@ -43,7 +43,7 @@ jobs:
 
           # Post the greeting to the MR via the forge API. We speak the GitHub REST
           # surface against $GITHUB_API_URL; the gh2forge proxy translates it to the
-          # real forge (GitLab/CodeHub) and authenticates with its own token, so
+          # real forge (e.g. GitLab) and authenticates with its own token, so
           # this is forge-agnostic and the node holds no forge credential — only
           # this job's own token, scoped by `permissions:` above.
           ctx = json.loads(os.environ.get("SF_PROTOCOL_CONTEXT") or "{}")
