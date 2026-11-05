@@ -36,8 +36,9 @@ into `.agents/skills`, where codex reads them, and the implement agent's
 `subagent-driven-development` dispatches subagents through codex's `spawn_agent`,
 which only multi-agent mode provides (golivax/software-factory#435).
 
-Agent units are gh-aw markdown **sources**; fill the slot, then compile them with
-gh-aw **v0.89.0** before use (see the top-level README):
+Agent units are gh-aw markdown **sources**. Fill the slot, add the profile's
+`network.allowed` hosts to the `egress` of the agent nodes that run it, then compile
+them with gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
 cp <your profile>.md <path-to-this-protocol>/workflows/shared/agent.md

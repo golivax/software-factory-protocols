@@ -6,7 +6,7 @@
 # catalogue's, verbatim. What changed in the frontmatter vs. upstream, and why:
 #   * engine:      upstream leaves the engine to the installer's default; we
 #                  leave it to the deployment too, through the agent slot
-#                  `imports: shared/agent.md` (a profile: agent, model, gateway).
+#                  `imports: shared/agent.md` (a profile: agent, model, model endpoint).
 #                  The installer fills the slot (README.md); it is not a
 #                  compatibility gap.
 #   * on:          `on: workflow_dispatch` instead of upstream's `/grumpy` slash

@@ -77,7 +77,7 @@ substrate does not recognise; bump both together.
 
 ## Agent slots
 
-No protocol here names an agent, a model or an LLM gateway: those are the
+No protocol here names an agent, a model or a model endpoint: those are the
 deployment's choices. An agent unit imports a **slot** instead,
 
 ```yaml
@@ -86,7 +86,7 @@ imports:
 ```
 
 and the installer fills each slot with a **profile**: a gh-aw import file,
-frontmatter only, holding one agent, model and gateway
+frontmatter only, holding one agent, model and model endpoint
 ([`agent-profile.example.md`](agent-profile.example.md) is the template). gh-aw merges
 the profile's `engine:` (id, model, args, env) and `network.allowed` into every unit
 that imports the slot. An unfilled slot fails the compile ("import file not found");
@@ -99,12 +99,16 @@ gh-aw never falls back to its default engine.
 - **A slot lives in the protocol's own `workflows/shared/`.** gh-aw resolves an
   import only inside the unit's `workflows/` folder, so each protocol holds its own
   copy, and `shared/` keeps it out of the `workflows/*.md` the factory reads as units.
-- **Fill, then compile.** Copy a profile to each slot the protocol's README lists,
-  then `gh aw compile`. The engine repo's live harness fills every slot with its
-  one default profile (`SF_LIVE_AGENT_PROFILE` in its `deploy/.env`).
-- **The gateway needs no `egress` entry.** The factory grants an agent node's job VMs
-  the gateway its compiled lock calls (`*_BASE_URL`), within the target's ceiling;
-  the target's `egress` ceiling must still allow it.
+- **Fill, add the profile's hosts to `egress`, then compile.** Copy a profile to
+  each slot the protocol's README lists. Add every host in the profile's
+  `network.allowed` (its model endpoint among them) to the `egress` of each agent
+  node whose unit imports that slot: a template cannot know the endpoint, so no
+  agent node here lists it. Then `gh aw compile`. The factory's registry sync
+  compares each agent node's `egress` with what its compiled lock's firewall
+  allows, and refuses the protocol when a profile host is missing; the target's
+  `egress` ceiling must allow the hosts too. The engine repo's live testing fills
+  every slot with its one default profile and adds its hosts
+  (`SF_LIVE_AGENT_PROFILE` in its `deploy/.env`).
 - **The key stays out of the profile.** It comes from the deployment's agent secrets
   file (`AGENT_SECRETS_FILE`).
 

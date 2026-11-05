@@ -102,7 +102,7 @@ the skill.
 
 When the skill dispatches a subagent (`spawn_agent`), ALWAYS give it **the model you
 run on yourself** — whatever role the skill's Model Selection describes. It is the
-only model this deployment's gateway is known to serve you; any other name may fail.
+only model this deployment's model endpoint is known to serve you; any other name may fail.
 Any mid-implementation ledger appends go into the spec doc that ships in the PR.
 
 ## 4. Finish the branch + open the PR

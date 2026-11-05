@@ -29,8 +29,9 @@ Nested legs (forks, sub-pipelines, dynamic fan-outs) are declared in `protocol.j
 `duplicate-code-remover-detect-agent.md` imports `shared/agent.md`, this protocol's one agent slot (see the top-level
 README, "Agent slots"). It needs a strong coding model; tested on codex with gpt-6.1-sol.
 
-Agent units are gh-aw markdown **sources**; fill the slot, then compile them with
-gh-aw **v0.89.0** before use (see the top-level README):
+Agent units are gh-aw markdown **sources**. Fill the slot, add the profile's
+`network.allowed` hosts to the `egress` of the agent nodes that run it, then compile
+them with gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
 cp <your profile>.md <path-to-this-protocol>/workflows/shared/agent.md
