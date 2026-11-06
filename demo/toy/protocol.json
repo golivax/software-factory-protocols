@@ -1,7 +1,7 @@
 {
   "name": "toy",
   "version": "1.0.0",
-  "min_engine_version": "16.0.0",
+  "min_engine_version": "16.0.1",
   "_note": "toy-max repackaged as a .softwarefactory protocol to prove the AGENT lane through the disposable-sbx substrate: compute (dispatched code) -> assess (a gh-aw/codex agent that reads compute's evidence and claims the max; a check settles it against the ground truth) -> done. Reuses the PROVEN assess-agent.lock.yml (gh-aw v0.83.4, which run-under-act.sh's transforms are pinned to). `as: compute-facts` so the mirrored input lands where assess-agent runtime-imports it.",
   "triggers": [
     { "on": "issue_comment", "comment_prefix": "/toy", "command": "start" }
