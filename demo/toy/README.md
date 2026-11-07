@@ -2,7 +2,7 @@
 
 A **code** node (`compute`) produces records; an **agent** node (`assess`) claims the maximum and the `max-claim-correct` check settles it against ground truth.
 
-**Engine floor:** `min_engine_version` 14.0.0 · **Protocol version:** 1.0.0
+**Engine floor:** `min_engine_version` 17.0.0 · **Protocol version:** 1.0.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 
