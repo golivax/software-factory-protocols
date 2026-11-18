@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from sf_protocol_testing import check_env, make_ctx
+from sf_protocol_kit import check_env, make_ctx
 
 PROTOCOL = Path(__file__).resolve().parents[1]   # this test's protocol
 

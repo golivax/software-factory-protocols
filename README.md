@@ -7,8 +7,8 @@ watches and adapts it as a customer protocol; a demo shows the factory end to en
 backs its canary. The engine repo consumes this one as a git submodule at `protocols/`
 (its test suite reads these protocols), so a change here is picked up by the engine by
 bumping the submodule pointer. A protocol carries its own unit tests in `tests/` (Python
-test dependencies, if any, in `tests/requirements.txt`; only the factory's protocol test
-API, `sf_protocol_testing`, is imported) and its scenario walks in `scenarios/`. Run one
+test dependencies, if any, in `tests/requirements.txt`; only the factory's client kit,
+`sf_protocol_kit`, is imported) and its scenario walks in `scenarios/`. Run one
 protocol's tests from the engine repo with `cd engine && uvx nox -s protocol --
 ../protocols/<path to the protocol>`, every protocol's with `uvx nox -s protocols`.
 

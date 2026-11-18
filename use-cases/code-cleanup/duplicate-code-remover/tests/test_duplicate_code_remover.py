@@ -1,9 +1,8 @@
 import json
 import os
-import stat
 import subprocess
 import pytest
-from sf_protocol_testing import make_ctx, check_env
+from sf_protocol_kit import make_ctx, check_env
 from pathlib import Path
 
 PROTOCOL = Path(__file__).resolve().parents[1]   # this test's protocol
@@ -16,15 +15,21 @@ PARAMS = {"min_locations": 2, "max_patterns": 3, "severities": ["high", "medium"
 
 
 # ---------------------------------------------------------------------------
-# Exec-bit regression (the class of bug: a check/publish hook committed
-# without the executable bit is invisible to every test that shells out via
-# `python3 <script>` — those bypass the runner's os.access(X_OK) gate
-# entirely. The check round (check_round.py) execs the resolved path
-# DIRECTLY (never `python3 <path>`), so a non-executable file becomes a
-# silent "not executable" failing verdict / publish no-op in production.
+# Exec-bit regression (the class of bug: a check committed without the
+# executable bit is invisible to every test that shells out via
+# `python3 <script>`. The check round execs the resolved path DIRECTLY (never
+# `python3 <path>`), so a non-executable check becomes a silent "not
+# executable" failing verdict in production.
 # ---------------------------------------------------------------------------
 
 FILE_ISSUES = WORKFLOWS / "file-issues.py"
+
+
+def _detect_checks():
+    """The checks `detect` declares, resolved to their files in `checks/`."""
+    proto = json.loads((PROTOCOL / "protocol.json").read_text())
+    detect = next(s for s in proto["states"] if s["id"] == "detect")
+    return [CHECKS / f"{c['run']}.py" for c in detect["checks"]], detect.get("params", {})
 
 
 def test_checks_are_executable():
@@ -34,39 +39,21 @@ def test_checks_are_executable():
         assert os.access(p, os.X_OK), f"{p} is missing the executable bit (committed mode must be 100755)"
 
 
-def test_run_checks_resolves_and_execs_detect_checks(tmp_path):
-    """Drive the REAL check round, not `python3 <check>` directly, so a missing
-    exec bit on either detect check would surface as the round's "not
-    executable" verdict rather than being silently bypassed."""
-    from sf_protocol_testing import check_round
-    ev = tmp_path / "ev.json"
-    ev.write_text(json.dumps({"scanned": ["a.cpp"], "patterns": []}))
-    out = check_round(PROTOCOL / "protocol.json", "detect", ev, make_ctx(tmp_path), tmp_path)
-    results = {v["check"]: v for v in out["results"]}
-    assert set(results) == {"evidence-wellformed", "anchored-to-real-code"}, results
-    for name, v in results.items():
-        assert v["pass"] is True, v
-        assert "not executable" not in v["feedback"], v
-
-
-def test_run_checks_exec_bit_guard_actually_guards(tmp_path):
-    """Sanity-check the regression guard: strip +x from evidence-wellformed.py and
-    confirm the check round surfaces the failure instead of silently succeeding. On
-    a COPY of the protocol: chmod-ing the shared file raced every other test that
-    runs detect's checks on another worker."""
-    import shutil
+def test_detect_checks_run_as_the_check_round_runs_them(tmp_path):
+    """Each check `detect` declares, exec'd by its path (as the check round
+    does, so a missing exec bit fails here), with detect's own params, passes
+    evidence that found nothing."""
+    checks, params = _detect_checks()
+    assert sorted(c.name for c in checks) == sorted([WELLFORMED.name, ANCHORED.name])
     ev = tmp_path / "ev.json"
     ev.write_text(json.dumps({"scanned": ["a.cpp"], "patterns": []}))
     ctx = make_ctx(tmp_path)
-    pkg = tmp_path / "pkg"
-    shutil.copytree(PROTOCOL, pkg, ignore=shutil.ignore_patterns("__pycache__"))
-    check = pkg / "checks" / WELLFORMED.name
-    check.chmod(check.stat().st_mode & ~stat.S_IXUSR & ~stat.S_IXGRP & ~stat.S_IXOTH)
-    from sf_protocol_testing import check_round
-    out = check_round(pkg / "protocol.json", "detect", ev, ctx, tmp_path)
-    results = {v["check"]: v for v in out["results"]}
-    assert results["evidence-wellformed"]["pass"] is False
-    assert "not executable" in results["evidence-wellformed"]["feedback"]
+    for check in checks:
+        r = subprocess.run([str(check), str(ev)], text=True, capture_output=True,
+                           env=check_env(ctx, CHECK_PARAMS=json.dumps(params)))
+        assert r.returncode == 0, (check.name, r.stderr)
+        verdict = json.loads(r.stdout)
+        assert verdict["pass"] is True, (check.name, verdict)
 
 
 def _write(p, obj):
