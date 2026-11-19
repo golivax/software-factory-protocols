@@ -156,8 +156,9 @@ The pull request is staged for you in `/tmp/gh-aw/agent/`:
 - `diff.patch`: the diff of each changed file
 
 Review that commit and nothing else: the PR's head may have moved since, and your
-comments are checked against this diff. Read the code around a change in the
-workspace, or with the GitHub tools at `head_sha`.
+comments are checked against this diff. Read the code around a change with the
+GitHub tools at `head_sha`; the workspace holds the PR's head as it was when this
+job started, which can be newer than the commit under review.
 
 ### Step 3: Analyze the Code
 
