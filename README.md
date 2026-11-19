@@ -112,8 +112,9 @@ gh-aw never falls back to its default engine.
   `egress` ceiling must allow the hosts too. The engine repo's live testing fills
   every slot with its one committed profile and adds its hosts
   (`runtime/live/agent-profile.md` in the engine repo).
-- **The key stays out of the profile.** It comes from the deployment's agent secrets
-  file (`AGENT_SECRETS_FILE`).
+- **The key stays out of the profile.** The lock reads it as a secret
+  (`${{ secrets.OPENAI_API_KEY }}` for codex, `${{ secrets.ANTHROPIC_API_KEY }}`
+  for claude), whose value the factory picks for each run.
 
 A unit that `{{#runtime-import}}`s `shared/skill-preamble.md` carries that file under
 its own `workflows/shared/` (the dispatcher copies a protocol package's whole `workflows/` dir
