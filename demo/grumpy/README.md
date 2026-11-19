@@ -14,7 +14,9 @@ merge-request comment.
    with `safe-outputs: staged: true`. A step copies the run's snapshot
    (`$SF_SUBJECT_DIR`, the commit the run is pinned to) to `/tmp/gh-aw/agent/`, and the
    body's Step 2 points at it as the commit the review is about; the GitHub tools still
-   read the MR, at its head of the moment. gh-aw still validates, sanitizes and
+   read the MR, at its head of the moment. A pre-agent step checks the workspace out at
+   that commit (the snapshot's `head_sha`) after gh-aw's checkout of the MR's head, and
+   fails the job before the agent runs when it cannot. gh-aw still validates, sanitizes and
    threat-scans (its detection job) the review the agent proposes, but writes
    nothing to the forge. Its safe_outputs job, which runs only once detection
    passed and holds no forge write permission, hands the staged items, each
