@@ -40,9 +40,8 @@ def test_the_reviewer_is_handed_the_runs_commit(tmp_path):
     assert (agent / "diff.patch").read_text() == DIFF
     assert (agent / "files.txt").read_text() == "a.py"
     assert json.loads((agent / "pr.json").read_text())["head_sha"] == "a" * 40
-    # the prompt reads the staged pull request, and no tool reads the MR's head now
+    # the prompt points at the staged pull request
     assert "/tmp/gh-aw/agent/" in MD.read_text().split("---", 2)[2]
-    assert "pull_requests" not in fm["tools"]["github"]["toolsets"]
 
 
 def test_a_reviewer_with_no_snapshot_never_reviews_an_empty_diff(tmp_path):

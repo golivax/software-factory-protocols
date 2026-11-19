@@ -24,13 +24,12 @@
 #                  import whose prose points the agent at pre-fetched files nothing
 #                  stages. The catalogue version has none of that: it reads the PR
 #                  through the GitHub MCP tools.)
-#   * steps:       the MR the agent reviews is the run's snapshot, staged for it in
-#                  /tmp/gh-aw/agent/ by the step below; Step 2 of the body reads
-#                  it there instead of through the GitHub tools, and the tools lose
-#                  the `pull_requests` toolset. The forge answers for the MR's head
-#                  at the moment of the read, which a push during the run moves:
-#                  the checks settle the review against the snapshot, so the agent
-#                  reviews the snapshot too.
+#   * steps:       the MR the run is about is the run's snapshot, staged for the
+#                  agent in /tmp/gh-aw/agent/ by the step below, and Step 2 of the
+#                  body points at it: the commit the checks settle the review
+#                  against. The GitHub tools still read the PR, as upstream's do;
+#                  they answer for its head at the moment of the read, which a push
+#                  during the run can have moved.
 # NOTE on memory: the catalogue version declares `tools: cache-memory: true`, so
 # the body's /tmp/gh-aw/cache-memory/ reads and writes are real (actions/cache
 # under act's cache server), not the no-op they were in the gh-aw-repo version.
@@ -50,7 +49,7 @@ tools:
   cache-memory: true
   github:
     min-integrity: approved
-    toolsets: [repos]
+    toolsets: [pull_requests, repos]
 
 steps:
   - name: Stage the MR for the agent
@@ -150,15 +149,15 @@ Use the cache memory at `/tmp/gh-aw/cache-memory/` to:
 
 ### Step 2: Fetch Pull Request Details
 
-The pull request is staged for you in `/tmp/gh-aw/agent/`:
-- `pr.json`: its number, title, body and `head_sha`, the commit under review
+The pull request is staged for you in `/tmp/gh-aw/agent/`, at the commit this review
+is about:
+- `pr.json`: its number, title, body and `head_sha`, that commit
 - `files.txt`: the files changed in the PR, one per line
 - `diff.patch`: the diff of each changed file
 
-Review that commit and nothing else: the PR's head may have moved since, and your
-comments are checked against this diff. Read the code around a change with the
-GitHub tools at `head_sha`; the workspace holds the PR's head as it was when this
-job started, which can be newer than the commit under review.
+Your comments are checked against this diff. The GitHub tools read the pull request
+and its code too; they, and the workspace, show the PR's head as it is now, which a
+push since this run started can have moved past `head_sha`.
 
 ### Step 3: Analyze the Code
 
