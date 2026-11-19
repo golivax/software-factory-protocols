@@ -13,7 +13,6 @@ permissions:
   contents: read
   pull-requests: read
 tools:
-  cli-proxy: true
   bash: ["*"]
 safe-outputs:
   # The agent's only output is its final answer (the evidence), NOT a gh-aw
@@ -23,6 +22,25 @@ safe-outputs:
     report-as-issue: false
   threat-detection: false
 pre-agent-steps:
+  - name: Stage the MR for the agent
+    # The run's snapshot ($SF_SUBJECT_DIR): the diff, the changed files and pr.json of
+    # the commit the run is pinned to, the bytes this node's checks read. The forge
+    # (`gh pr diff`, the GitHub tools) answers for the MR's head at the moment, which a
+    # push can have moved since the run started. A snapshot the factory could not
+    # compute (pr.json names the MR, no base_sha) fails the step: an empty diff is not
+    # an MR that changes nothing.
+    run: |
+      set -euo pipefail
+      mkdir -p /tmp/gh-aw/agent
+      python3 - "$SF_SUBJECT_DIR/pr.json" <<'PY'
+      import json, sys
+      pr = json.load(open(sys.argv[1]))
+      if pr.get("number") and not pr.get("base_sha"):
+          sys.exit(f"the factory could not compute MR {pr['number']}'s diff (pr.json names no base_sha)")
+      print(f"staging MR {pr.get('number')} at {pr.get('head_sha')}")
+      PY
+      cp "$SF_SUBJECT_DIR/diff.patch" "$SF_SUBJECT_DIR/files.txt" "$SF_SUBJECT_DIR/pr.json" /tmp/gh-aw/agent/
+      sha256sum /tmp/gh-aw/agent/diff.patch
   - name: Materialize task context
     env:
       CTX: ${{ github.event.inputs.aw_context }}
@@ -50,8 +68,11 @@ Read `/tmp/gh-aw/task-context.json`. `inputs.finding` is the candidate:
 
 ## Your job
 
-1. Fetch the PR diff: `gh pr diff <pr> --repo ${{ github.repository }}` and
-   locate the hunk(s) for `inputs.finding.path`.
+1. Read the PR diff, `/tmp/gh-aw/agent/diff.patch`: the diff of the commit
+   under review (`head_sha` in `/tmp/gh-aw/agent/pr.json`), the one the checks
+   verify your answer against. Do not fetch the PR yourself: its head may have
+   moved since this run started.
+   Locate the hunk(s) for `inputs.finding.path`.
 2. Confirm `inputs.finding.existing_code` still sits at `side`/`line`
    (/`start_line`) in that hunk. If the surrounding diff shifted, relocate the
    anchor to wherever that exact snippet now sits (same side, same hunk); if

@@ -11,7 +11,10 @@ merge-request comment.
 ## How it works
 
 1. **`review`** (agent): the `grumpy-reviewer.md` of gh-aw's agentics collection (githubnext/agentics), near-verbatim,
-   with `safe-outputs: staged: true`. gh-aw still validates, sanitizes and
+   with `safe-outputs: staged: true`. A step copies the run's snapshot
+   (`$SF_SUBJECT_DIR`, the commit the run is pinned to) to `/tmp/gh-aw/agent/`, and the
+   body's Step 2 points at it as the commit the review is about; the GitHub tools still
+   read the MR, at its head of the moment. gh-aw still validates, sanitizes and
    threat-scans (its detection job) the review the agent proposes, but writes
    nothing to the forge. Its safe_outputs job, which runs only once detection
    passed and holds no forge write permission, hands the staged items, each
