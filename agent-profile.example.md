@@ -4,8 +4,9 @@
 # replace the placeholders, then compile. Frontmatter only: gh-aw merges it into
 # every unit that imports the slot. Add every `network.allowed` host to the
 # `egress` of each agent node that runs such a unit: the registry refuses the
-# protocol otherwise. The endpoint's key is not here: it comes from the
-# deployment's agent secrets file (AGENT_SECRETS_FILE).
+# protocol otherwise. The endpoint's key is not here: the lock reads it as a
+# secret (OPENAI_API_KEY for codex, ANTHROPIC_API_KEY for claude), whose value
+# the factory picks for each run.
 engine:
   id: codex                                   # the agent CLI (gh-aw engine id)
   model: <model>                              # a model the endpoint serves
