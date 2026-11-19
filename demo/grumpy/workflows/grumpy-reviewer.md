@@ -30,6 +30,10 @@
 #                  against. The GitHub tools still read the PR, as upstream's do;
 #                  they answer for its head at the moment of the read, which a push
 #                  during the run can have moved.
+#   * pre-agent-steps: the workspace is checked out at that commit (the snapshot's
+#                  head_sha) after gh-aw's checkout of the MR's head of the moment,
+#                  so the diff and the code around it are one commit; a commit that
+#                  cannot be checked out fails the job before the agent runs.
 # NOTE on memory: the catalogue version declares `tools: cache-memory: true`, so
 # the body's /tmp/gh-aw/cache-memory/ reads and writes are real (actions/cache
 # under act's cache server), not the no-op they were in the gh-aw-repo version.
@@ -69,6 +73,27 @@ steps:
       PY
       cp "$SF_SUBJECT_DIR/diff.patch" "$SF_SUBJECT_DIR/files.txt" "$SF_SUBJECT_DIR/pr.json" /tmp/gh-aw/agent/
       sha256sum /tmp/gh-aw/agent/diff.patch
+
+pre-agent-steps:
+  # After gh-aw's own "Checkout PR branch", which leaves the workspace at the MR's head
+  # of the moment: the code around a change is read at the commit the review is about.
+  - name: Check out the commit the review is about
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+    run: |
+      set -euo pipefail
+      SHA="$(python3 -c 'import json,os,sys; print(json.load(open(os.path.join(os.environ["SF_SUBJECT_DIR"], "pr.json"))).get("head_sha") or "")')"
+      if [ -z "$SHA" ]; then
+        echo "::error::the run's snapshot names no commit (pr.json has no head_sha)" >&2
+        exit 1
+      fi
+      if ! git cat-file -e "$SHA^{commit}" 2>/dev/null; then
+        git fetch -q --depth=1 "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$SHA"
+      fi
+      git -c advice.detachedHead=false checkout -q "$SHA"
+      test "$(git rev-parse HEAD)" = "$SHA"
+      echo "workspace at $SHA"
 
 safe-outputs:
   # STAGED: gh-aw still schema-validates, sanitizes and threat-scans (the
@@ -155,9 +180,9 @@ is about:
 - `files.txt`: the files changed in the PR, one per line
 - `diff.patch`: the diff of each changed file
 
-Your comments are checked against this diff. The GitHub tools read the pull request
-and its code too; they, and the workspace, show the PR's head as it is now, which a
-push since this run started can have moved past `head_sha`.
+Your comments are checked against this diff, and the workspace is checked out at
+`head_sha`. The GitHub tools read the pull request too; they show its head as it is
+now, which a push since this run started can have moved past `head_sha`.
 
 ### Step 3: Analyze the Code
 
