@@ -37,8 +37,10 @@ pre-agent-steps:
       pr = json.load(open(sys.argv[1]))
       if pr.get("number") and not pr.get("base_sha"):
           sys.exit(f"the factory could not compute MR {pr['number']}'s diff (pr.json names no base_sha)")
+      print(f"staging MR {pr.get('number')} at {pr.get('head_sha')}")
       PY
       cp "$SF_SUBJECT_DIR/diff.patch" "$SF_SUBJECT_DIR/files.txt" "$SF_SUBJECT_DIR/pr.json" /tmp/gh-aw/agent/
+      sha256sum /tmp/gh-aw/agent/diff.patch
   - name: Materialize task context
     env:
       CTX: ${{ github.event.inputs.aw_context }}
