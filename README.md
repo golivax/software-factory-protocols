@@ -86,9 +86,9 @@ imports:
 ```
 
 and the installer fills each slot with a **profile**: a gh-aw import file,
-frontmatter only, holding one agent, model and model endpoint
+frontmatter only, holding one agent and model endpoint
 ([`agent-profile.example.md`](agent-profile.example.md) is the template). gh-aw merges
-the profile's `engine:` (id, model, args, env) and `network.allowed` into every unit
+the profile's `engine:` (id, args, env) and `network.allowed` into every unit
 that imports the slot. A profile is frontmatter only: gh-aw also appends an imported
 file's markdown body to the prompt of every unit that imports it, so any text after
 the closing `---` would become part of those agents' instructions. An unfilled slot
@@ -112,6 +112,16 @@ gh-aw never falls back to its default engine.
   `egress` ceiling must allow the hosts too. The engine repo's live testing fills
   every slot with its one committed profile and adds its hosts
   (`runtime/live/agent-profile.md` in the engine repo).
+- **A filled slot leaves the model to the variable.** A profile names no `model:`,
+  so the compiled lock reads the agent's model at run time from
+  `vars.GH_AW_MODEL_AGENT_<ENGINE> || vars.GH_AW_DEFAULT_MODEL_<ENGINE>`, whose
+  values the factory picks for each run (golivax/software-factory#483), like the
+  key. gh-aw runs a unit's threat detection on its fixed model alias `detection`
+  unless a model is named, so the profile also names
+  `safe-outputs.threat-detection.engine` with the same agent and
+  `model: ${{ vars.GH_AW_MODEL_DETECTION_<ENGINE> || vars.GH_AW_DEFAULT_MODEL_<ENGINE> }}`;
+  a unit with `threat-detection: false` keeps it off. A `model:` in a profile
+  would fix the model for every run and target.
 - **The key stays out of the profile.** The lock reads it as a secret
   (`${{ secrets.OPENAI_API_KEY }}` for codex, `${{ secrets.ANTHROPIC_API_KEY }}`
   for claude), whose value the factory picks for each run.
