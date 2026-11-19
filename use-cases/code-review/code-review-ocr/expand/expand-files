@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Real diff-parsing expander for dyn-fanout-stub (and, verbatim, code-review-ocr).
 Emits one item per changed file: {"path","diff"}. OCR-style pre-filters skip
-binary, vendored/generated, and oversized-diff files.
+binary, vendored/generated, and oversized-diff files, and a file with no hunk
+(a pure rename, a mode change).
 
 It reads the MR diff the factory already fetched, $CHECK_CTX/diff.patch: an
 expander runs in an expand round (engine 11.0.0, #211) with the same ground
@@ -9,6 +10,8 @@ truth as a check, so it fetches nothing itself.
 
 Modes:
   $CHECK_CTX/diff.patch non-empty -> parse it.
+  the factory could not compute it (pr.json names the MR, no base_sha)
+                                  -> exit 1: the run fails, never "no legs".
   otherwise                       -> no items (a PR with no diff has no files).
 
 Thresholds come from EXPAND_PARAMS (JSON of the node's `expand` object) with defaults.
@@ -29,6 +32,14 @@ def _params():
 def _load_diff():
     ctx = os.environ.get("CHECK_CTX", "")
     try:
+        with open(os.path.join(ctx, "pr.json")) as f:
+            pr = json.load(f)
+    except (OSError, ValueError):
+        pr = {}
+    if pr.get("number") and not pr.get("base_sha"):
+        raise SystemExit("expand-files: the factory could not compute the MR's diff "
+                         "(pr.json names no base_sha)")
+    try:
         with open(os.path.join(ctx, "diff.patch")) as f:
             return f.read()
     except OSError:
@@ -48,6 +59,10 @@ def _split_files(diff_text):
 def _is_binary(chunk):
     return "\nBinary files " in ("\n" + chunk) or chunk.count("GIT binary patch")
 
+def _has_hunks(chunk):
+    """A pure rename or a mode change carries no line to review."""
+    return "\n@@ " in chunk
+
 def _diff_lines(chunk):
     return sum(1 for ln in chunk.splitlines()
                if (ln.startswith("+") or ln.startswith("-")) and not ln.startswith(("+++", "---")))
@@ -57,7 +72,7 @@ def main():
     diff = _load_diff()
     items = []
     for path, chunk in _split_files(diff):
-        if _is_binary(chunk):
+        if _is_binary(chunk) or not _has_hunks(chunk):
             continue
         if VENDOR_RE.search(path):
             continue

@@ -2,7 +2,7 @@
 
 The authoring template: one dispatched **code** node (`facts`) feeding one **agent** node (`summarize`) whose source you compile yourself. Each runs in its own disposable microVM (the agent node: one per gh-aw job).
 
-**Engine floor:** `min_engine_version` 18.2.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 19.0.0 · **Protocol version:** 0.1.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 

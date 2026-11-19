@@ -1,7 +1,7 @@
 {
   "name": "hello",
   "version": "0.2.0",
-  "min_engine_version": "18.2.0",
+  "min_engine_version": "19.0.0",
   "_note": "The factory's 'hello world': the smallest protocol that proves the whole control plane end to end, with no LLM. One dispatched CODE node checks the repo out (checkout: true), takes a light but genuine reading of it (a file count + a sample via git ls-files), and posts a friendly greeting to the merge request through the forge API (forge-agnostic, via the gh2forge proxy — the node holds no forge token). A single self-contained check settles that it read the tree AND that the greeting landed. Trigger `/hello` on an MR comment; watch it on the dashboard: webhook -> conductor -> disposable microVM -> checkout -> forge API -> check -> status.",
   "triggers": [
     { "on": "issue_comment", "comment_prefix": "/hello", "command": "start" }
