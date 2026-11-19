@@ -180,6 +180,7 @@ def test_traces_exist_in_diff_ocr_flat_pass_and_fail(tmp_path):
 
 
 REDUCE_FILE = str(PROTOCOL / "workflows/reduce-file.py")
+PINNED = "a1b2c3d4" * 5          # protocol_context.json's `sha`: the run's commit
 POST_REVIEW = str(PROTOCOL / "workflows/post-review.py")
 
 
@@ -190,7 +191,7 @@ def _run_node(script, tmp_path, inputs, env=None):
     (d / "inputs").mkdir(parents=True)
     for alias, rows in inputs.items():
         (d / "inputs" / f"{alias}.json").write_text(json.dumps(rows))
-    (d / "protocol_context.json").write_text(json.dumps({"pr": "1"}))
+    (d / "protocol_context.json").write_text(json.dumps({"pr": "1", "sha": PINNED}))
     out = d / "evidence-out.json"
     r = subprocess.run(["python3", script], capture_output=True, text=True,
                        env={**os.environ, "SF_INPUTS_DIR": str(d / "inputs"),
@@ -277,7 +278,8 @@ class _Forge:
 def test_post_review_dedups_regroups_and_posts_one_review(tmp_path):
     """Two file legs' survivors are gathered from inputs/files.json, cross-file
     deduped by (path,side,line,existing_code), and posted as ONE review on the
-    MR's head, with the job's own token."""
+    commit the run reviewed, with the job's own token: never on the MR's head
+    now, which the fake forge says has moved (head123)."""
     rows = [
         {"leg_id": "L1", "state": "done", "evidence": {
             "conclusion": "success", "summary": "1 finding(s) kept", "survivors": [
@@ -298,7 +300,8 @@ def test_post_review_dedups_regroups_and_posts_one_review(tmp_path):
         forge.srv.shutdown()
     assert out["conclusion"] == "failure" and out["event"] == "REQUEST_CHANGES", out
     (review,) = forge.reviews()
-    assert review["event"] == "REQUEST_CHANGES" and review["commit_id"] == "head123"
+    assert review["event"] == "REQUEST_CHANGES" and review["commit_id"] == PINNED
+    assert not [r for r in forge.requests if r[0] == "GET"], "it read the MR's live head"
     assert len(review["comments"]) == 2                 # deduped: 2 distinct, not 3
     assert {c["path"] for c in review["comments"]} == {"a.py", "b.py"}
     posts = [r for r in forge.requests if r[0] == "POST"]
@@ -321,3 +324,91 @@ def test_post_review_approves_with_no_survivors_and_falls_back_to_comment(tmp_pa
         forge.srv.shutdown()
     assert out["conclusion"] == "success", out
     assert [r["event"] for r in forge.reviews()] == ["APPROVE", "COMMENT"]
+
+
+# ---------------------------------------------------------------------------
+# The factory's diff (engine 19.0.0): `git diff` of the run's pinned commit.
+# _GIT_DIFF is what the factory computed for an MR that changes a binary file,
+# a mode, deletes a file, edits a path with a space and renames an edited file.
+# ---------------------------------------------------------------------------
+
+_GIT_DIFF = (
+    'diff --git a/img/logo.png b/img/logo.png\nindex c86626638e0bc8cf47ca49bb1525b40e9737ee64'
+    '..5663091be8ca2b5e57d3c2323a38840a729caf66 100644\nBinary files a/img/logo.png and '
+    'b/img/logo.png differ\ndiff --git a/run.sh b/run.sh\nold mode 100644\nnew mode 100755\n'
+    'diff --git a/src/gone.py b/src/gone.py\ndeleted file mode 100644\nindex '
+    'c626f529f8e2c0bb51074d71fbc040252ea362ba..0000000000000000000000000000000000000000\n'
+    '--- a/src/gone.py\n+++ /dev/null\n@@ -1,2 +0,0 @@\n-def gone():\n-    return 0\n'
+    'diff --git a/src/my file.py b/src/my file.py\nindex 223ca50d99502c4cf15a026d366965225e573961'
+    '..7884034b9ae869a6f4adbcbad1a3f7b0b9fb02a5 100644\n--- a/src/my file.py\t\n'
+    '+++ b/src/my file.py\t\n@@ -1,2 +1,3 @@\n a = 1\n-b = 2\n+b = 3\n+c = 4\n'
+    'diff --git a/src/old.py b/src/new.py\nsimilarity index 94%\nrename from src/old.py\n'
+    'rename to src/new.py\nindex c4352f8b46de5cdb88d0cc96958316db42dd2398..'
+    'be8344cad54e4faa9cfa5d607b8fef33b65113b6 100644\n--- a/src/old.py\n+++ b/src/new.py\n'
+    '@@ -7,7 +7,7 @@ line 6\n line 7\n line 8\n line 9\n-line 10\n+line ten\n line 11\n'
+    ' line 12\n line 13\n')
+_GIT_FILES = ["img/logo.png", "run.sh", "src/gone.py", "src/my file.py", "src/new.py"]
+_PR = {"number": 1, "head_sha": PINNED, "base_sha": "b" * 40}
+
+
+@pytest.mark.parametrize("path,finding,ok", [
+    ("src/my file.py", {"existing_code": "c = 4", "side": "RIGHT", "line": 3}, True),
+    ("src/my file.py", {"existing_code": "b = 2", "side": "LEFT", "line": 2}, True),
+    ("src/new.py", {"existing_code": "line ten", "side": "RIGHT", "line": 10}, True),
+    ("src/new.py", {"existing_code": "line 10", "side": "LEFT", "line": 10}, True),
+    ("src/gone.py", {"existing_code": "return 0", "side": "LEFT", "line": 2}, True),
+    ("src/old.py", {"existing_code": "line ten", "side": "RIGHT", "line": 10}, False),
+    ("src/new.py", {"existing_code": "line ten", "side": "RIGHT", "line": 11}, False),
+], ids=["space-right", "space-left", "renamed-right", "renamed-left", "deleted-left",
+        "renamed-by-its-old-path", "wrong-line"])
+def test_traces_exist_in_diff_reads_the_factorys_git_diff(tmp_path, path, finding, ok):
+    """A finding anchors in a renamed file by its new path, in a deleted file
+    on its old side, and in a path with a space (git ends its ---/+++ path
+    with a tab)."""
+    ctx = make_ctx(tmp_path, diff=_GIT_DIFF, files=_GIT_FILES, pr=_PR)
+    ev = tmp_path / "ev.json"
+    ev.write_text(json.dumps({"files": [{"path": path, "findings": [
+        {"finding_id": "f1", "comment": "c", **finding}]}]}))
+    r = _ctx_check(OCR_TRACES, ev, ctx)
+    assert r["pass"] is ok, r["feedback"]
+
+
+def test_a_check_with_no_snapshot_fails_not_passes(tmp_path):
+    """pr.json names the MR with no base_sha: the factory could not compute
+    the diff. An empty diff is then no evidence of anything."""
+    ctx = make_ctx(tmp_path, pr={"number": 1, "head_sha": PINNED, "base_sha": ""})
+    ev = tmp_path / "ev.json"
+    ev.write_text(json.dumps({"files": []}))
+    r = _ctx_check(OCR_TRACES, ev, ctx)
+    assert r["check"] == "traces-exist-in-diff" and r["pass"] is False
+    assert "could not compute" in r["feedback"]
+
+
+EXPAND_FILES = str(PROTOCOL / "expand/expand-files")
+
+
+def test_expand_files_splits_the_factorys_git_diff(tmp_path):
+    """One leg per file with a diff to review: the binary file and the
+    mode-only change have none; a renamed file is its new path."""
+    ctx = make_ctx(tmp_path, diff=_GIT_DIFF, files=_GIT_FILES, pr=_PR)
+    r = subprocess.run(["python3", EXPAND_FILES], capture_output=True, text=True,
+                       env=check_env(ctx))
+    assert r.returncode == 0, r.stderr
+    items = json.loads(r.stdout)["items"]
+    assert [i["path"] for i in items] == ["src/gone.py", "src/my file.py", "src/new.py"]
+    assert "+line ten" in items[2]["diff"]
+
+
+@pytest.mark.parametrize("pr,code", [({"number": 1, "head_sha": PINNED, "base_sha": ""}, 1),
+                                     ({"number": 1, "head_sha": PINNED, "base_sha": "b" * 40}, 0),
+                                     ({}, 0)],
+                         ids=["no-snapshot", "an-mr-with-no-change", "no-mr"])
+def test_expand_files_fails_the_run_with_no_snapshot(tmp_path, pr, code):
+    """An empty diff is no legs when the MR changes nothing or there is no MR;
+    when the factory could not compute it, the expander fails the run."""
+    ctx = make_ctx(tmp_path, pr=pr)
+    r = subprocess.run(["python3", EXPAND_FILES], capture_output=True, text=True,
+                       env=check_env(ctx))
+    assert r.returncode == code, r.stderr
+    if code == 0:
+        assert json.loads(r.stdout) == {"items": []}

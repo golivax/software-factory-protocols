@@ -4,7 +4,7 @@ A deliberately grumpy reviewer, run the factory's way: **the agent proposes,
 deterministic checks verify, a trusted step publishes.** Dispatched on a
 merge-request comment.
 
-**Engine floor:** `min_engine_version` 18.0.0 · **Protocol version:** 0.2.0
+**Engine floor:** `min_engine_version` 19.0.0 · **Protocol version:** 0.2.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 
@@ -28,8 +28,8 @@ merge-request comment.
      reason, no duplicate anchors;
    - `anchors-in-diff`: every comment sits on a line the MR diff shows.
 4. **`publish`** (dispatched code, its own microVM): posts the checked review
-   through gh2forge, pinned to the reviewed commit, and posts nothing if the MR has
-   moved since. It is the only forge write in the protocol.
+   through gh2forge, pinned to the reviewed commit: on an MR that moved since, the
+   forge shows it as outdated. It is the only forge write in the protocol.
 
 ## Triggers
 

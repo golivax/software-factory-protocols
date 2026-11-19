@@ -10,9 +10,10 @@ every item's fields). This settles what a schema cannot:
 
   * each item type's required fields and the workflow's maxes
     (`_review.form_errors`);
-  * the review was made for the commit whose diff the engine fetched
-    (`sha` == pr.json `diff_head_sha`): an anchor check against a different
-    commit's diff proves nothing;
+  * the review was made for the commit the run is pinned to, whose diff the
+    factory computed (`sha` == pr.json `head_sha`, and pr.json names the
+    diff's `base_sha`): an anchor check against a different commit's diff
+    proves nothing;
   * it says something: at least one comment or a verdict body;
   * REQUEST_CHANGES gives a reason (a comment or a verdict body);
   * no two comments sit on the same anchor.
@@ -47,12 +48,12 @@ def main():
     malformed = _review.form_errors(ev)
     if malformed:
         emit(False, "; ".join(malformed))
-    head = pr.get("diff_head_sha") or ""
+    head = pr.get("head_sha") or ""
     sha = ev.get("sha") or ""
-    if not head:
-        emit(False, "pr.json has no diff_head_sha (the MR moved while its diff was read)")
+    if not pr.get("base_sha"):
+        emit(False, "pr.json has no base_sha: the factory could not compute the MR's diff")
     if sha != head:
-        emit(False, f"the review is for {sha[:12] or '<no sha>'} but the checked diff is "
+        emit(False, f"the review is for {sha[:12] or '<no sha>'} but the run is pinned to "
                     f"{head[:12]}")
 
     comments = _review.comments(ev)
