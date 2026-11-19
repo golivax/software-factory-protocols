@@ -64,7 +64,8 @@ def main():
     with open(os.path.join(os.environ["SF_INPUTS_DIR"], "files.json")) as fh:
         rows = json.load(fh)
     with open(os.path.join(os.environ["SF_CONTROL_DIR"], "protocol_context.json")) as fh:
-        pr = str(json.load(fh).get("pr", ""))
+        ctx = json.load(fh)
+    pr, sha = str(ctx.get("pr", "")), ctx.get("sha", "")
     findings = []
     for r in rows:
         if isinstance(r.get("evidence"), dict):
@@ -74,8 +75,9 @@ def main():
     event = "REQUEST_CHANGES" if inline else "APPROVE"
     body = REQ_BODY.format(n=len(inline), nfiles=nfiles) if inline else OK_BODY
     repo = os.environ["GITHUB_REPOSITORY"]
-    head = (_call("GET", f"repos/{repo}/pulls/{pr}", pr).get("head") or {}).get("sha", "")
-    review = {"event": event, "body": body, "comments": inline, "commit_id": head}
+    # the commit the run reviewed, never the MR's head now: on an MR that moved
+    # since, the forge shows the review as outdated
+    review = {"event": event, "body": body, "comments": inline, "commit_id": sha}
     try:
         posted = _call("POST", f"repos/{repo}/pulls/{pr}/reviews", pr, review)
     except urllib.error.HTTPError:
