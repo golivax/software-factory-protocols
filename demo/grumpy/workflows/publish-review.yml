@@ -3,7 +3,8 @@ name: publish-review
 # act in its own microVM, after the engine's checks passed on the review node's
 # evidence (gh-aw's sanitized, detection-approved staged review). It reaches the
 # forge through gh2forge ($GITHUB_API_URL); the review is pinned to the commit the
-# checks saw, and nothing is posted if the MR has moved since. Its job token
+# checks saw (`commit_id`), so on an MR that moved since the forge shows it as
+# outdated. Its job token
 # (gh2forge's job listener, minted from this block) can post the review and nothing
 # else.
 on:
@@ -44,11 +45,6 @@ jobs:
                   json.dump({"published": published, "summary": summary, **extra}, fh)
               print(summary)
               sys.exit(0 if published else 1)
-
-          head = (call("GET", f"repos/{repo}/pulls/{pr}").get("head") or {}).get("sha", "")
-          if head != sha:
-              done(False, f"not published: the MR moved from {sha[:12]} (reviewed and "
-                          f"checked) to {head[:12]}", reviewed=sha, head=head)
 
           # The review, read from gh-aw's staged items (the evidence the engine
           # validated against review.evidence.schema.json and the checks passed).

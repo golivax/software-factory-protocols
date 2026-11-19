@@ -55,7 +55,8 @@ def parse_diff(path):
                 minus_path = None
                 continue
             if line.startswith("--- "):
-                minus = line[4:]
+                # git ends a ---/+++ path that holds a space with a tab
+                minus = line[4:].rstrip("\t")
                 if minus == "/dev/null":
                     minus_path = None
                 elif minus.startswith("a/"):
@@ -65,7 +66,7 @@ def parse_diff(path):
                 in_hunk = False
                 continue
             if line.startswith("+++ "):
-                plus = line[4:]
+                plus = line[4:].rstrip("\t")
                 if plus == "/dev/null":
                     cur = minus_path  # deleted file: key it under its old path
                 elif plus.startswith("b/"):
