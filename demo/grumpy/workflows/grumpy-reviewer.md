@@ -3,7 +3,7 @@
 # 2026-09-08) as a Software Factory demo protocol. The goal is to prove that a
 # reusable gh-aw workflow from GitHub's own catalogue ports onto our substrate
 # with only the adaptations every adopter makes. The body below is the
-# catalogue's, verbatim. What changed in the frontmatter vs. upstream, and why:
+# catalogue's, verbatim but for Step 2 (below). What changed vs. upstream, and why:
 #   * engine:      upstream leaves the engine to the installer's default; we
 #                  leave it to the deployment too, through the agent slot
 #                  `imports: shared/agent.md` (a profile: agent, model, model endpoint).
@@ -23,7 +23,14 @@
 #                  slash command, plus `cli-proxy: true`, an `otlp` import and a `pr-review-base`
 #                  import whose prose points the agent at pre-fetched files nothing
 #                  stages. The catalogue version has none of that: it reads the PR
-#                  through the GitHub MCP tools, which is what gh2forge serves.)
+#                  through the GitHub MCP tools.)
+#   * steps:       the MR the agent reviews is the run's snapshot, staged for it in
+#                  /tmp/gh-aw/agent/ by the step below; Step 2 of the body reads
+#                  it there instead of through the GitHub tools, and the tools lose
+#                  the `pull_requests` toolset. The forge answers for the MR's head
+#                  at the moment of the read, which a push during the run moves:
+#                  the checks settle the review against the snapshot, so the agent
+#                  reviews the snapshot too.
 # NOTE on memory: the catalogue version declares `tools: cache-memory: true`, so
 # the body's /tmp/gh-aw/cache-memory/ reads and writes are real (actions/cache
 # under act's cache server), not the no-op they were in the gh-aw-repo version.
@@ -43,7 +50,24 @@ tools:
   cache-memory: true
   github:
     min-integrity: approved
-    toolsets: [pull_requests, repos]
+    toolsets: [repos]
+
+steps:
+  - name: Stage the MR for the agent
+    # The run's snapshot ($SF_SUBJECT_DIR): the diff, the changed files and pr.json of
+    # the commit the run is pinned to, the bytes this node's checks read. A snapshot the
+    # factory could not compute (pr.json names the MR, no base_sha) fails the step: an
+    # empty diff is not an MR that changes nothing.
+    run: |
+      set -euo pipefail
+      mkdir -p /tmp/gh-aw/agent
+      python3 - "$SF_SUBJECT_DIR/pr.json" <<'PY'
+      import json, sys
+      pr = json.load(open(sys.argv[1]))
+      if pr.get("number") and not pr.get("base_sha"):
+          sys.exit(f"the factory could not compute MR {pr['number']}'s diff (pr.json names no base_sha)")
+      PY
+      cp "$SF_SUBJECT_DIR/diff.patch" "$SF_SUBJECT_DIR/files.txt" "$SF_SUBJECT_DIR/pr.json" /tmp/gh-aw/agent/
 
 safe-outputs:
   # STAGED: gh-aw still schema-validates, sanitizes and threat-scans (the
@@ -124,10 +148,14 @@ Use the cache memory at `/tmp/gh-aw/cache-memory/` to:
 
 ### Step 2: Fetch Pull Request Details
 
-Use the GitHub tools to get the pull request details:
-- Get the PR with number `${{ github.event.issue.number }}` in repository `${{ github.repository }}`
-- Get the list of files changed in the PR
-- Review the diff for each changed file
+The pull request is staged for you in `/tmp/gh-aw/agent/`:
+- `pr.json`: its number, title, body and `head_sha`, the commit under review
+- `files.txt`: the files changed in the PR, one per line
+- `diff.patch`: the diff of each changed file
+
+Review that commit and nothing else: the PR's head may have moved since, and your
+comments are checked against this diff. Read the code around a change in the
+workspace, or with the GitHub tools at `head_sha`.
 
 ### Step 3: Analyze the Code
 

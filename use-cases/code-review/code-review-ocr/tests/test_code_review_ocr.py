@@ -412,3 +412,52 @@ def test_expand_files_fails_the_run_with_no_snapshot(tmp_path, pr, code):
     assert r.returncode == code, r.stderr
     if code == 0:
         assert json.loads(r.stdout) == {"items": []}
+
+
+# ---------------------------------------------------------------------------
+# The agents read the run's snapshot, never the MR's head now (#518 in
+# golivax/software-factory): each agent's staging step, run as its job runs
+# it, copies $SF_SUBJECT_DIR where the agent reads, while a `gh` on PATH
+# answers for a head the author pushed since.
+# ---------------------------------------------------------------------------
+
+AGENTS = sorted((PROTOCOL / "workflows").glob("ocr-*-agent.md"))
+SNAPSHOT_DIFF = "diff --git a/a.py b/a.py\n--- a/a.py\n+++ b/a.py\n@@ -1 +1 @@\n-x = 1\n+x = 2\n"
+
+
+def _stage(md, tmp_path, base_sha="b" * 40):
+    import yaml
+    fm = yaml.safe_load(md.read_text().split("---", 2)[1])
+    steps = [s for s in fm.get("pre-agent-steps", []) + fm.get("steps", [])
+             if "run" in s and "/tmp/gh-aw/agent" in s["run"]]
+    sub = tmp_path / "subject"
+    sub.mkdir()
+    (sub / "diff.patch").write_text(SNAPSHOT_DIFF if base_sha else "")
+    (sub / "files.txt").write_text("a.py" if base_sha else "")
+    (sub / "pr.json").write_text(json.dumps({"number": 1, "head_sha": "a" * 40, "base_sha": base_sha}))
+    gh = tmp_path / "bin" / "gh"
+    gh.parent.mkdir()
+    gh.write_text("#!/bin/sh\nprintf 'diff --git a/pushed_later.py b/pushed_later.py\\n'\n")
+    gh.chmod(0o755)
+    env = {**os.environ, "SF_SUBJECT_DIR": str(sub), "PATH": f"{gh.parent}:{os.environ['PATH']}"}
+    codes = [subprocess.run(["bash", "-eo", "pipefail", "-c",
+                             s["run"].replace("/tmp/gh-aw", str(tmp_path / "gh-aw"))],
+                            env=env, capture_output=True, text=True) for s in steps]
+    return codes, tmp_path / "gh-aw" / "agent"
+
+
+@pytest.mark.parametrize("md", AGENTS, ids=lambda p: p.stem)
+def test_an_agent_is_handed_the_runs_commit(md, tmp_path):
+    codes, agent = _stage(md, tmp_path)
+    assert codes and all(r.returncode == 0 for r in codes), [r.stderr for r in codes]
+    assert (agent / "diff.patch").read_text() == SNAPSHOT_DIFF
+    assert json.loads((agent / "pr.json").read_text())["head_sha"] == "a" * 40
+    prompt = md.read_text().split("---", 2)[2]
+    assert "/tmp/gh-aw/agent/diff.patch" in prompt
+
+
+@pytest.mark.parametrize("md", AGENTS, ids=lambda p: p.stem)
+def test_an_agent_with_no_snapshot_never_reviews_an_empty_diff(md, tmp_path):
+    codes, agent = _stage(md, tmp_path, base_sha="")
+    assert codes and codes[-1].returncode != 0 and "no base_sha" in codes[-1].stderr
+    assert not (agent / "diff.patch").exists()
