@@ -110,9 +110,9 @@ gh-aw never falls back to its default engine.
   compares each agent node's `egress` with what its compiled lock's firewall
   allows, and refuses the protocol when a profile host is missing; the factory's
   egress policy (its operator's deny-list or allow-list) must allow the hosts
-  too. The engine repo's live testing fills
+  too. The engine repo's test stack fills
   every slot with its one committed profile and adds its hosts
-  (`runtime/live/agent-profile.md` in the engine repo).
+  (`runtime/test_stack/agent-profile.md` in the engine repo).
 - **A filled slot leaves the model to the variable.** A profile names no `model:`,
   so the compiled lock reads the agent's model at run time from
   `vars.GH_AW_MODEL_AGENT_<ENGINE> || vars.GH_AW_DEFAULT_MODEL_<ENGINE>`, whose
