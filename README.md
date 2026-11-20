@@ -108,8 +108,9 @@ gh-aw never falls back to its default engine.
   node whose unit imports that slot: a template cannot know the endpoint, so no
   agent node here lists it. Then `gh aw compile`. The factory's registry sync
   compares each agent node's `egress` with what its compiled lock's firewall
-  allows, and refuses the protocol when a profile host is missing; the target's
-  `egress` ceiling must allow the hosts too. The engine repo's live testing fills
+  allows, and refuses the protocol when a profile host is missing; the factory's
+  egress policy (its operator's deny-list or allow-list) must allow the hosts
+  too. The engine repo's live testing fills
   every slot with its one committed profile and adds its hosts
   (`runtime/live/agent-profile.md` in the engine repo).
 - **A filled slot leaves the model to the variable.** A profile names no `model:`,
