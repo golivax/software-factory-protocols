@@ -29,12 +29,12 @@ EXPF = str(PROTOCOL / "expand/expand-findings")
 
 
 def test_expand_findings_one_item_per_finding(tmp_path):
-    ev = tmp_path / "main.json"
-    json.dump({"files": [{"path": "a.py", "findings": [
+    ev = {"files": [{"path": "a.py", "findings": [
         {"finding_id": "a.py:1", "existing_code": "x=1", "side": "RIGHT", "line": 1, "comment": "c1"},
-        {"finding_id": "a.py:2", "existing_code": "y=2", "side": "RIGHT", "line": 2, "comment": "c2"}]}]}, open(ev, "w"))
+        {"finding_id": "a.py:2", "existing_code": "y=2", "side": "RIGHT", "line": 2, "comment": "c2"}]}]}
+    ctx = make_ctx(tmp_path, inputs={"main-review": ev})
     r = subprocess.run([EXPF, str(tmp_path), "pr-1"], capture_output=True, text=True,
-                       env={**os.environ, "EXPAND_FINDINGS_EVIDENCE": str(ev)})
+                       env=check_env(ctx))
     assert r.returncode == 0, r.stderr
     items = json.loads(r.stdout)["items"]
     assert [i["finding_id"] for i in items] == ["a.py:1", "a.py:2"]
@@ -42,10 +42,26 @@ def test_expand_findings_one_item_per_finding(tmp_path):
 
 
 def test_expand_findings_no_evidence_fails_loud(tmp_path):
-    env = {k: v for k, v in os.environ.items() if k != "EXPAND_FINDINGS_EVIDENCE"}
-    r = subprocess.run([EXPF, str(tmp_path), "pr-1"], capture_output=True, text=True, env=env)
+    r = subprocess.run([EXPF, str(tmp_path), "pr-1"], capture_output=True, text=True,
+                       env=check_env(make_ctx(tmp_path)))
     assert r.returncode != 0
     assert "expand-findings" in r.stderr
+
+
+def test_the_findings_fork_declares_its_expanders_input():
+    """The expander reads `inputs/main-review.json`: the fork must name
+    main-review as that input, or its round holds nothing to read."""
+    proto = json.loads((PROTOCOL / "protocol.json").read_text())
+
+    def forks(states):
+        for n in states:
+            if n.get("id") == "findings":
+                yield n
+            for leg in [n.get("each")] if isinstance(n.get("each"), dict) else []:
+                yield from forks(leg.get("states") or [])
+            yield from forks(n.get("states") or [])
+    (fork,) = forks(proto["states"])
+    assert fork["inputs"] == [{"from": "main-review", "as": "main-review"}]
 
 
 # ---------------------------------------------------------------------------

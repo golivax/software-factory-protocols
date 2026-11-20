@@ -4,7 +4,7 @@ A deliberately grumpy reviewer, run the factory's way: **the agent proposes,
 deterministic checks verify, a trusted step publishes.** Dispatched on a
 merge-request comment.
 
-**Engine floor:** `min_engine_version` 19.0.0 · **Protocol version:** 0.2.0
+**Engine floor:** `min_engine_version` 20.0.0 · **Protocol version:** 0.2.0
 
 **Status.** Verified live on the deployed factory (GitLab); you must compile the agent first.
 
