@@ -2,7 +2,7 @@
 
 Detects duplicated code across the repository with a single agent and reports it as structured evidence for the checks to settle.
 
-**Engine floor:** `min_engine_version` 20.0.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 21.0.0 · **Protocol version:** 0.1.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked in golivax/software-factory#269 (re-verify the ported use-case protocols live on microVM-per-job).
 
