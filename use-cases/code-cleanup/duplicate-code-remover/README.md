@@ -2,7 +2,7 @@
 
 Detects duplicated code across the repository with a single agent and reports it as structured evidence for the checks to settle.
 
-**Engine floor:** `min_engine_version` 20.1.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 21.0.0 · **Protocol version:** 0.1.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked in golivax/software-factory#269 (re-verify the ported use-case protocols live on microVM-per-job).
 
@@ -29,8 +29,7 @@ Nested legs (forks, sub-pipelines, dynamic fan-outs) are declared in `protocol.j
 `duplicate-code-remover-detect-agent.md` imports `shared/agent.md`, this protocol's one agent slot (see the top-level
 README, "Agent slots"). It needs a strong coding model; tested on codex with gpt-6.1-sol.
 
-Agent units are gh-aw markdown **sources**. Fill the slot, add the profile's
-`network.allowed` hosts to the `egress` of the agent nodes that run it, then compile
+Agent units are gh-aw markdown **sources**. Fill the slot, then compile
 them with gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
