@@ -102,16 +102,12 @@ gh-aw never falls back to its default engine.
 - **A slot lives in the protocol's own `workflows/shared/`.** gh-aw resolves an
   import only inside the unit's `workflows/` folder, so each protocol holds its own
   copy, and `shared/` keeps it out of the `workflows/*.md` the factory reads as units.
-- **Fill, add the profile's hosts to `egress`, then compile.** Copy a profile to
-  each slot the protocol's README lists. Add every host in the profile's
-  `network.allowed` (its model endpoint among them) to the `egress` of each agent
-  node whose unit imports that slot: a template cannot know the endpoint, so no
-  agent node here lists it. Then `gh aw compile`. The factory's registry sync
-  compares each agent node's `egress` with what its compiled lock's firewall
-  allows, and refuses the protocol when a profile host is missing; the factory's
-  egress policy (its operator's deny-list or allow-list) must allow the hosts
-  too. The engine repo's test stack fills
-  every slot with its one committed profile and adds its hosts
+- **Fill, then compile.** Copy a profile to each slot the protocol's README lists,
+  then `gh aw compile`. The factory reads the hosts an agent node reaches from its
+  compiled lock (the profile's model endpoint and `network.allowed` among them), so
+  no agent node lists them in its `egress`; the factory's egress policy (its
+  operator's deny-list or allow-list) must allow them. The engine repo's test stack
+  fills every slot with its one committed profile
   (`runtime/test_stack/agent-profile.md` in the engine repo).
 - **A filled slot leaves the model to the variable.** A profile names no `model:`,
   so the compiled lock reads the agent's model at run time from

@@ -2,7 +2,7 @@
 
 Implements a feature from an issue end to end: `design` (spec + ledger + plan, iterated until the ledger checks pass) → `implement` (TDD + open a PR) → `post-summary` (comment the PR link on the issue).
 
-**Engine floor:** `min_engine_version` 20.1.0 · **Protocol version:** 0.1.0
+**Engine floor:** `min_engine_version` 21.0.0 · **Protocol version:** 0.1.0
 
 **Status.** Ported from the engine's GitHub-Actions era. Not yet re-verified on the deployed service and expected to need work (its units still reference the old in-repo `.github/agent-factory/...` paths); tracked in golivax/software-factory#269 (re-verify the ported use-case protocols live on microVM-per-job).
 
@@ -36,8 +36,7 @@ into `.agents/skills`, where codex reads them, and the implement agent's
 `subagent-driven-development` dispatches subagents through codex's `spawn_agent`,
 which only multi-agent mode provides (golivax/software-factory#435).
 
-Agent units are gh-aw markdown **sources**. Fill the slot, add the profile's
-`network.allowed` hosts to the `egress` of the agent nodes that run it, then compile
+Agent units are gh-aw markdown **sources**. Fill the slot, then compile
 them with gh-aw **v0.89.0** before use (see the top-level README):
 
 ```bash
