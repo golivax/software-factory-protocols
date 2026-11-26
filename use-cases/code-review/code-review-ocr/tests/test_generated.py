@@ -14,6 +14,14 @@ def test_protocol_json_is_generated():
         "protocol.json differs from tests/generate/gen_protocol.py: regenerate it"
 
 
+def test_readme_diagram_is_generated():
+    r = subprocess.run([sys.executable, str(GEN / "gen_diagram.py")], capture_output=True, text=True,
+                       check=True)
+    readme = (PKG / "README.md").read_text()
+    assert f"```mermaid\n{r.stdout}```" in readme, \
+        "README.md's diagram differs from protocol.json: run tests/generate/gen_diagram.py --readme"
+
+
 def test_agent_units_are_generated(tmp_path):
     subprocess.run([sys.executable, str(GEN / "gen_agents.py"), str(tmp_path)], capture_output=True,
                    check=True)
