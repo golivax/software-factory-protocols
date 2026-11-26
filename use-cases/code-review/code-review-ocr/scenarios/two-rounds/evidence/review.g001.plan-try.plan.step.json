@@ -1,0 +1,3 @@
+{
+  "plan": "Summary: Adds a TTL cache shared by the request handlers and an HTTP handler that serves it.\n\nIssues\n\n1. [high] svc/cache.go Get updates the hits/misses counters after releasing the lock, so concurrent handlers race on them and Stats reads them unsynchronized\n   → file_read svc/cache.go — confirm which statements run outside the critical section\n2. [medium] svc/cache.go Stats divides by hits+misses, which is zero before the first lookup\n3. [low] svc/cache_handler.go ignores the error w.Write returns"
+}

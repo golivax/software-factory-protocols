@@ -1,0 +1,11 @@
+{
+  "tool": "report_incorrect_comments",
+  "analysis": [
+    "c-0: concurrency subject, protected-subject veto: keep.",
+    "c-1: division by zero is a real claim the diff supports (no guard before the division): keep.",
+    "c-2: claims the handler never checks `ok`; svc/cache_handler.go's diff has `if !ok {` right after the call, which literally contradicts it (Ground B): remove."
+  ],
+  "comment_ids": [
+    "c-2"
+  ]
+}

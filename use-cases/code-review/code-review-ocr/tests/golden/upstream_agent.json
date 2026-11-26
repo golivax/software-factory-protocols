@@ -1,0 +1,1042 @@
+{
+ "change": [
+  "ADDED   Makefile (+2/-0)\nADDED   api/vendor/y.go (+1/-0)\nRENAMED   app/new_name.py (+1/-1)\nMODIFIED   app/util.py (+4/-1)\nMODIFIED   conf/app.yaml (+2/-1)\nDELETED   docs/remove_me.md (+0/-3)\nADDED   notes.weird (+1/-0)\nMODIFIED   scripts/run.sh (+0/-0)\nADDED   src/main.m (+2/-0)\nADDED   src/üñí/naïve file.go (+3/-0)\nMODIFIED   svc/handler.go (+12/-6)\nADDED   svc/handler_test.go (+3/-0)\nADDED   vendor/lib/x.go (+1/-0)\nMODIFIED   web/index.ts (+2/-1)\nMODIFIED   win/crlf.txt (+1/-1)",
+  "ADDED   .env (+1/-0)\nADDED   .env.example (+1/-0)\nADDED   Makefile (+2/-0)\nADDED   api/vendor/y.go (+1/-0)\nRENAMED   app/new_name.py (+1/-1)\nMODIFIED   app/util.py (+4/-1)\nMODIFIED   conf/app.yaml (+2/-1)\nDELETED   docs/remove_me.md (+0/-3)\nADDED   notes.weird (+1/-0)\nMODIFIED   scripts/run.sh (+0/-0)\nADDED   src/main.m (+2/-0)\nADDED   src/üñí/naïve file.go (+3/-0)\nMODIFIED   svc/handler.go (+12/-6)\nADDED   svc/handler_test.go (+3/-0)\nADDED   vendor/lib/x.go (+1/-0)\nMODIFIED   web/index.ts (+2/-1)\nMODIFIED   win/crlf.txt (+1/-1)",
+  ""
+ ],
+ "concat": [
+  "\u003cfile path=\".env\"\u003e\ndiff --git a/.env b/.env\nnew file mode 100644\n--- /dev/null\n+++ b/.env\n@@ -0,0 +1 @@\n+SECRET=1\n\u003c/file\u003e\n\n\u003cfile path=\".env.example\"\u003e\ndiff --git a/.env.example b/.env.example\nnew file mode 100644\n--- /dev/null\n+++ b/.env.example\n@@ -0,0 +1 @@\n+SECRET=\n\u003c/file\u003e\n\n\u003cfile path=\"Makefile\"\u003e\ndiff --git a/Makefile b/Makefile\nnew file mode 100644\n--- /dev/null\n+++ b/Makefile\n@@ -0,0 +1,2 @@\n+all:\n+\techo hi\n\u003c/file\u003e",
+  "\u003cfile path=\"f0.go\"\u003e\n\n\u003c/file\u003e"
+ ],
+ "confirmed": [
+  "",
+  "The following issues were already identified and confirmed in a prior review pass. Do not repeat them. Continue reviewing all files in \u003creview_files\u003e and report any other real issues you find.\n\n\u003cconfirmed_findings\u003e\n1. a.go\n   code: x := 1   y\n   issue: multi line \u003cb\u003e\u0026amp;\u003c/b\u003e zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz...\n2. b.go\n   issue: short\n3. ü.go\n   code: ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß...\n   issue: éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé...\n\u003c/confirmed_findings\u003e",
+  "The following issues were already identified and confirmed in a prior review pass. Do not repeat them. Continue reviewing all files in \u003creview_files\u003e and report any other real issues you find.\n\n\u003cconfirmed_findings\u003e\n1. a.go\n   code: x := 1   y\n   issue: multi line \u003cb\u003e\u0026amp;\u003c/b\u003e zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz...\n\u003c/confirmed_findings\u003e"
+ ],
+ "file_list": [
+  "[0] ADDED   .env (+1/-0)\n[1] ADDED   .env.example (+1/-0)\n[2] ADDED   Makefile (+2/-0)\n[3] ADDED   api/vendor/y.go (+1/-0)\n[4] RENAMED   app/new_name.py (+1/-1)\n[5] MODIFIED   app/util.py (+4/-1)\n[6] MODIFIED   conf/app.yaml (+2/-1)\n[7] DELETED   docs/remove_me.md (+0/-3)\n[8] MODIFIED   img/logo.png (+0/-0)\n[9] ADDED   notes.weird (+1/-0)\n[10] MODIFIED   scripts/run.sh (+0/-0)\n[11] ADDED   src/main.m (+2/-0)\n[12] ADDED   src/üñí/naïve file.go (+3/-0)\n[13] MODIFIED   svc/handler.go (+12/-6)\n[14] ADDED   svc/handler_test.go (+3/-0)\n[15] ADDED   vendor/lib/x.go (+1/-0)\n[16] MODIFIED   web/index.ts (+2/-1)\n[17] MODIFIED   win/crlf.txt (+1/-1)\n",
+  "[0] MODIFIED   f0.go (+0/-0)\n"
+ ],
+ "filter": [
+  [
+   {
+    "role": "system",
+    "content": "You are a fact-checker for code review comments.\n\nThese review comments come from an Agent that could invoke tools to read the full codebase. You can see only the diffs of the files it reviewed together. Anything you cannot see, the Agent may well have seen.\n\nYour task is narrow: remove only the comments that this diff **proves** to be factually wrong. You are not judging whether a comment is useful, well-prioritized, or worth a reviewer's time.\n\nThe two mistakes available to you are not equally bad:\n\n- Keeping an incorrect comment costs a reviewer a few seconds of attention.\n- Removing a correct comment silently destroys a real finding. It never reaches anyone, and nobody learns that it was dropped.\n\nSo when your evidence falls short of proof, approve. \"Suspicious\", \"I cannot verify this\", \"low value\", \"the flagged code looks fine to me\", and \"I would not have raised this\" all mean approve."
+   },
+   {
+    "role": "user",
+    "content": "### Task\n\nBelow are the diffs of one or more related files, and a set of review comments about them. Identify only the comments that these diffs **prove** to be wrong.\n\nEvery comment carries a `path`. The `\u003cfile\u003e` element with that same path is the comment's subject; the other files are context. They can supply the evidence a cross-file comment rests on, but they never stand in for the subject file — code present somewhere in the group is not present in the file the comment was filed against.\n\nYour default answer is to approve everything. On most reviews that is the correct answer.\n\n### The only two grounds for removal\n\n**Ground A — the comment targets code that is not in its subject file's diff.**\n\nThe symbol, statement, or construct the comment describes appears nowhere in the `\u003cfile\u003e` whose path the comment names. This ground is judged against that file alone — the same construct appearing in a sibling file does not rescue the comment. Typical shapes:\n\n- it discusses the body of a function, on a file that only declares or references it\n- it discusses host-language logic on a file that holds none — a query, build, markup, or configuration file\n- it claims code was removed, or an error is handled, and its subject file's diff contains no such change\n\n**Ground B — a specific diff line literally contradicts the comment's central claim.**\n\nThe comment asserts a concrete fact and the diffs show the opposite in plain text. Unlike Ground A, the contradicting line may sit in any `\u003cfile\u003e` in the group: a comment calling an identifier unused is wrong once any of these files uses it. The contradiction must be readable straight off the diff, not derived through a chain of reasoning. Typical shapes:\n\n- it says an identifier is unused, and the diff shows it in use\n- it says a check, assertion, or branch is missing, and the diff contains it\n- it says a value is hardcoded, and the diff shows it read from a variable\n- it says something is declared twice and shadows an outer name, and the diff holds exactly one declaration\n- it states a condition or type relationship that the diff's own text refutes\n\nIf you cannot point to the specific diff line that establishes Ground A or Ground B, approve the comment.\n\n### Protected subjects — never remove\n\nThese are vetoes, applied before you judge correctness at all. Whatever you conclude about the comment, approve it if its subject is:\n\n- **Memory safety** — allocation size, buffer length, index bounds, off-by-one, use-after-free, null dereference\n- **Concurrency** — locks and lock modes, atomics, data races, synchronization arguments that are not honored\n- **Linkage and declaration consistency** — `static` versus non-`static`, a declaration that disagrees with its definition, missing `extern`\n- **Behavioral or compatibility change** — a message, field, status, or default that the old code produced and the new code no longer does; an altered error path; a counter whose update moved to a different point in the lifecycle\n- **A parameter the function accepts and never uses**\n\nThese are the categories where a wrongly removed comment is most expensive, and where your own confidence is least trustworthy — including confidence that the language, compiler, or runtime does not behave the way the comment claims. On a protected subject you do not get to be confident. Approve.\n\n### Not grounds for removal\n\n- The comment is about style, formatting, naming, blank lines, the wording of a code comment, or readability — **provided what it states is true**. Low value is not incorrectness, and filtering by value is not your job.\n- The comment reasons about runtime behavior, business semantics, or code in files you cannot see. The Agent had access you do not.\n- You disagree with its recommendation, or you consider the flagged code acceptable as written.\n- You cannot confirm it. Unverifiable is not incorrect.\n- It identifies a real problem but quotes a slightly wrong line or snippet. Judge the claim, not the citation.\n- It is imprecise in passing while its central claim holds.\n\n### Method\n\nRun these steps in order for every comment. Stop at the first step that applies — do not revisit a decision a later step would have made differently.\n\n**Step 1 — protected-subject veto.** Is the comment's subject one of the protected categories above (memory safety, concurrency, linkage and declaration consistency, behavioral or compatibility change, an unused parameter)? → **approve and stop.** Do not assess whether it is correct. This veto outranks Ground A and Ground B: a comment on a protected subject stays even when you are confident it is wrong.\n\n**Step 2 — value veto.** Is the comment about style, formatting, naming, blank lines, the wording of a code comment, or readability, and is what it states true of this diff? → **approve and stop.** Its low value is not your concern.\n\n**Step 3 — Ground A.** Is the code it describes absent from its subject file's diff? → **remove it.**\n\n**Step 4 — Ground B.** Is there one diff line, in any file of the group, that literally contradicts its central claim, requiring no chain of reasoning to see? → **remove it.** Steps 3 and 4 are not optional: once a comment reaches them and qualifies, report it.\n\nBefore concluding a contradiction in Step 4, search every `\u003cfile\u003e` for what the comment describes — not only the snippet it quoted. A comment that cites the wrong line while describing something the diffs do contain is correct, and stays.\n\n**Step 5 —** approve.\n\nReaching Step 4 and needing more than a single inferential step to reach the contradiction means there is none. Approve.\n\n### Code Diff\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+x\n\u003c/file\u003e\n\u003c/review_files\u003e\n\n### Review Comments\n\n[{\"id\":\"c-0\"}]\n\n### Output\n\nYou must call exactly one tool:\n\n- `report_incorrect_comments` — only for comments meeting Ground A or Ground B, and only if you could name the diff line that disproves each one.\n- `approve_all_comments` — in every other case, including when comments look doubtful, unverifiable, or minor."
+   }
+  ]
+ ],
+ "filter_json": [
+  "[]",
+  "[{\"id\":\"c-0\",\"path\":\"a.go\",\"content\":\"multi\\nline \\u003cb\\u003e\\u0026amp;\\u003c/b\\u003e zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\",\"existing_code\":\"x := 1\\n  y\\u2028\"},{\"id\":\"c-1\",\"path\":\"b.go\",\"content\":\"short\"},{\"id\":\"c-2\",\"path\":\"ü.go\",\"content\":\"éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé\",\"existing_code\":\"ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß\"}]"
+ ],
+ "group_rule": [
+  "#### Go Review Principles\n\u003e Favor precision over recall: report only defects that are likely real in the changed code and its reachable context. A false positive costs reviewer trust. Treat correctness and security findings as blocking; style-only suggestions are non-blocking. Focus on language-specific risks that ordinary formatting and deterministic tooling do not already cover.\n\nBefore reporting a non-local claim, use `file_read` and `code_search` to establish the relevant call sites, ownership, synchronization, and input boundaries. Do not infer concurrent invocation, attacker control, resource ownership, or an error contract solely from a function name or package import. Do not duplicate findings that `go vet`, Staticcheck, `go test -race`, the compiler, or `gofmt` can determine reliably unless the diff shows a concrete user-visible consequence those tools will not express.\n\n#### Errors, Panics, and API Contracts\n- Errors returned from calls that are ignored, overwritten, or converted into success/default values that hide a failed operation. A deliberately best-effort operation is acceptable only when the ignored failure is safe and documented or evident from the context.\n- Error wrapping that loses the original cause (`fmt.Errorf(\"...: %v\", err)` when callers need `errors.Is`/`errors.As`), wraps nil, returns a misleading sentinel, or exposes internal/sensitive details at a public boundary. Prefer `%w` when preserving identity is required.\n- `panic`, `log.Fatal`, `os.Exit`, or a must-style helper in request, worker, library, or cleanup paths where a recoverable error can be returned. Do not flag an impossible internal invariant or documented programmer contract.\n- Deferred cleanup that overwrites a primary error, drops a meaningful `Close`/`Commit`/`Rollback` error, or returns success after cleanup makes the result invalid.\n\n#### Nil, Interfaces, and Value Semantics\n- A typed nil pointer, map, slice, function, channel, or error stored in a non-nil interface and later treated as absent. Check the concrete assignment and all interface checks first.\n- Nil maps written to, nil channels used unintentionally (which block forever), or nil pointers dereferenced on paths inputs or constructors can actually produce.\n- Copying a value after first use when it contains `sync.Mutex`, `sync.RWMutex`, `sync.Once`, `sync.Pool`, `atomic` state, or another non-copyable synchronization primitive. Flag copies through value receivers, assignment, return, append, map values, or serialization only when the value can have been used first.\n- Value receivers or copies that silently mutate only a copy when callers expect shared state, especially for structs holding maps, slices, pointers, locks, or atomic state. Do not flag intentional immutable value objects.\n- `sync.Once` used for work that must retry after failure. `Once.Do` considers its `func()` complete even if it panics; an error captured by that closure also does not make a later `Do` retry it.\n\n#### Context, Goroutines, and Cancellation\n- Request-scoped work started with `context.Background()`/`TODO()` or a fresh context when it should inherit the caller's deadline, cancellation, values, or tracing. Independent background work is valid.\n- `context.Context` stored in a struct or replaced with a custom context interface when it should be passed explicitly as the first parameter. Allow it only where a required external interface fixes the signature or ownership/lifetime is unambiguous.\n- `context.WithCancel`, `WithTimeout`, or `WithDeadline` whose cancel function is not called once the derived context is no longer needed, unless ownership transfer and eventual cancellation are evident.\n- Blocking I/O, waits, retries, selects, or loops on a request/worker path that lack cancellation or deadline where the dependency can stall. Confirm the operation can outlive its caller first.\n- Goroutines that can outlive their owner because they wait forever on a channel, lock, I/O operation, or unbounded retry; lack shutdown; or have no way for errors/completion to be observed when that matters.\n- Fire-and-forget goroutines that capture request-local mutable data, write to a response after the handler returns, panic without recovery at a process boundary, or race with cleanup. Do not require joining independent background work.\n- Loop-variable or mutable outer-variable captures in goroutines/callbacks where a closure can observe a later value. Verify the module's `go` directive and whether a new variable is created per iteration; Go 1.22 language semantics changed range-loop variables while older-module semantics can retain the shared variable.\n\n#### Channels, Locks, and Shared State\nOnly report races or deadlocks with evidence that state is reachable concurrently; inspect surrounding call sites where that is not local. Do not flag immutable data, per-goroutine locals, or synchronization guaranteed by ownership.\n\n- Unsynchronized concurrent reads/writes of maps, slices, pointers, counters, caches, or compound state; check-then-act sequences that can interleave.\n- Holding a mutex/RWMutex across blocking I/O, channel operations, callbacks, network/database calls, or long CPU work when another path needs the lock to progress. Check lock ordering before claiming deadlock.\n- `RLock` used while mutating protected data; unlocked mutation of a field whose peers protect it; or atomic and non-atomic access mixed for the same state.\n- Sends/receives that can block indefinitely because a peer may stop, a buffer may fill, or shutdown/cancellation is not selected. Do not flag a synchronous handoff with a proven peer.\n- Multiple possible channel closers, send-on-closed-channel risk, or double-close. Establish sender/owner responsibility first.\n- `select` defaults that busy-spin, drop required work, or bypass cancellation; unbounded retries without backoff/cancellation.\n- WaitGroups with `Add` racing with `Wait`, missing `Done`, copies after first use, or counters that cannot reach completion.\n\n#### Timers, Tickers, and Resource Lifecycle\n- A timer/ticker retained by its owner and left running after work ends, so it can fire, tick, retain reachable state, or keep associated work alive. Do not report missing `Stop` solely as a GC leak: Go 1.23+ can recover unreferenced unstopped timers/tickers; older semantics and `GODEBUG=asynctimerchan=1` differ.\n- `time.After` in a repeated/select loop only with evidence of cost: pre-Go-1.23 semantics with many unexpired timers, a high-frequency allocation path, or retained timer owners. Do not call it a leak by itself on Go 1.23+.\n- Timer reset/stop code that assumes one behavior across Go versions. Channel timers on Go 1.23+ eliminate stale values after `Reset`/`Stop`; older semantics require stop-and-drain coordination. `AfterFunc` reset/stop does not wait for an already-started callback, so callbacks can overlap unless synchronized.\n- `http.Response.Body`, `sql.Rows`, files, sockets, compression readers/writers, transactions, locks, or other closable resources not closed on all reachable paths after acquisition. Do not flag resources handed to a caller/framework that owns closure.\n- `defer` inside a loop whose surrounding function can run many iterations or indefinitely, especially when it delays closing files, response bodies, rows, locks, or transactions until function return. Do not flag small statically bounded loops or helpers returning per iteration.\n- `sql.Rows` iteration that omits `rows.Err()` after the loop, or rows not closed when iteration can stop early.\n- Outbound HTTP calls missing body cleanup, request context, or timeout on a server path that can hang; transactions with a return path after `Begin` lacking rollback/commit.\n\n#### Collections, Slices, Bytes, and Numeric Boundaries\n- Returning, caching, or passing a slice/map/byte buffer whose backing storage is later reused/mutated, changing data observed by another owner. Confirm ownership; zero-copy APIs can be intentional.\n- `append` to a slice that aliases caller/shared backing storage where mutation escapes; retaining a tiny subslice of a huge buffer where retained memory matters.\n- Reachable indexing, slicing, length arithmetic, or capacity assumptions that exceed bounds on empty/boundary input.\n- Integer conversion, narrowing, signed/unsigned comparison, size calculation, allocation, or offset arithmetic that can overflow, truncate, wrap, or turn negative input into huge size. Consider architecture-dependent `int` width.\n- Reusing mutable buffers, encoders, decoders, scanners, or package/global state concurrently or after returned output depends on their lifetime.\n\n#### Security-Sensitive Boundaries\nConfirm attacker control or a trust boundary before reporting. Prefer a concrete exploit path and remediation.\n\n- SQL, shell commands, URLs, paths, headers, templates, regexes, or serialized data assembled from untrusted input without appropriate parameterization, validation, escaping, allowlisting, or scheme/host/path restrictions. `os/exec` argument arrays are safer than a shell but arguments may still need validation.\n- Path traversal, symlink-following, unsafe archive extraction, insecure temp files, or permission/ownership assumptions that expose or overwrite files.\n- `html/template` replaced with `text/template` for HTML, trusted-template types constructed from untrusted content, or context-inappropriate escaping. Do not flag `text/template` for non-HTML output by default.\n- SSRF or credential leakage through outbound URLs: untrusted destinations, absent required allowlists, redirects to internal services, or sensitive headers forwarded cross-host.\n- Secrets, credentials, tokens, authorization headers, private keys, or sensitive personal data logged, returned in errors, or embedded in source/configuration.\n- `math/rand` or `math/rand/v2` used for security-sensitive keys, tokens, session IDs, reset codes, nonces, or salts; require `crypto/rand` or a vetted cryptographic construction. Do not flag simulation, sampling, load-balancing, or tests.\n- `reflect`, `unsafe`, cgo, unsafe pointer conversion, manual memory/layout assumptions, or custom cryptography without narrow documented invariants and required bounds/lifetime checks. Do not flag ordinary reflection alone.\n\n#### Tests and Review Scope\n- Review production Go changes by default. `*_test.go` files remain excluded by OCR's default path filter and are reviewed only when user configuration explicitly includes them.\n- Suggest tests only for concrete changed correctness, concurrency, error, or boundary failure modes. Favor deterministic tests; do not demand flaky timing-based race tests.\n- Do not make formatting, import ordering, naming preferences, simplification, or advice already enforced by `gofmt`, `go vet`, Staticcheck, linters, or the compiler into blocking findings.",
+  "#### Go Review Principles\n\u003e Favor precision over recall: report only defects that are likely real in the changed code and its reachable context. A false positive costs reviewer trust. Treat correctness and security findings as blocking; style-only suggestions are non-blocking. Focus on language-specific risks that ordinary formatting and deterministic tooling do not already cover.\n\nBefore reporting a non-local claim, use `file_read` and `code_search` to establish the relevant call sites, ownership, synchronization, and input boundaries. Do not infer concurrent invocation, attacker control, resource ownership, or an error contract solely from a function name or package import. Do not duplicate findings that `go vet`, Staticcheck, `go test -race`, the compiler, or `gofmt` can determine reliably unless the diff shows a concrete user-visible consequence those tools will not express.\n\n#### Errors, Panics, and API Contracts\n- Errors returned from calls that are ignored, overwritten, or converted into success/default values that hide a failed operation. A deliberately best-effort operation is acceptable only when the ignored failure is safe and documented or evident from the context.\n- Error wrapping that loses the original cause (`fmt.Errorf(\"...: %v\", err)` when callers need `errors.Is`/`errors.As`), wraps nil, returns a misleading sentinel, or exposes internal/sensitive details at a public boundary. Prefer `%w` when preserving identity is required.\n- `panic`, `log.Fatal`, `os.Exit`, or a must-style helper in request, worker, library, or cleanup paths where a recoverable error can be returned. Do not flag an impossible internal invariant or documented programmer contract.\n- Deferred cleanup that overwrites a primary error, drops a meaningful `Close`/`Commit`/`Rollback` error, or returns success after cleanup makes the result invalid.\n\n#### Nil, Interfaces, and Value Semantics\n- A typed nil pointer, map, slice, function, channel, or error stored in a non-nil interface and later treated as absent. Check the concrete assignment and all interface checks first.\n- Nil maps written to, nil channels used unintentionally (which block forever), or nil pointers dereferenced on paths inputs or constructors can actually produce.\n- Copying a value after first use when it contains `sync.Mutex`, `sync.RWMutex`, `sync.Once`, `sync.Pool`, `atomic` state, or another non-copyable synchronization primitive. Flag copies through value receivers, assignment, return, append, map values, or serialization only when the value can have been used first.\n- Value receivers or copies that silently mutate only a copy when callers expect shared state, especially for structs holding maps, slices, pointers, locks, or atomic state. Do not flag intentional immutable value objects.\n- `sync.Once` used for work that must retry after failure. `Once.Do` considers its `func()` complete even if it panics; an error captured by that closure also does not make a later `Do` retry it.\n\n#### Context, Goroutines, and Cancellation\n- Request-scoped work started with `context.Background()`/`TODO()` or a fresh context when it should inherit the caller's deadline, cancellation, values, or tracing. Independent background work is valid.\n- `context.Context` stored in a struct or replaced with a custom context interface when it should be passed explicitly as the first parameter. Allow it only where a required external interface fixes the signature or ownership/lifetime is unambiguous.\n- `context.WithCancel`, `WithTimeout`, or `WithDeadline` whose cancel function is not called once the derived context is no longer needed, unless ownership transfer and eventual cancellation are evident.\n- Blocking I/O, waits, retries, selects, or loops on a request/worker path that lack cancellation or deadline where the dependency can stall. Confirm the operation can outlive its caller first.\n- Goroutines that can outlive their owner because they wait forever on a channel, lock, I/O operation, or unbounded retry; lack shutdown; or have no way for errors/completion to be observed when that matters.\n- Fire-and-forget goroutines that capture request-local mutable data, write to a response after the handler returns, panic without recovery at a process boundary, or race with cleanup. Do not require joining independent background work.\n- Loop-variable or mutable outer-variable captures in goroutines/callbacks where a closure can observe a later value. Verify the module's `go` directive and whether a new variable is created per iteration; Go 1.22 language semantics changed range-loop variables while older-module semantics can retain the shared variable.\n\n#### Channels, Locks, and Shared State\nOnly report races or deadlocks with evidence that state is reachable concurrently; inspect surrounding call sites where that is not local. Do not flag immutable data, per-goroutine locals, or synchronization guaranteed by ownership.\n\n- Unsynchronized concurrent reads/writes of maps, slices, pointers, counters, caches, or compound state; check-then-act sequences that can interleave.\n- Holding a mutex/RWMutex across blocking I/O, channel operations, callbacks, network/database calls, or long CPU work when another path needs the lock to progress. Check lock ordering before claiming deadlock.\n- `RLock` used while mutating protected data; unlocked mutation of a field whose peers protect it; or atomic and non-atomic access mixed for the same state.\n- Sends/receives that can block indefinitely because a peer may stop, a buffer may fill, or shutdown/cancellation is not selected. Do not flag a synchronous handoff with a proven peer.\n- Multiple possible channel closers, send-on-closed-channel risk, or double-close. Establish sender/owner responsibility first.\n- `select` defaults that busy-spin, drop required work, or bypass cancellation; unbounded retries without backoff/cancellation.\n- WaitGroups with `Add` racing with `Wait`, missing `Done`, copies after first use, or counters that cannot reach completion.\n\n#### Timers, Tickers, and Resource Lifecycle\n- A timer/ticker retained by its owner and left running after work ends, so it can fire, tick, retain reachable state, or keep associated work alive. Do not report missing `Stop` solely as a GC leak: Go 1.23+ can recover unreferenced unstopped timers/tickers; older semantics and `GODEBUG=asynctimerchan=1` differ.\n- `time.After` in a repeated/select loop only with evidence of cost: pre-Go-1.23 semantics with many unexpired timers, a high-frequency allocation path, or retained timer owners. Do not call it a leak by itself on Go 1.23+.\n- Timer reset/stop code that assumes one behavior across Go versions. Channel timers on Go 1.23+ eliminate stale values after `Reset`/`Stop`; older semantics require stop-and-drain coordination. `AfterFunc` reset/stop does not wait for an already-started callback, so callbacks can overlap unless synchronized.\n- `http.Response.Body`, `sql.Rows`, files, sockets, compression readers/writers, transactions, locks, or other closable resources not closed on all reachable paths after acquisition. Do not flag resources handed to a caller/framework that owns closure.\n- `defer` inside a loop whose surrounding function can run many iterations or indefinitely, especially when it delays closing files, response bodies, rows, locks, or transactions until function return. Do not flag small statically bounded loops or helpers returning per iteration.\n- `sql.Rows` iteration that omits `rows.Err()` after the loop, or rows not closed when iteration can stop early.\n- Outbound HTTP calls missing body cleanup, request context, or timeout on a server path that can hang; transactions with a return path after `Begin` lacking rollback/commit.\n\n#### Collections, Slices, Bytes, and Numeric Boundaries\n- Returning, caching, or passing a slice/map/byte buffer whose backing storage is later reused/mutated, changing data observed by another owner. Confirm ownership; zero-copy APIs can be intentional.\n- `append` to a slice that aliases caller/shared backing storage where mutation escapes; retaining a tiny subslice of a huge buffer where retained memory matters.\n- Reachable indexing, slicing, length arithmetic, or capacity assumptions that exceed bounds on empty/boundary input.\n- Integer conversion, narrowing, signed/unsigned comparison, size calculation, allocation, or offset arithmetic that can overflow, truncate, wrap, or turn negative input into huge size. Consider architecture-dependent `int` width.\n- Reusing mutable buffers, encoders, decoders, scanners, or package/global state concurrently or after returned output depends on their lifetime.\n\n#### Security-Sensitive Boundaries\nConfirm attacker control or a trust boundary before reporting. Prefer a concrete exploit path and remediation.\n\n- SQL, shell commands, URLs, paths, headers, templates, regexes, or serialized data assembled from untrusted input without appropriate parameterization, validation, escaping, allowlisting, or scheme/host/path restrictions. `os/exec` argument arrays are safer than a shell but arguments may still need validation.\n- Path traversal, symlink-following, unsafe archive extraction, insecure temp files, or permission/ownership assumptions that expose or overwrite files.\n- `html/template` replaced with `text/template` for HTML, trusted-template types constructed from untrusted content, or context-inappropriate escaping. Do not flag `text/template` for non-HTML output by default.\n- SSRF or credential leakage through outbound URLs: untrusted destinations, absent required allowlists, redirects to internal services, or sensitive headers forwarded cross-host.\n- Secrets, credentials, tokens, authorization headers, private keys, or sensitive personal data logged, returned in errors, or embedded in source/configuration.\n- `math/rand` or `math/rand/v2` used for security-sensitive keys, tokens, session IDs, reset codes, nonces, or salts; require `crypto/rand` or a vetted cryptographic construction. Do not flag simulation, sampling, load-balancing, or tests.\n- `reflect`, `unsafe`, cgo, unsafe pointer conversion, manual memory/layout assumptions, or custom cryptography without narrow documented invariants and required bounds/lifetime checks. Do not flag ordinary reflection alone.\n\n#### Tests and Review Scope\n- Review production Go changes by default. `*_test.go` files remain excluded by OCR's default path filter and are reviewed only when user configuration explicitly includes them.\n- Suggest tests only for concrete changed correctness, concurrency, error, or boundary failure modes. Favor deterministic tests; do not demand flaky timing-based race tests.\n- Do not make formatting, import ordering, naming preferences, simplification, or advice already enforced by `gofmt`, `go vet`, Staticcheck, linters, or the compiler into blocking findings.",
+  "\u003crules for=\"a.go, c.go\"\u003e\n#### Go Review Principles\n\u003e Favor precision over recall: report only defects that are likely real in the changed code and its reachable context. A false positive costs reviewer trust. Treat correctness and security findings as blocking; style-only suggestions are non-blocking. Focus on language-specific risks that ordinary formatting and deterministic tooling do not already cover.\n\nBefore reporting a non-local claim, use `file_read` and `code_search` to establish the relevant call sites, ownership, synchronization, and input boundaries. Do not infer concurrent invocation, attacker control, resource ownership, or an error contract solely from a function name or package import. Do not duplicate findings that `go vet`, Staticcheck, `go test -race`, the compiler, or `gofmt` can determine reliably unless the diff shows a concrete user-visible consequence those tools will not express.\n\n#### Errors, Panics, and API Contracts\n- Errors returned from calls that are ignored, overwritten, or converted into success/default values that hide a failed operation. A deliberately best-effort operation is acceptable only when the ignored failure is safe and documented or evident from the context.\n- Error wrapping that loses the original cause (`fmt.Errorf(\"...: %v\", err)` when callers need `errors.Is`/`errors.As`), wraps nil, returns a misleading sentinel, or exposes internal/sensitive details at a public boundary. Prefer `%w` when preserving identity is required.\n- `panic`, `log.Fatal`, `os.Exit`, or a must-style helper in request, worker, library, or cleanup paths where a recoverable error can be returned. Do not flag an impossible internal invariant or documented programmer contract.\n- Deferred cleanup that overwrites a primary error, drops a meaningful `Close`/`Commit`/`Rollback` error, or returns success after cleanup makes the result invalid.\n\n#### Nil, Interfaces, and Value Semantics\n- A typed nil pointer, map, slice, function, channel, or error stored in a non-nil interface and later treated as absent. Check the concrete assignment and all interface checks first.\n- Nil maps written to, nil channels used unintentionally (which block forever), or nil pointers dereferenced on paths inputs or constructors can actually produce.\n- Copying a value after first use when it contains `sync.Mutex`, `sync.RWMutex`, `sync.Once`, `sync.Pool`, `atomic` state, or another non-copyable synchronization primitive. Flag copies through value receivers, assignment, return, append, map values, or serialization only when the value can have been used first.\n- Value receivers or copies that silently mutate only a copy when callers expect shared state, especially for structs holding maps, slices, pointers, locks, or atomic state. Do not flag intentional immutable value objects.\n- `sync.Once` used for work that must retry after failure. `Once.Do` considers its `func()` complete even if it panics; an error captured by that closure also does not make a later `Do` retry it.\n\n#### Context, Goroutines, and Cancellation\n- Request-scoped work started with `context.Background()`/`TODO()` or a fresh context when it should inherit the caller's deadline, cancellation, values, or tracing. Independent background work is valid.\n- `context.Context` stored in a struct or replaced with a custom context interface when it should be passed explicitly as the first parameter. Allow it only where a required external interface fixes the signature or ownership/lifetime is unambiguous.\n- `context.WithCancel`, `WithTimeout`, or `WithDeadline` whose cancel function is not called once the derived context is no longer needed, unless ownership transfer and eventual cancellation are evident.\n- Blocking I/O, waits, retries, selects, or loops on a request/worker path that lack cancellation or deadline where the dependency can stall. Confirm the operation can outlive its caller first.\n- Goroutines that can outlive their owner because they wait forever on a channel, lock, I/O operation, or unbounded retry; lack shutdown; or have no way for errors/completion to be observed when that matters.\n- Fire-and-forget goroutines that capture request-local mutable data, write to a response after the handler returns, panic without recovery at a process boundary, or race with cleanup. Do not require joining independent background work.\n- Loop-variable or mutable outer-variable captures in goroutines/callbacks where a closure can observe a later value. Verify the module's `go` directive and whether a new variable is created per iteration; Go 1.22 language semantics changed range-loop variables while older-module semantics can retain the shared variable.\n\n#### Channels, Locks, and Shared State\nOnly report races or deadlocks with evidence that state is reachable concurrently; inspect surrounding call sites where that is not local. Do not flag immutable data, per-goroutine locals, or synchronization guaranteed by ownership.\n\n- Unsynchronized concurrent reads/writes of maps, slices, pointers, counters, caches, or compound state; check-then-act sequences that can interleave.\n- Holding a mutex/RWMutex across blocking I/O, channel operations, callbacks, network/database calls, or long CPU work when another path needs the lock to progress. Check lock ordering before claiming deadlock.\n- `RLock` used while mutating protected data; unlocked mutation of a field whose peers protect it; or atomic and non-atomic access mixed for the same state.\n- Sends/receives that can block indefinitely because a peer may stop, a buffer may fill, or shutdown/cancellation is not selected. Do not flag a synchronous handoff with a proven peer.\n- Multiple possible channel closers, send-on-closed-channel risk, or double-close. Establish sender/owner responsibility first.\n- `select` defaults that busy-spin, drop required work, or bypass cancellation; unbounded retries without backoff/cancellation.\n- WaitGroups with `Add` racing with `Wait`, missing `Done`, copies after first use, or counters that cannot reach completion.\n\n#### Timers, Tickers, and Resource Lifecycle\n- A timer/ticker retained by its owner and left running after work ends, so it can fire, tick, retain reachable state, or keep associated work alive. Do not report missing `Stop` solely as a GC leak: Go 1.23+ can recover unreferenced unstopped timers/tickers; older semantics and `GODEBUG=asynctimerchan=1` differ.\n- `time.After` in a repeated/select loop only with evidence of cost: pre-Go-1.23 semantics with many unexpired timers, a high-frequency allocation path, or retained timer owners. Do not call it a leak by itself on Go 1.23+.\n- Timer reset/stop code that assumes one behavior across Go versions. Channel timers on Go 1.23+ eliminate stale values after `Reset`/`Stop`; older semantics require stop-and-drain coordination. `AfterFunc` reset/stop does not wait for an already-started callback, so callbacks can overlap unless synchronized.\n- `http.Response.Body`, `sql.Rows`, files, sockets, compression readers/writers, transactions, locks, or other closable resources not closed on all reachable paths after acquisition. Do not flag resources handed to a caller/framework that owns closure.\n- `defer` inside a loop whose surrounding function can run many iterations or indefinitely, especially when it delays closing files, response bodies, rows, locks, or transactions until function return. Do not flag small statically bounded loops or helpers returning per iteration.\n- `sql.Rows` iteration that omits `rows.Err()` after the loop, or rows not closed when iteration can stop early.\n- Outbound HTTP calls missing body cleanup, request context, or timeout on a server path that can hang; transactions with a return path after `Begin` lacking rollback/commit.\n\n#### Collections, Slices, Bytes, and Numeric Boundaries\n- Returning, caching, or passing a slice/map/byte buffer whose backing storage is later reused/mutated, changing data observed by another owner. Confirm ownership; zero-copy APIs can be intentional.\n- `append` to a slice that aliases caller/shared backing storage where mutation escapes; retaining a tiny subslice of a huge buffer where retained memory matters.\n- Reachable indexing, slicing, length arithmetic, or capacity assumptions that exceed bounds on empty/boundary input.\n- Integer conversion, narrowing, signed/unsigned comparison, size calculation, allocation, or offset arithmetic that can overflow, truncate, wrap, or turn negative input into huge size. Consider architecture-dependent `int` width.\n- Reusing mutable buffers, encoders, decoders, scanners, or package/global state concurrently or after returned output depends on their lifetime.\n\n#### Security-Sensitive Boundaries\nConfirm attacker control or a trust boundary before reporting. Prefer a concrete exploit path and remediation.\n\n- SQL, shell commands, URLs, paths, headers, templates, regexes, or serialized data assembled from untrusted input without appropriate parameterization, validation, escaping, allowlisting, or scheme/host/path restrictions. `os/exec` argument arrays are safer than a shell but arguments may still need validation.\n- Path traversal, symlink-following, unsafe archive extraction, insecure temp files, or permission/ownership assumptions that expose or overwrite files.\n- `html/template` replaced with `text/template` for HTML, trusted-template types constructed from untrusted content, or context-inappropriate escaping. Do not flag `text/template` for non-HTML output by default.\n- SSRF or credential leakage through outbound URLs: untrusted destinations, absent required allowlists, redirects to internal services, or sensitive headers forwarded cross-host.\n- Secrets, credentials, tokens, authorization headers, private keys, or sensitive personal data logged, returned in errors, or embedded in source/configuration.\n- `math/rand` or `math/rand/v2` used for security-sensitive keys, tokens, session IDs, reset codes, nonces, or salts; require `crypto/rand` or a vetted cryptographic construction. Do not flag simulation, sampling, load-balancing, or tests.\n- `reflect`, `unsafe`, cgo, unsafe pointer conversion, manual memory/layout assumptions, or custom cryptography without narrow documented invariants and required bounds/lifetime checks. Do not flag ordinary reflection alone.\n\n#### Tests and Review Scope\n- Review production Go changes by default. `*_test.go` files remain excluded by OCR's default path filter and are reviewed only when user configuration explicitly includes them.\n- Suggest tests only for concrete changed correctness, concurrency, error, or boundary failure modes. Favor deterministic tests; do not demand flaky timing-based race tests.\n- Do not make formatting, import ordering, naming preferences, simplification, or advice already enforced by `gofmt`, `go vet`, Staticcheck, linters, or the compiler into blocking findings.\n\u003c/rules\u003e\n\u003crules for=\"b.py\"\u003e\n\u003e Favor precision over recall: only raise an issue when you are confident it is a real defect, and stay silent when the surrounding context is unclear — a false alarm costs more reviewer trust than a missed minor issue. Treat security and correctness findings as blocking, and style or idiom suggestions as non-blocking.\n\n#### Obvious Typos or Spelling Errors\n- Spelling errors in variable, function, class, or module names at their declaration sites; do not report spelling errors at reference sites, as these are determined by the declaration\n- Strings in log messages or exception messages containing spelling errors that affect readability\n\n#### Dead Code\n- Code blocks that can never be reached (e.g., branches where the condition is always false, code after a `return`, `raise`, `break`, or `continue`)\n- Variables, imports, or function parameters that are declared but never read or referenced\n- Large blocks of commented-out code with no apparent intent to preserve\n- Do not report unused imports, variables, or parameters in `.pyi` stub files; a stub declares an interface it never executes, so re-exported imports, annotation-only declarations, and unreferenced parameter names are expected rather than dead\n\n#### Mutable Default Arguments and Shared State\n- Mutable default arguments such as `def f(x=[])` or `def f(x={})`; the default is created once and shared across every call. Default to `None` and build the value inside the body\n- Class-level mutable attributes shared unintentionally across instances when a per-instance value was intended\n- Module-level mutable globals (lists, dicts, caches) mutated across requests or threads, retaining state in ways that surprise the caller\n- Closures that capture a loop variable by reference and all end up seeing its final value\n- Do not report when the function never mutates the argument, or when the shared default is a deliberate, documented cache or sentinel\n\n#### Boundary and Edge-Case Handling\n- Empty inputs assumed to be non-empty: indexing `xs[0]`, `max()`/`min()`, or slicing without first handling the empty `list`, `str`, `dict`, or iterator\n- Off-by-one and out-of-range access on indices, ranges, or slices, especially at the first/last element\n- `None` reaching code that assumes a value, when an upstream call or default can legitimately return `None` (confirm the data source with `file_read` before flagging)\n- Comparing floats for exact equality with `==`; use `math.isclose` or an explicit tolerance, since floating-point results are not exact\n- Integer/float and division assumptions: unintended truncation with `//`, or `ZeroDivisionError` when a divisor can be zero\n- Heterogeneous or unexpected element types in a collection that the code assumes are uniform (e.g., mixing `None`, numbers, and strings)\n- Dictionary access by key without handling the missing-key case (`d[k]` vs `d.get(k)`), or set/dict operations that assume a key is present\n- Do not report edge cases that a caller or type contract has already ruled out, or inputs that cannot occur given validated boundaries upstream\n\n#### Error Handling and Exceptions\n- Bare `except:` swallows everything, including `KeyboardInterrupt` and `SystemExit`; catch `except Exception` at minimum, and prefer the specific exception types you expect\n- `except Exception` that is still broader than the failure being handled; narrow it to the exceptions actually raised by the guarded call\n- Exceptions caught and silently discarded (`pass`) without logging or re-raising\n- Original traceback lost when re-raising; prefer `raise NewError(...) from err` to preserve the cause\n- Broad `try` blocks that wrap far more than the line that can actually fail, hiding where the error originates\n- `assert` used for runtime validation of external input — assertions are stripped under `python -O`\n\n#### Identity and Equality Comparisons\n- Using `is`/`is not` to compare against literals such as strings, numbers, or tuples; this relies on implementation-specific interning rather than value equality — use `==` (a real correctness risk)\n- Comparing against `True`/`False` with `==`, where a truthy-but-not-`True` value (e.g. `1`, a non-empty container) would compare unequal; prefer a plain truthiness check\n- Reserve `is` for identity checks against singletons and sentinels\n- Comparing against `None` with `==`/`!=` rather than `is`/`is not` is a style preference; report as minor, not blocking\n\n#### Resource Management\n- Files, sockets, locks, or database connections opened without a `with` statement, risking leaks on early return or exception\n- Context managers available but bypassed in favor of manual `open()`/`close()` pairs\n- Resources acquired in a `try` whose `finally` cleanup is missing or incomplete on the error path\n- Iterators or generators holding resources open longer than necessary\n- Do not report short-lived scripts, or handles already managed by an enclosing `with` or framework-managed lifecycle (confirm the surrounding scope with `file_read` before flagging)\n\n#### Performance\nConfirm data scale and that the code is on a hot path before flagging:\n- Building strings with `+=` in a loop instead of accumulating in a list and `\"\".join(...)`, or using an f-string\n- Repeated membership tests against a `list` where a `set` or `dict` would turn O(n) lookups into O(1)\n- Building a full list when a generator would avoid holding everything in memory\n- Recomputing inside a loop a value that is invariant across iterations (e.g., compiling a regex, attribute lookups in hot paths)\n- Passing an eagerly formatted f-string to `logging` (e.g., `logging.info(f\"...\")`) instead of `logging.info(\"%s\", value)`, which defeats lazy formatting when the level is disabled\n\n#### Concurrency and Async\nOnly flag concurrency issues when there is evidence of multi-threaded, multi-process, or async invocation (confirm the call context before reporting):\n- CPU-bound work parallelized with `threading` under the GIL where `multiprocessing` or a process pool is the right tool (traditional CPython; free-threaded builds excepted); I/O-bound work is the case threads actually help\n- Check-then-act races on shared state without a `Lock`, or non-atomic compound updates assumed to be atomic\n- Blocking calls (synchronous I/O, `time.sleep`, `requests`, CPU-heavy work) inside `async def`, stalling the event loop; use the async equivalent or run them in an executor\n- `asyncio` tasks created and never awaited, so exceptions are swallowed and the work may be garbage-collected before it finishes\n- Shared mutable state across threads or tasks without synchronization or a thread-safe structure\n\nDo not report local variables (each thread has its own), read-only access to shared data, or code with no evidence of concurrent use.\n\n#### Security-Sensitive Code\nValidate the data source before flagging; confirm the input is actually attacker-controlled rather than a trusted constant:\n- `eval`, `exec`, or `compile` on untrusted input; this is arbitrary code execution\n- `subprocess` with `shell=True` built from unsanitized input; pass an argument list and avoid the shell\n- `pickle`, `marshal`, or `yaml.load` (without `SafeLoader`) on untrusted data; deserialization can execute arbitrary code\n- SQL built by string concatenation or f-strings instead of parameterized queries\n- Secrets, tokens, passwords, or PII written to logs or committed in source\n- Weak or misused cryptography (`hashlib.md5`/`sha1` for passwords, `random` for security tokens); use `secrets` and vetted libraries\n- Untrusted file paths joined without validation, allowing path traversal\n\u003c/rules\u003e",
+  "#### Correctness\nIs the logic correct? Are there missing boundary conditions?\nAre exceptions handled properly?\nIs it thread-safe in concurrent scenarios?\n\n#### Security\nAre there security vulnerabilities such as SQL injection or XSS?\nIs sensitive information handled correctly?\nIs permission validation complete?\n\n#### Performance\nAre there obvious performance issues (e.g., N+1 queries, unnecessary loops)?\nAre resources properly released?\n\n#### Maintainability\nIs the code clear and easy to understand?\nDo names accurately express intent?\nDoes it follow the project’s existing code style and architecture patterns?\n\n#### Test Coverage\nDo critical logic paths have corresponding test cases?\nDo test cases cover boundary conditions?",
+  "\u003crules for=\"a.java, b.java\"\u003e\n#### Obvious Typos or Spelling Errors\n- Spelling errors in variable names, method names, or class names at their declaration sites (confirm by searching for naming conventions of similar identifiers using `code_search`)\n- Strings in log messages or exception messages containing spelling errors that affect readability\n- Do not report spelling errors at reference sites, as these are typically determined by the declaration\n\n#### Dead Code\n- Code blocks that can never be reached (e.g., branches where the condition is always false, code after a return statement)\n- Variables that are declared but never read or referenced\n- Large blocks of commented-out code (with no apparent intent to preserve)\n\n#### Logic Error Detection\n- Incorrect if-condition logic (use `file_read` to examine surrounding context and confirm expected logic)\n- Boundary condition handling errors (pay special attention to index and array length checks)\n- Misuse of boolean logic operators (precedence and short-circuit evaluation issues)\n- Obvious infinite loops or recursion without termination conditions\n- Use of return/break/continue where exiting is not intended\n- Missing break statements in switch cases causing unintended fall-through\n- Intentional fall-through lacking explanatory comments\n- Code patterns that may cause NPE (confirm risk by inspecting the data source call chain using `file_read` and `code_search`)\n- Missing parentheses in logical expressions that may cause execution order to differ from intent\n\n#### Severe Performance Issues\n- Database queries executed inside loops (use `code_search` to confirm whether the method call involves database operations)\n- N+1 query problems (suggest batch query optimizations)\n- Processing large datasets without pagination (use `file_read` to understand data scale and processing context)\n- Inefficient algorithm implementations in nested loops (O(n^2) or higher complexity where a more optimal solution exists)\n\n#### Thread Safety Issue Detection\nOnly flag thread safety issues in the following cases:\n- **Race conditions**: A \"check-then-act\" pattern exists where intermediate state may be altered by another thread\n- **Non-atomic compound operations**: Multi-step operations that require atomicity but lack synchronization mechanisms\n- **Unsafe lazy initialization**: Double-checked locking defects in singleton patterns or cache implementations\n- **Concurrent writes to thread-unsafe collections**: Modifications to non-thread-safe collections such as ArrayList or HashMap in a multi-threaded environment\n\nDo not report in the following cases:\n- **Local variables within methods**: These are inherently thread-safe, as each thread has its own copy\n- **Single-threaded context usage**: No evidence of multi-threaded invocation (confirm by searching for relevant call contexts using `code_search`)\n- **Read-only operations**: Even with non-thread-safe data structures, if only read operations are performed\n- **Immutable objects**: References to final fields pointing to immutable objects\n- **Proper synchronization already in place**: Code already uses synchronized, Lock, atomic classes, or other correct synchronization mechanisms\n- **Components designed for single-threaded use**: Such as the building phase of a Builder pattern, temporary data transfer objects, etc.\n\u003c/rules\u003e\n\u003crules for=\"m.properties\"\u003e\n#### Obvious Typos or Spelling Errors\n- Spelling errors in key names, especially the standard spelling of common configuration items\n\n#### Configuration Error Detection\n- Duplicate key definitions within the visible scope of the current file causing configuration override issues\n- Malformed key-value pairs (missing equals sign, extra whitespace, etc.)\n- Special characters not properly escaped (e.g., backslashes in paths, Unicode characters, etc.)\n\n#### Critical Security Issues\n- Sensitive information (passwords, API keys, database connection strings, etc.) stored in plaintext\n\u003c/rules\u003e"
+ ],
+ "grouping": [
+  [
+   {
+    "role": "system",
+    "content": "You are a file grouping assistant for code review. Group changed files into semantically related clusters that should be reviewed together.\n\nFiles in the same group typically:\n- Belong to the same module/feature\n- Have producer/consumer relationships (e.g. interface and implementation)\n- Are i18n/config variants of the same resource (e.g. message_en.properties and message_zh.properties)\n- Share the same directory and work together on a single concern\n\nEach file in the list is prefixed with a zero-based index in brackets, e.g. `[0] MODIFIED   path/to/file (+12/-3)`. Refer to files by that integer index, never by path.\n\nRules:\n- Every file index must appear in exactly one group.\n- A group may contain 1 file if it is unrelated to others.\n- Maximum 10 files per group.\n- The \"files\" field of each group is an array of the integer indices shown in brackets.\n- Output ONLY a JSON array, no other text."
+   },
+   {
+    "role": "user",
+    "content": "Group the following changed files:\n\n[0] MODIFIED   a.go (+1/-0)\n[1] ADDED   b.go (+3/-0)\n\n\nRespond with a JSON array, where \"files\" holds the integer indices shown in brackets beside each file:\n[{\"label\": \"short theme description\", \"files\": [0, 1]}]"
+   }
+  ]
+ ],
+ "grouping_parse": [
+  [
+   {
+    "label": "a",
+    "files": [
+     "f0.go",
+     "f1.go",
+     "f2.go"
+    ]
+   },
+   {
+    "label": "b",
+    "files": [
+     "f3.go"
+    ]
+   },
+   {
+    "label": "f4.go",
+    "files": [
+     "f4.go"
+    ]
+   },
+   {
+    "label": "f5.go",
+    "files": [
+     "f5.go"
+    ]
+   }
+  ],
+  [
+   {
+    "label": "all",
+    "files": [
+     "f0.go",
+     "f1.go",
+     "f2.go",
+     "f3.go",
+     "f4.go",
+     "f5.go",
+     "f6.go",
+     "f7.go",
+     "f8.go",
+     "f9.go"
+    ]
+   },
+   {
+    "label": "all",
+    "files": [
+     "f10.go",
+     "f11.go",
+     "f12.go"
+    ]
+   }
+  ],
+  "ERROR",
+  [
+   {
+    "label": "f0.go",
+    "files": [
+     "f0.go"
+    ]
+   },
+   {
+    "label": "f1.go",
+    "files": [
+     "f1.go"
+    ]
+   },
+   {
+    "label": "f2.go",
+    "files": [
+     "f2.go"
+    ]
+   }
+  ],
+  [
+   {
+    "label": "x",
+    "files": [
+     "f2.go",
+     "f0.go"
+    ]
+   },
+   {
+    "label": "f1.go",
+    "files": [
+     "f1.go"
+    ]
+   },
+   {
+    "label": "f3.go",
+    "files": [
+     "f3.go"
+    ]
+   }
+  ]
+ ],
+ "main": [
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in English."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg \n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in Chinese."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg \n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in English."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg \n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Previously Confirmed Findings\nThe following issues...\n\u003cconfirmed_findings\u003e\n1. a.go\n\u003c/confirmed_findings\u003e\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in Chinese."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg \n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Previously Confirmed Findings\nThe following issues...\n\u003cconfirmed_findings\u003e\n1. a.go\n\u003c/confirmed_findings\u003e\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in English."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg Summary: x\n\nIssues\n\n1. [high] y\n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Review Plan\nSummary: x\n\nIssues\n\n1. [high] y\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in Chinese."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg Summary: x\n\nIssues\n\n1. [high] y\n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Review Plan\nSummary: x\n\nIssues\n\n1. [high] y\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in English."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg Summary: x\n\nIssues\n\n1. [high] y\n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Review Plan\nSummary: x\n\nIssues\n\n1. [high] y\n\n### Previously Confirmed Findings\nThe following issues...\n\u003cconfirmed_findings\u003e\n1. a.go\n\u003c/confirmed_findings\u003e\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ],
+  [
+   {
+    "role": "system",
+    "content": "## Role\nYou are a code review assistant. You are responsible for producing professional review feedback on pull requests before they are merged. The diffs show what changed; use context tools to read or search related code when needed.\nPlease keep your responses concise and objective.\n\n## Capabilities\n- Think step by step progressively.\n- First understand the code changes to be reviewed. Code changes are provided in Unified Diff format, where lines starting with `-` indicate deleted code, lines starting with `+` indicate added code, consecutive `-` and `+` lines represent modified code, and other lines represent unchanged code.\n- Be objective and neutral, make judgments based on facts and logic, avoid subjective assumptions. When the context is unclear, use tools to obtain contextual information rather than judging based on assumptions.\n- For the current code changes, provide feedback opinions, pointing out areas for improvement or potential issues. Focus on issues in newly added code.\n- Avoid commenting on correct code or unchanged code.\n- Avoid commenting on deleted code; deleted code serves only as reference context.\n- Focus on clarity, practicality, and comprehensiveness.\n- Use developer-friendly terminology and analogies in explanations.\n- Focus primarily on the actual code logic and functionality. Avoid commenting on or providing feedback about non-functional elements such as code comments, tool-generated indicators (like @Generated annotations), or other metadata, unless the user explicitly requests you to review these elements.\n\n## Strict Focus Rules\n- Review every file listed in \u003creview_files\u003e individually.\n- Cross-file observations within \u003creview_files\u003e are encouraged — look for inconsistencies, missing updates, and broken contracts across related files.\n- Context tools are for gathering background information only. Your comments must address code within \u003creview_files\u003e — never produce comments targeting files outside it.\n\n## Reply limit\n- Before calling `task_done`, confirm you have given every `\u003cfile\u003e` in \u003creview_files\u003e its own pass. Reviewing an implementation file does not cover its header, interface, or configuration counterpart — a file being the smaller or secondary member of the group is not a reason to skip it.\n- If the current code review task is complete, call `task_done` to end the task.\n- If a code issue has been identified and confirmed, call the `code_comment` tool to provide feedback.\n- If additional context is needed to confirm the issue, call the appropriate context tool.\n\nAlways respond in Chinese."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\nMODIFIED   x.go (+1/-0)\n\u003c/other_changed_files\u003e\n\n\u003creview_files\u003e\n\u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e\n\u003c/review_files\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n\u003cuser_task\u003e\n### Requirement Background (Optional)\nbg Summary: x\n\nIssues\n\n1. [high] y\n\n### Review Checklist\n#### Rule\n- check \u003cfile path=\"a.go\"\u003e\n+{{system_rule}}\n\u003c/file\u003e literally\n\n### Review Plan\nSummary: x\n\nIssues\n\n1. [high] y\n\n### Previously Confirmed Findings\nThe following issues...\n\u003cconfirmed_findings\u003e\n1. a.go\n\u003c/confirmed_findings\u003e\n\nNow please review the code changes in \u003creview_files\u003e above.\n\u003c/user_task\u003e"
+   }
+  ]
+ ],
+ "main_tool_defs": [
+  {
+   "name": "task_done",
+   "description": "Call this tool to terminate task execution when you have completed the user's task, such as when no obvious code issues are found during code review.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "state": {
+      "type": "string",
+      "enum": [
+       "DONE",
+       "FAILED"
+      ],
+      "description": "Defaults to DONE. Return FAILED if the task cannot be completed using available tools."
+     }
+    },
+    "required": [
+     "state"
+    ]
+   }
+  },
+  {
+   "name": "code_comment",
+   "description": "When you discover that a code change could introduce code issue, please use this tool to report the issue. The tool will pinpoint your feedback to the precise code line (or block) in the current file by inserting a code comment.\n\n**Core Mechanism:**\nThis tool uses a dynamic sliding window algorithm to match corresponding consecutive lines in diff text based on your provided 'existing_code' parameter. Therefore, you must ensure the provided 'existing_code' actually exists in the diff text with exactly matching format. It should contain one or several consecutive lines of code most relevant to your comment.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "comments": {
+      "type": "array",
+      "description": "A list of comments. Each item should contain 'content' and 'existing_code'.",
+      "items": {
+       "type": "object",
+       "properties": {
+        "content": {
+         "type": "string",
+         "description": "Comment content, typically a brief description of code issues and corresponding suggestions."
+        },
+        "existing_code": {
+         "type": "string",
+         "description": "Code snippet used to locate comment position. Only return newly added code lines, should not include deleted code or unchanged code lines. Maintain consistent style with diff code for IDE recognition and mounting in current file."
+        },
+        "suggestion_code": {
+         "type": "string",
+         "description": "Corresponding suggested code snippet, maintaining consistent code style."
+        },
+        "category": {
+         "type": "string",
+         "enum": [
+          "bug",
+          "security",
+          "performance",
+          "maintainability",
+          "test",
+          "style",
+          "documentation",
+          "other"
+         ],
+         "description": "The category the issue belongs to."
+        },
+        "severity": {
+         "type": "string",
+         "enum": [
+          "critical",
+          "high",
+          "medium",
+          "low"
+         ],
+         "description": "The severity of the issue."
+        },
+        "path": {
+         "type": "string",
+         "description": "The relative file path this comment applies to."
+        }
+       },
+       "required": [
+        "content",
+        "existing_code",
+        "category",
+        "severity",
+        "path"
+       ]
+      }
+     }
+    },
+    "required": [
+     "comments"
+    ]
+   }
+  },
+  {
+   "description": "Use this tool to search for specific text within files. Supports searching in specific files, directories, or across the entire codebase with flexible file pattern filtering.\n\n**Example output:**\nSearch results for 'toolRequest' (case-insensitive):\nFile: path/to/example.java\n433|      String name = toolRequest.get().getName();\n438|      logToolRequest(newPath, tool, toolRequest.get());\n\n**Search examples (values of search_text):**\n- Literal text (default): use 'FS(' to find that exact text. Do not escape the parenthesis.\n- Regex (use_perl_regexp: true): use 'FS\\(|func FS' to find either 'FS(' or 'func FS'. Escape literal parentheses, not the alternation operator.\n- Regex: use 'class.*extends.*BaseModel' to find classes that extend BaseModel.\n\n**File patterns examples:**\n- Single file: ['src/main.go']\n- Multiple files: ['src/main.go', 'lib/utils.js']\n- All Go files: ['*.go']\n- Exclude test files: [':(exclude)*_test.go']\n- Only in src directory: ['src/']\n- Multiple patterns: ['*.go', ':(exclude)vendor/']\n\n**Limitations:**\n- If more than 100 matches are found, only the first 100 results will be returned.\n- Empty search terms will return no results.\n- This tool searches in the selected side of the current comparison.\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.",
+   "name": "code_search",
+   "parameters": {
+    "properties": {
+     "search_text": {
+      "type": "string",
+      "description": "The text string or regular expression pattern to search for."
+     },
+     "file_patterns": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Array of patterns to include/exclude files in the search. Supports Git pathspec syntax for including and excluding files. If omitted, searches the entire codebase."
+     },
+     "case_sensitive": {
+      "type": "boolean",
+      "description": "Whether the search should be case-sensitive. Defaults to false (case-insensitive)."
+     },
+     "use_perl_regexp": {
+      "type": "boolean",
+      "description": "If true, treats search_text as a Perl-compatible regular expression pattern instead of literal text. Defaults to false."
+     },
+     "side": {
+      "type": "string",
+      "enum": [
+       "new",
+       "old"
+      ],
+      "description": "The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side."
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object"
+   }
+  },
+  {
+   "description": "Use this tool to read file content when you need to get context for git diff. You can specify start_line and end_line to view specific parts of the file.\n\n**Line Range Strategy:**\n- Git diff hunk header provides guidance on how to get more relevant context.\n- Git diff hunk header \"@@-x,y +m,n@@\" indicates that the old file has y lines starting from line x, and the new file has n lines starting from line m.\n- For example, when you need to read 50 lines above and below the current changed code block in the new file, set start_line = m - 50, end_line = m + n + 50.\n\n**Example output:**\nFile: path/to/example.go (Total lines: 50)\nIS_TRUNCATED: false\nLINE_RANGE: 10-12\n// The following is the original content of the file\nfunc main() {\n  fmt.Println(\"Hello, World!\")\n}\n\n**Limitations:**\n- If the specified range exceeds 500 lines, only 500 lines will be returned with a truncation notice.\n- This tool reads either side of the current comparison.\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.",
+   "name": "file_read",
+   "parameters": {
+    "properties": {
+     "file_path": {
+      "type": "string",
+      "description": "The relative path of the file to open."
+     },
+     "start_line": {
+      "type": "integer",
+      "description": "The start line number to view. Defaults to 1."
+     },
+     "end_line": {
+      "type": "integer",
+      "description": "The end line number to view. Defaults to end line of file."
+     },
+     "side": {
+      "type": "string",
+      "enum": [
+       "new",
+       "old"
+      ],
+      "description": "The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side."
+     }
+    },
+    "required": [
+     "file_path"
+    ],
+    "type": "object"
+   }
+  },
+  {
+   "name": "file_read_diff",
+   "description": "The tool is used to view the changes made to other files in the list of modifications. Call this tool when you discover suspected code issues but need to check changes in other files to confirm whether the problem actually exists. This tool will respond in git diff format.\n\nOutput example:\n==== FILE: path/to/file1.txt ====\n--- a/path/to/file1.txt\n+++ b/path/to/file1.txt\n@@ -10,1 +10,1 @@\n- old content\n+ new content\n\n==== FILE: path/to/file2.txt ====\n@@ -5,1 +5,2 @@\n  - old content\n  + new content1\n  + new content2",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path_array": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "List of file paths to view diff content."
+     }
+    },
+    "required": [
+     "path_array"
+    ]
+   }
+  },
+  {
+   "description": "Search for matching files in the current project based on filename keywords. When the query contains a path separator ('/' or '\\'), also matches against the full repository-relative path, enabling directory-scoped queries. Use this tool when you cannot find the files you need to view in the current change file list.\n\nThis tool searches for filenames containing specified keywords in the project directory and returns a list of matching file paths. Search is case-insensitive by default, adjustable via case_sensitive parameter.\n\nNote: This tool only supports returning the first 100 matching file paths; excess will be truncated.\n\nExample:\nInput:\nquery_name: UserService\nOutput:\nsrc/main/java/UserService.java\nsrc/test/java/UserServiceTest.java\n\nInput:\nquery_name: pkg/util\nOutput:\npkg/util.go\npkg/util_test.go\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.",
+   "name": "file_find",
+   "parameters": {
+    "properties": {
+     "query_name": {
+      "type": "string",
+      "description": "Filename keyword to search for, supports partial matching. If the query contains '/' or '\\', falls back to matching against the full repository-relative path (e.g. 'pkg/util' or 'internal/diff/')."
+     },
+     "case_sensitive": {
+      "type": "boolean",
+      "description": "Whether to perform case-sensitive search. Defaults to false."
+     },
+     "side": {
+      "type": "string",
+      "enum": [
+       "new",
+       "old"
+      ],
+      "description": "The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side."
+     }
+    },
+    "required": [
+     "query_name"
+    ],
+    "type": "object"
+   }
+  }
+ ],
+ "plan": [
+  [
+   {
+    "role": "system",
+    "content": "You are an expert in code review task planning. You have access to a set of tools for retrieving relevant context about code changes, and your responsibility is to analyze those changes and produce a structured review plan.\n\n## Core Responsibilities\nAnalyze code change content, identify potential risk points, and plan appropriate tool-calling strategies for each risk point.\n\n## Tool Descriptions\n### Available Tools (reference only — do not call)\n- **code_search**: Use this tool to search for specific text within files. Supports searching in specific files, directories, or across the entire codebase with flexible file pattern filtering.\n\n**Example output:**\nSearch results for 'toolRequest' (case-insensitive):\nFile: path/to/example.java\n433|      String name = toolRequest.get().getName();\n438|      logToolRequest(newPath, tool, toolRequest.get());\n\n**Search examples (values of search_text):**\n- Literal text (default): use 'FS(' to find that exact text. Do not escape the parenthesis.\n- Regex (use_perl_regexp: true): use 'FS\\(|func FS' to find either 'FS(' or 'func FS'. Escape literal parentheses, not the alternation operator.\n- Regex: use 'class.*extends.*BaseModel' to find classes that extend BaseModel.\n\n**File patterns examples:**\n- Single file: ['src/main.go']\n- Multiple files: ['src/main.go', 'lib/utils.js']\n- All Go files: ['*.go']\n- Exclude test files: [':(exclude)*_test.go']\n- Only in src directory: ['src/']\n- Multiple patterns: ['*.go', ':(exclude)vendor/']\n\n**Limitations:**\n- If more than 100 matches are found, only the first 100 results will be returned.\n- Empty search terms will return no results.\n- This tool searches in the selected side of the current comparison.\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.\n  Parameters:\n  - search_text: The text string or regular expression pattern to search for. (required)\n  - file_patterns: Array of patterns to include/exclude files in the search. Supports Git pathspec syntax for including and excluding files. If omitted, searches the entire codebase.\n  - case_sensitive: Whether the search should be case-sensitive. Defaults to false (case-insensitive).\n  - use_perl_regexp: If true, treats search_text as a Perl-compatible regular expression pattern instead of literal text. Defaults to false.\n  - side: The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side.\n- **file_read**: Use this tool to read file content when you need to get context for git diff. You can specify start_line and end_line to view specific parts of the file.\n\n**Line Range Strategy:**\n- Git diff hunk header provides guidance on how to get more relevant context.\n- Git diff hunk header \"@@-x,y +m,n@@\" indicates that the old file has y lines starting from line x, and the new file has n lines starting from line m.\n- For example, when you need to read 50 lines above and below the current changed code block in the new file, set start_line = m - 50, end_line = m + n + 50.\n\n**Example output:**\nFile: path/to/example.go (Total lines: 50)\nIS_TRUNCATED: false\nLINE_RANGE: 10-12\n// The following is the original content of the file\nfunc main() {\n  fmt.Println(\"Hello, World!\")\n}\n\n**Limitations:**\n- If the specified range exceeds 500 lines, only 500 lines will be returned with a truncation notice.\n- This tool reads either side of the current comparison.\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.\n  Parameters:\n  - file_path: The relative path of the file to open. (required)\n  - start_line: The start line number to view. Defaults to 1.\n  - end_line: The end line number to view. Defaults to end line of file.\n  - side: The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side.\n- **file_read_diff**: The tool is used to view the changes made to other files in the list of modifications. Call this tool when you discover suspected code issues but need to check changes in other files to confirm whether the problem actually exists. This tool will respond in git diff format.\n\nOutput example:\n==== FILE: path/to/file1.txt ====\n--- a/path/to/file1.txt\n+++ b/path/to/file1.txt\n@@ -10,1 +10,1 @@\n- old content\n+ new content\n\n==== FILE: path/to/file2.txt ====\n@@ -5,1 +5,2 @@\n  - old content\n  + new content1\n  + new content2\n  Parameters:\n  - path_array: List of file paths to view diff content. (required)\n- **file_find**: Search for matching files in the current project based on filename keywords. When the query contains a path separator ('/' or '\\'), also matches against the full repository-relative path, enabling directory-scoped queries. Use this tool when you cannot find the files you need to view in the current change file list.\n\nThis tool searches for filenames containing specified keywords in the project directory and returns a list of matching file paths. Search is case-insensitive by default, adjustable via case_sensitive parameter.\n\nNote: This tool only supports returning the first 100 matching file paths; excess will be truncated.\n\nExample:\nInput:\nquery_name: UserService\nOutput:\nsrc/main/java/UserService.java\nsrc/test/java/UserServiceTest.java\n\nInput:\nquery_name: pkg/util\nOutput:\npkg/util.go\npkg/util_test.go\n\nOmit side or use side=new for the reviewed new version. Use side=old for the frozen comparison base, not the current target branch tip. For renamed files, use the path on the selected side; paths are not automatically translated. An empty old tree contains no files.\n  Parameters:\n  - query_name: Filename keyword to search for, supports partial matching. If the query contains '/' or '\\', falls back to matching against the full repository-relative path (e.g. 'pkg/util' or 'internal/diff/'). (required)\n  - case_sensitive: Whether to perform case-sensitive search. Defaults to false.\n  - side: The side of the current comparison to access. Defaults to new. Paths and line numbers belong to the selected side.\n\n\n## Output Format\nStrictly follow the plain-text structure below. Output nothing else — no preamble, no closing remarks, no Markdown headings (lines starting with `#`), and no code fences (triple backticks):\n\nSummary: (a brief description of the purpose and scope of this code change)\n\nIssues\n\n1. [high|medium|low] (a clear description of the specific problem and its potential impact for this risk point)\n   → (tool name) (invocation arguments) — (the purpose of calling this tool and its relevance to the current issue)\n   → (one line per additional tool call planned for the same issue)\n2. [high|medium|low] (...)\n\nEach part carries exactly one piece of information:\n- the `Summary:` line — the overall change summary\n- the `[...]` tag — the severity of that issue\n- the text after the severity tag — the issue description\n- each `→` line — one piece of tool guidance: the tool name, then its invocation arguments, then the reason after the em dash (e.g. `→ file_read internal/agent/agent.go — confirm whether the key passed to AwaitKey matches the one used at submission`)\n\n## Analysis Rules\n1. **Scope**: Only analyze newly added and modified code; ignore deleted code\n2. **Ordering**: Issues must be numbered continuously and sorted by severity in descending order (high → medium → low)\n3. **Severity Definitions**:\n   - `high`: May cause security vulnerabilities, data loss, system crashes, or critical functional failures\n   - `medium`: May affect performance, maintainability, or involve potential edge-case problems\n   - `low`: Code style, readability, or non-critical best practice suggestions\n4. **Tool Usage**: Tools are for reference purposes only and must not be actually invoked; describe the calling intent on the `→` lines\n5. **Description Requirements**: Each issue description must cover three dimensions — problem location, nature of the problem, and potential impact\n6. **Empty Result**: If an issue needs no tool verification, omit its `→` lines. If the changes carry no identifiable risk at all, output the `Summary:` line, then `Issues`, then `(none)`. Do not invent issues to fill the list.\n\nAlways respond in English."
+   },
+   {
+    "role": "user",
+    "content": "Other files changed in this update (not in this review group):\n\u003cother_changed_files\u003e\n\n\u003c/other_changed_files\u003e\n\n\u003cfile/\u003e\n\nCurrent time in the real world: 2026-11-26 10:00\n\n### Requirement Background (Optional)\n\n\n### Review Checklist\n#### Rule\n- check \u003cfile/\u003e literally\n\n### Task\nPlease analyze the code changes above and output a structured review plan."
+   }
+  ]
+ ],
+ "relocation": [
+  [
+   {
+    "role": "system",
+    "content": "You are a code location assistant. Given a unified diff and a review comment, your sole task is to extract the exact code snippet from the diff that the comment refers to. /no_think"
+   },
+   {
+    "role": "user",
+    "content": "Below is a unified diff and a review comment. Identify the minimal contiguous code range in the diff that the comment targets.\n\nRules:\n1. Copy the relevant lines VERBATIM from the diff — do not rewrite, reformat, or add anything.\n2. Strip leading diff markers (`+`, `-`, ` `) from each line before outputting.\n3. Include only the lines directly related to the issue — no surrounding context.\n4. If multiple disjoint locations apply, pick the single most relevant one.\n5. Output ONLY a fenced code block. No explanation, no commentary.\n\n**Diff:**\n```diff\n@@ -1 +1 @@\n-a\n+b c {diff}```\n\n**Original code snippet (failed to match):**\n```\ne {existing_code}\n```\n\n**Review comment:**\nc {diff}"
+   }
+  ]
+ ],
+ "select": [
+  [
+   "secret_exclude",
+   "unsupported_ext",
+   "",
+   "default_path",
+   "",
+   "",
+   "",
+   "unsupported_ext",
+   "binary",
+   "unsupported_ext",
+   "",
+   "",
+   "",
+   "",
+   "default_path",
+   "default_path",
+   "",
+   "unsupported_ext"
+  ],
+  [
+   "secret_exclude",
+   "unsupported_ext",
+   "",
+   "default_path",
+   "user_exclude",
+   "user_exclude",
+   "",
+   "unsupported_ext",
+   "binary",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "default_path",
+   "",
+   "",
+   "unsupported_ext"
+  ],
+  [
+   "secret_exclude",
+   "unsupported_ext",
+   "too_large",
+   "user_exclude",
+   "too_large",
+   "too_large",
+   "too_large",
+   "unsupported_ext",
+   "binary",
+   "unsupported_ext",
+   "",
+   "too_large",
+   "user_exclude",
+   "user_exclude",
+   "user_exclude",
+   "user_exclude",
+   "user_exclude",
+   "unsupported_ext"
+  ]
+ ],
+ "thresholds": [
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": false
+  },
+  {
+   "grouping": "per_file",
+   "plan": false
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": false
+  },
+  {
+   "grouping": "per_file",
+   "plan": false
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": false
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "bundle_all",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "per_file",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": false
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  },
+  {
+   "grouping": "llm",
+   "plan": true
+  }
+ ],
+ "token_budget": [
+  [
+   {
+    "label": "g (split: f0.go)",
+    "files": [
+     "f0.go"
+    ]
+   },
+   {
+    "label": "g (split: big.go)",
+    "files": [
+     "big.go"
+    ]
+   },
+   {
+    "label": "h",
+    "files": [
+     "f1.go",
+     "f2.go"
+    ]
+   }
+  ],
+  [
+   {
+    "label": "g",
+    "files": [
+     "f0.go",
+     "big.go"
+    ]
+   }
+  ]
+ ]
+}

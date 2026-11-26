@@ -1,0 +1,287 @@
+package agent
+
+// Oracle for the code-review-ocr protocol port (scratch, never upstreamed).
+
+import (
+	"encoding/json"
+	"os"
+	"strings"
+	"testing"
+
+	"github.com/alibaba/open-code-review/internal/config/rules"
+	"github.com/alibaba/open-code-review/internal/config/template"
+	"github.com/alibaba/open-code-review/internal/config/toolsconfig"
+	"github.com/alibaba/open-code-review/internal/diff"
+	"github.com/alibaba/open-code-review/internal/llm"
+	"github.com/alibaba/open-code-review/internal/model"
+)
+
+type msg struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+func msgs(in []llm.Message) []msg {
+	out := []msg{}
+	for _, m := range in {
+		out = append(out, msg{m.Role, m.ExtractText()})
+	}
+	return out
+}
+
+type groupOut struct {
+	Label string   `json:"label"`
+	Files []string `json:"files"`
+}
+
+func groupsOut(gs []FileGroup) []groupOut {
+	out := []groupOut{}
+	for _, g := range gs {
+		var files []string
+		for _, d := range g.Diffs {
+			files = append(files, d.NewPath)
+		}
+		out = append(out, groupOut{g.Label, files})
+	}
+	return out
+}
+
+type oracleIn struct {
+	Select []struct {
+		Diffs     []model.Diff      `json:"diffs"`
+		Filter    *rules.FileFilter `json:"filter"`
+		MaxTokens int               `json:"max_tokens"`
+	} `json:"select"`
+	GroupingParse []struct {
+		Content string       `json:"content"`
+		Diffs   []model.Diff `json:"diffs"`
+	} `json:"grouping_parse"`
+	TokenBudget []struct {
+		Groups []struct {
+			Label string       `json:"label"`
+			Diffs []model.Diff `json:"diffs"`
+		} `json:"groups"`
+		Limit int `json:"limit"`
+	} `json:"token_budget"`
+	Thresholds [][3]int64            `json:"thresholds"`
+	Confirmed  [][]model.LlmComment  `json:"confirmed"`
+	FilterJSON [][]model.LlmComment  `json:"filter_json"`
+	FileList   [][]model.Diff        `json:"file_list"`
+	Concat     [][]model.Diff        `json:"concat"`
+	Change     []struct {
+		All   []model.Diff `json:"all"`
+		Group []model.Diff `json:"group"`
+	} `json:"change"`
+	GroupRule [][]string `json:"group_rule"`
+	Main      []struct {
+		Date, Rule, Diffs, Background, Plan, Confirmed, Language string
+		ChangeFiles                                             string `json:"change_files"`
+	} `json:"main"`
+	Plan []struct {
+		Date, Rule, Diffs, Background, Language string
+		ChangeFiles                              string `json:"change_files"`
+	} `json:"plan"`
+	Filter []struct {
+		Key, Diffs, Comments string
+	} `json:"filter"`
+	Relocation []struct {
+		Comment model.LlmComment `json:"comment"`
+		Diff    model.Diff       `json:"diff"`
+	} `json:"relocation"`
+	Grouping []string `json:"grouping"`
+}
+
+func TestOracle(t *testing.T) {
+	in := os.Getenv("OCR_ORACLE_IN")
+	if in == "" {
+		t.Skip("no oracle input")
+	}
+	raw, err := os.ReadFile(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var c oracleIn
+	if err := json.Unmarshal(raw, &c); err != nil {
+		t.Fatal(err)
+	}
+	out := map[string]any{}
+	load := func(lang string) template.Template {
+		tpl, err := template.LoadDefault()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if lang != "-" {
+			tpl.ApplyLanguage(lang)
+		}
+		return *tpl
+	}
+	base := load("-")
+
+	var sel [][]string
+	for _, s := range c.Select {
+		tpl := base
+		tpl.MaxTokens = s.MaxTokens
+		a := &Agent{args: Args{Template: tpl, FileFilter: s.Filter}}
+		var reasons []string
+		for _, d := range a.selectFiles(s.Diffs) {
+			reasons = append(reasons, string(d.Reason))
+		}
+		sel = append(sel, reasons)
+	}
+	out["select"] = sel
+
+	var gp []any
+	for _, g := range c.GroupingParse {
+		groups, err := parseGroupingResponse(g.Content, g.Diffs)
+		if err != nil {
+			gp = append(gp, "ERROR")
+			continue
+		}
+		gp = append(gp, groupsOut(groups))
+	}
+	out["grouping_parse"] = gp
+
+	var tb []any
+	for _, b := range c.TokenBudget {
+		var gs []FileGroup
+		for _, g := range b.Groups {
+			gs = append(gs, FileGroup{Label: g.Label, Diffs: g.Diffs})
+		}
+		tb = append(tb, groupsOut(enforceGroupTokenBudget(gs, b.Limit)))
+	}
+	out["token_budget"] = tb
+
+	type thr struct {
+		Grouping string `json:"grouping"`
+		Plan     bool   `json:"plan"`
+	}
+	var th []thr
+	for _, x := range c.Thresholds {
+		th = append(th, thr{base.GroupingPlan(int(x[0]), x[1]).String(), base.PlanRequired(int(x[0]), x[1], x[2])})
+	}
+	out["thresholds"] = th
+
+	var conf, fj, fl, cc []string
+	for _, cs := range c.Confirmed {
+		conf = append(conf, buildConfirmedCommentsBlock(cs))
+	}
+	for _, cs := range c.FilterJSON {
+		fj = append(fj, buildGroupFilterCommentsJSON(cs))
+	}
+	for _, ds := range c.FileList {
+		fl = append(fl, buildFileList(ds))
+	}
+	for _, ds := range c.Concat {
+		cc = append(cc, buildConcatenatedDiffs(ds))
+	}
+	out["confirmed"], out["filter_json"], out["file_list"], out["concat"] = conf, fj, fl, cc
+
+	var ch []string
+	for _, x := range c.Change {
+		a := &Agent{diffs: x.All}
+		ch = append(ch, a.buildChangeFilesExceptGroup(x.Group))
+	}
+	out["change"] = ch
+
+	sys, err := rules.LoadDefault()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var gr []string
+	for _, paths := range c.GroupRule {
+		var ds []model.Diff
+		for _, p := range paths {
+			ds = append(ds, model.Diff{NewPath: p, OldPath: p})
+		}
+		a := &Agent{args: Args{SystemRule: sys}}
+		gr = append(gr, a.resolveGroupSystemRule(ds))
+	}
+	out["group_rule"] = gr
+
+	var mainOut [][]msg
+	for _, m := range c.Main {
+		a := &Agent{args: Args{Template: load(m.Language), Background: m.Background}, currentDate: m.Date}
+		mainOut = append(mainOut, msgs(a.buildMainTaskMessages(m.Rule, m.ChangeFiles, m.Diffs, m.Plan, m.Confirmed)))
+	}
+	out["main"] = mainOut
+
+	entries, err := toolsconfig.LoadDefault()
+	if err != nil {
+		t.Fatal(err)
+	}
+	planDefs, err := toolsconfig.Resolve(entries, base.PlanTask.ToolReferences)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planDefs, err = toolsconfig.WithComparisonSides(planDefs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var planOut [][]msg
+	for _, p := range c.Plan {
+		tpl := load(p.Language)
+		var ms []llm.Message
+		for _, m := range tpl.PlanTask.Messages {
+			content := m.Content
+			content = strings.ReplaceAll(content, "{{current_system_date_time}}", p.Date)
+			content = strings.ReplaceAll(content, "{{system_rule}}", p.Rule)
+			content = strings.ReplaceAll(content, "{{change_files}}", p.ChangeFiles)
+			content = strings.ReplaceAll(content, "{{diffs}}", p.Diffs)
+			content = strings.ReplaceAll(content, "{{requirement_background}}", p.Background)
+			content = strings.ReplaceAll(content, "{{plan_tools}}", formatToolDefs(planDefs))
+			ms = append(ms, llm.NewTextMessage(m.Role, content))
+		}
+		planOut = append(planOut, msgs(ms))
+	}
+	out["plan"] = planOut
+
+	mainDefs, err := toolsconfig.Resolve(entries, base.MainTask.Tools)
+	if err != nil {
+		t.Fatal(err)
+	}
+	mainDefs, err = toolsconfig.WithComparisonSides(mainDefs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var defs []json.RawMessage
+	for _, d := range mainDefs {
+		defs = append(defs, d.Function.RawDefinition)
+	}
+	out["main_tool_defs"] = defs
+
+	var filterOut [][]msg
+	for _, f := range c.Filter {
+		var ms []llm.Message
+		for _, m := range base.ReviewFilterTask.Messages {
+			content := m.Content
+			content = strings.ReplaceAll(content, "{{path}}", f.Key)
+			content = strings.ReplaceAll(content, "{{diff}}", f.Diffs)
+			content = strings.ReplaceAll(content, "{{comments}}", f.Comments)
+			ms = append(ms, llm.NewTextMessage(m.Role, content))
+		}
+		filterOut = append(filterOut, msgs(ms))
+	}
+	out["filter"] = filterOut
+
+	var relOut [][]msg
+	for _, r := range c.Relocation {
+		cm, d := r.Comment, r.Diff
+		relOut = append(relOut, msgs(diff.BuildReLocationMessages(&cm, &d, base.ReLocationTask)))
+	}
+	out["relocation"] = relOut
+
+	var grpOut [][]msg
+	for _, fileList := range c.Grouping {
+		var ms []llm.Message
+		for _, m := range base.GroupingTask.Messages {
+			ms = append(ms, llm.NewTextMessage(m.Role, strings.ReplaceAll(m.Content, "{{file_list}}", fileList)))
+		}
+		grpOut = append(grpOut, msgs(ms))
+	}
+	out["grouping"] = grpOut
+
+	data, _ := json.MarshalIndent(out, "", " ")
+	if err := os.WriteFile(os.Getenv("OCR_ORACLE_OUT"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+}

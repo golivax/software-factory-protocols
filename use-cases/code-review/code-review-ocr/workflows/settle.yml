@@ -1,0 +1,15 @@
+name: settle
+on:
+  workflow_dispatch:
+    inputs:
+      protocol_context:
+        type: string
+        required: false
+permissions:
+  contents: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply a round's re-locations
+        run: python3 "$SF_CONTROL_DIR/.github/workflows/settle.py"
