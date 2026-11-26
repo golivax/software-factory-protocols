@@ -1,12 +1,33 @@
-{ "type": "object", "additionalProperties": false,
-  "required": ["finding_id", "keep", "anchor", "reason", "path", "existing_code", "comment"],
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tool",
+    "analysis",
+    "comment_ids"
+  ],
   "properties": {
-    "finding_id": {"type": "string"}, "keep": {"type": "boolean"},
-    "anchor": { "anyOf": [
-      { "type": "object", "additionalProperties": false, "required": ["side", "line", "start_line"],
-        "properties": {
-          "side": {"type": "string", "enum": ["LEFT", "RIGHT"]}, "line": {"type": "integer"},
-          "start_line": {"type": ["integer", "null"]} } },
-      { "type": "null" } ] },
-    "reason": {"type": "string"},
-    "path": {"type": "string"}, "existing_code": {"type": "string"}, "comment": {"type": "string"} } }
+    "tool": {
+      "type": "string",
+      "enum": [
+        "report_incorrect_comments",
+        "approve_all_comments"
+      ],
+      "description": "The one tool called."
+    },
+    "analysis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "report_incorrect_comments' analysis; [] for approve_all_comments."
+    },
+    "comment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "report_incorrect_comments' comment_ids; [] for approve_all_comments."
+    }
+  }
+}

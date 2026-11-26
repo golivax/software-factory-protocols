@@ -1,0 +1,3 @@
+{
+  "response": "```go\nreturn float64(c.hits) / float64(c.hits+c.misses)\n```"
+}

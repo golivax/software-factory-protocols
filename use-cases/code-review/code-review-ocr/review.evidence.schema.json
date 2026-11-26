@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state",
+    "comments"
+  ],
+  "properties": {
+    "state": {
+      "type": "string",
+      "enum": [
+        "DONE",
+        "FAILED"
+      ],
+      "description": "task_done's state."
+    },
+    "comments": {
+      "type": "array",
+      "description": "Every code_comment the review filed, in order.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "content",
+          "existing_code",
+          "suggestion_code",
+          "category",
+          "severity"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "The relative file path this comment applies to."
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content, typically a brief description of code issues and corresponding suggestions."
+          },
+          "existing_code": {
+            "type": "string",
+            "description": "Code snippet used to locate comment position, verbatim from the diff."
+          },
+          "suggestion_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Corresponding suggested code snippet, or null."
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "bug",
+              "security",
+              "performance",
+              "maintainability",
+              "test",
+              "style",
+              "documentation",
+              "other"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

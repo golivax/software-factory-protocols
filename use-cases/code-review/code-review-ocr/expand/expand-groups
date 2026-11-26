@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""The review fork's legs: one per group of the `partition` node.
+
+`partition` (a code node) already formed the groups, so this expander only hands
+them on: $CHECK_CTX/inputs/partition.json's `groups`, each keyed by its `id`.
+"""
+import json
+import os
+
+with open(os.path.join(os.environ["CHECK_CTX"], "inputs", "partition.json"), encoding="utf-8") as fh:
+    print(json.dumps({"items": json.load(fh).get("groups") or []}))

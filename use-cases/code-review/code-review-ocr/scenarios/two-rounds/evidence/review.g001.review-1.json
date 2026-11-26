@@ -1,0 +1,29 @@
+{
+  "state": "DONE",
+  "comments": [
+    {
+      "path": "svc/cache.go",
+      "content": "`c.misses++` (and `c.hits++` below) run after `c.mu.Unlock()`, so concurrent `Get` calls race on the counters: a data race the race detector reports, and lost updates in `Stats`. Update them while the lock is held.",
+      "existing_code": "c.misses++",
+      "suggestion_code": null,
+      "category": "bug",
+      "severity": "high"
+    },
+    {
+      "path": "svc/cache.go",
+      "content": "`Stats` divides by `c.hits+c.misses`, which is 0 until the first lookup: the result is NaN. Return 0 when nothing was looked up.",
+      "existing_code": "func (c *Cache) Stats() float64 { return float64(c.hits) / float64(c.hits+c.misses) }",
+      "suggestion_code": null,
+      "category": "bug",
+      "severity": "medium"
+    },
+    {
+      "path": "svc/cache_handler.go",
+      "content": "`CacheHandler` never checks whether `shared.Get` found the key, so a missing key is served as an empty 200 response.",
+      "existing_code": "value, ok := shared.Get(key)",
+      "suggestion_code": null,
+      "category": "bug",
+      "severity": "medium"
+    }
+  ]
+}

@@ -1,7 +1,4 @@
 name: post-review
-# code-review-ocr's top `merge`: post one review of every file's surviving
-# findings (post-review.py beside this file). Its job token can post the review
-# and nothing else.
 on:
   workflow_dispatch:
     inputs:
@@ -11,10 +8,10 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 jobs:
-  post:
+  run:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - name: post the review
-        run: python3 "$SF_CONTROL_DIR/.github/workflows/post-review.py"
+      - name: Post the review on the MR
+        run: python3 "$SF_CONTROL_DIR/.github/workflows/post_review.py"

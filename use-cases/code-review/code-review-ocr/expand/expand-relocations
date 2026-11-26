@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""A relocate-<n> fork's legs: one per comment its locate-<n> node could not place.
+
+$CHECK_CTX/inputs/locate.json's `relocations`, each keyed by its `id`; none
+(every comment placed, or the round did not run) is a fork of no legs.
+"""
+import json
+import os
+
+with open(os.path.join(os.environ["CHECK_CTX"], "inputs", "locate.json"), encoding="utf-8") as fh:
+    print(json.dumps({"items": json.load(fh).get("relocations") or []}))

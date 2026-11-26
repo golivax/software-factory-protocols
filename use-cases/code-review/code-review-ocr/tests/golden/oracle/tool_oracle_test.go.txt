@@ -1,0 +1,63 @@
+package tool
+
+// Oracle for the code-review-ocr protocol port (scratch, never upstreamed):
+// the context tools of a range review, as the model sees their answers.
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os"
+	"testing"
+)
+
+func TestOracle(t *testing.T) {
+	in := os.Getenv("OCR_ORACLE_IN")
+	if in == "" {
+		t.Skip("no oracle input")
+	}
+	raw, err := os.ReadFile(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cases struct {
+		Tools struct {
+			Repo    string            `json:"repo"`
+			Base    string            `json:"base"`
+			Head    string            `json:"head"`
+			DiffMap map[string]string `json:"diffmap"`
+			Calls   []struct {
+				Tool string         `json:"tool"`
+				Args map[string]any `json:"args"`
+			} `json:"calls"`
+		} `json:"tools"`
+	}
+	if err := json.Unmarshal(raw, &cases); err != nil {
+		t.Fatal(err)
+	}
+	tc := cases.Tools
+	cur := FileReader{RepoDir: tc.Repo, Mode: ModeRange, Ref: tc.Head}
+	prev := FileReader{RepoDir: tc.Repo, Mode: ModeCommit, Ref: tc.Base}
+	access, err := NewComparisonCodeAccess(cur, prev)
+	if err != nil {
+		t.Fatal(err)
+	}
+	providers := map[string]Provider{
+		"code_search":    &CodeSearchProvider{FileReader: &cur, Access: access},
+		"file_read":      &FileReadProvider{FileReader: &cur, Access: access},
+		"file_find":      &FileFindProvider{FileReader: &cur, Access: access},
+		"file_read_diff": NewFileReadDiff(NewDiffMap(tc.DiffMap)),
+	}
+	var out []string
+	for _, c := range tc.Calls {
+		res, err := providers[c.Tool].Execute(context.Background(), c.Args)
+		if err != nil {
+			res = fmt.Sprintf("Error executing tool %s: %v", c.Tool, err)
+		}
+		out = append(out, res)
+	}
+	data, _ := json.MarshalIndent(map[string]any{"tools": out}, "", " ")
+	if err := os.WriteFile(os.Getenv("OCR_ORACLE_OUT"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+}

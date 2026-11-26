@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "response"
+  ],
+  "properties": {
+    "response": {
+      "type": "string",
+      "description": "The re-location answer, verbatim: one fenced code block."
+    }
+  }
+}

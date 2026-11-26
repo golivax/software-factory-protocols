@@ -1,141 +1,907 @@
 {
   "name": "code-review-ocr",
+  "_note": "Alibaba OpenCodeReview (alibaba/open-code-review, `ocr review`) as a protocol: see README.md.",
   "min_engine_version": "21.1.0",
+  "max_depth": 6,
+  "inputs": {
+    "type": "object",
+    "properties": {
+      "effort": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "default": "medium",
+        "description": "`ocr review --effort`: review rounds per group (1, 2, 3)."
+      },
+      "language": {
+        "type": "string",
+        "default": "English",
+        "description": "The language OCR reviews in (`ocr config set language`)."
+      },
+      "background": {
+        "type": "string",
+        "default": "",
+        "description": "`ocr review --background`: the requirement background."
+      },
+      "rule": {
+        "type": "string",
+        "default": "",
+        "description": "`ocr review --rule`: a custom rule.json, relative to the repository."
+      },
+      "no_filter": {
+        "type": "boolean",
+        "default": false,
+        "description": "`ocr review --no-filter`: skip the review filter."
+      }
+    }
+  },
+  "result": {
+    "kind": "comment",
+    "description": "OpenCodeReview's review: inline comments and a summary comment"
+  },
   "triggers": [
     {
+      "on": "pull_request",
+      "actions": [
+        "opened",
+        "reopened"
+      ],
+      "command": "start",
+      "_note": "Not synchronize: on GitLab every MR update is one, the factory's own status writes included."
+    },
+    {
       "on": "issue_comment",
-      "comment_prefix": "/ocr-review",
+      "comment_prefix": "/open-code-review",
       "command": "start"
     }
   ],
   "states": [
     {
+      "id": "select",
+      "kind": "code",
+      "label": "Select files",
+      "workflow": "select",
+      "checkout": true,
+      "next": "grouping-gate"
+    },
+    {
+      "id": "grouping-gate",
+      "kind": "choice",
+      "on": {
+        "from": "select",
+        "path": "$.strategy"
+      },
+      "cases": [
+        {
+          "when": "llm",
+          "next": "grouping-try"
+        }
+      ],
+      "default": "partition"
+    },
+    {
+      "id": "grouping-try",
+      "kind": "fork",
+      "branches": [
+        {
+          "id": "grouping",
+          "kind": "agent",
+          "label": "Group files",
+          "workflow": "grouping-agent",
+          "evidence": "grouping.evidence.schema.json",
+          "max_iterations": 2,
+          "inputs": [
+            {
+              "from": "select",
+              "as": "select"
+            }
+          ]
+        }
+      ],
+      "next": "grouping-join"
+    },
+    {
+      "id": "grouping-join",
+      "kind": "join",
+      "of": "grouping-try",
+      "policy": "quorum:0%",
+      "next": "partition"
+    },
+    {
+      "id": "partition",
+      "kind": "code",
+      "label": "Partition",
+      "workflow": "partition",
+      "inputs": [
+        {
+          "from": "select",
+          "as": "select"
+        },
+        {
+          "from": "grouping",
+          "as": "grouping"
+        }
+      ],
+      "next": "review"
+    },
+    {
       "id": "review",
       "kind": "fork",
+      "label": "Review",
+      "inputs": [
+        {
+          "from": "partition",
+          "as": "partition"
+        }
+      ],
       "expand": {
-        "hook": "expand-files",
-        "as": "file",
-        "id_from": "$.path",
-        "max_legs": 32
+        "hook": "expand-groups",
+        "as": "group",
+        "id_from": "$.id",
+        "max_legs": 256
       },
       "each": {
+        "kind": "sequence",
         "states": [
           {
-            "id": "plan",
-            "kind": "agent",
-            "workflow": "ocr-plan-agent",
-            "evidence": "plan.evidence.schema.json",
-            "max_iterations": 1,
-            "params": {
-              "schema": "plan.evidence.schema.json"
-            },
-            "checks": [
+            "id": "prepare",
+            "kind": "code",
+            "label": "Prepare",
+            "workflow": "prepare",
+            "checkout": true,
+            "inputs": [
               {
-                "run": "evidence-schema-valid"
+                "from": "select",
+                "as": "select"
               }
             ],
-            "next": "main-review"
+            "next": "plan-gate"
           },
           {
-            "id": "main-review",
+            "id": "plan-gate",
+            "kind": "choice",
+            "on": {
+              "from": "prepare",
+              "path": "$.plan"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "plan-try"
+              }
+            ],
+            "default": "over-budget-gate"
+          },
+          {
+            "id": "plan-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "plan",
+                "kind": "agent",
+                "label": "Plan",
+                "workflow": "plan-agent",
+                "evidence": "plan.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  }
+                ]
+              }
+            ],
+            "next": "plan-join"
+          },
+          {
+            "id": "plan-join",
+            "kind": "join",
+            "of": "plan-try",
+            "policy": "quorum:0%",
+            "next": "review-1"
+          },
+          {
+            "id": "over-budget-gate",
+            "kind": "choice",
+            "on": {
+              "from": "prepare",
+              "path": "$.over_budget"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "collect"
+              }
+            ],
+            "default": "review-1"
+          },
+          {
+            "id": "review-1",
             "kind": "agent",
-            "workflow": "ocr-main-agent",
-            "evidence": "main-review.evidence.schema.json",
-            "max_iterations": 1,
+            "label": "Review round 1",
+            "workflow": "review-agent",
+            "evidence": "review.evidence.schema.json",
+            "max_iterations": 2,
             "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
               {
                 "from": "plan",
                 "as": "plan"
               }
             ],
-            "params": {
-              "schema": "main-review.evidence.schema.json"
-            },
-            "checks": [
-              {
-                "run": "evidence-schema-valid"
-              },
-              {
-                "run": "traces-exist-in-diff"
-              }
-            ],
-            "next": "findings"
+            "next": "locate-1"
           },
           {
-            "id": "findings",
-            "kind": "fork",
+            "id": "locate-1",
+            "kind": "code",
+            "label": "Locate round 1",
+            "workflow": "locate",
+            "checkout": true,
             "inputs": [
               {
-                "from": "main-review",
-                "as": "main-review"
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "review-1",
+                "as": "review"
+              }
+            ],
+            "next": "relocate-1"
+          },
+          {
+            "id": "relocate-1",
+            "kind": "fork",
+            "label": "Re-locate round 1",
+            "inputs": [
+              {
+                "from": "locate-1",
+                "as": "locate"
               }
             ],
             "expand": {
-              "hook": "expand-findings",
-              "as": "finding",
-              "id_from": "$.finding_id",
-              "max_legs": 32
+              "hook": "expand-relocations",
+              "as": "relocation",
+              "id_from": "$.id",
+              "max_legs": 256
             },
             "each": {
-              "workflow": "ocr-filter-agent",
-              "evidence": "filter.evidence.schema.json",
-              "max_iterations": 1,
-              "params": {
-                "schema": "filter.evidence.schema.json"
-              },
-              "checks": [
+              "kind": "agent",
+              "workflow": "relocate-agent",
+              "evidence": "relocate.evidence.schema.json",
+              "max_iterations": 2,
+              "inputs": [
                 {
-                  "run": "evidence-schema-valid"
-                },
-                {
-                  "run": "filter-verdict-valid"
+                  "from": "select",
+                  "as": "select"
                 }
-              ],
-              "kind": "agent"
+              ]
             },
-            "next": "join-findings"
+            "next": "relocate-1-join"
           },
           {
-            "id": "join-findings",
+            "id": "relocate-1-join",
             "kind": "join",
-            "of": "findings",
-            "policy": "any",
-            "next": "reduce"
+            "of": "relocate-1",
+            "policy": "quorum:0%",
+            "next": "settle-1"
           },
           {
-            "id": "reduce",
+            "id": "settle-1",
             "kind": "code",
+            "label": "Settle round 1",
+            "workflow": "settle",
+            "checkout": true,
             "inputs": [
               {
-                "from_fork": "findings",
-                "as": "findings"
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "locate-1",
+                "as": "locate"
+              },
+              {
+                "from_fork": "relocate-1",
+                "as": "relocations"
               }
             ],
-            "workflow": "reduce-file"
+            "next": "filter-gate-1"
+          },
+          {
+            "id": "filter-gate-1",
+            "kind": "choice",
+            "on": {
+              "from": "settle-1",
+              "path": "$.filter"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "filter-1-try"
+              }
+            ],
+            "default": "confirm-1"
+          },
+          {
+            "id": "filter-1-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "filter-1",
+                "kind": "agent",
+                "label": "Review filter round 1",
+                "workflow": "filter-agent",
+                "evidence": "filter.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  },
+                  {
+                    "from": "settle-1",
+                    "as": "settle"
+                  }
+                ]
+              }
+            ],
+            "next": "filter-1-join"
+          },
+          {
+            "id": "filter-1-join",
+            "kind": "join",
+            "of": "filter-1-try",
+            "policy": "quorum:0%",
+            "next": "confirm-1"
+          },
+          {
+            "id": "confirm-1",
+            "kind": "code",
+            "label": "Confirm round 1",
+            "workflow": "confirm",
+            "params": {
+              "round": 1
+            },
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "settle-1",
+                "as": "settle"
+              },
+              {
+                "from": "filter-1",
+                "as": "filter"
+              }
+            ],
+            "next": "round-gate-1"
+          },
+          {
+            "id": "round-gate-1",
+            "kind": "choice",
+            "on": {
+              "from": "confirm-1",
+              "path": "$.continue"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "review-2-try"
+              }
+            ],
+            "default": "collect"
+          },
+          {
+            "id": "review-2-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "review-2",
+                "kind": "agent",
+                "label": "Review round 2",
+                "workflow": "review-agent",
+                "evidence": "review.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  },
+                  {
+                    "from": "confirm-1",
+                    "as": "previous"
+                  }
+                ]
+              }
+            ],
+            "next": "review-2-join"
+          },
+          {
+            "id": "review-2-join",
+            "kind": "join",
+            "of": "review-2-try",
+            "policy": "quorum:0%",
+            "next": "locate-2"
+          },
+          {
+            "id": "locate-2",
+            "kind": "code",
+            "label": "Locate round 2",
+            "workflow": "locate",
+            "checkout": true,
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "review-2",
+                "as": "review"
+              }
+            ],
+            "next": "relocate-2"
+          },
+          {
+            "id": "relocate-2",
+            "kind": "fork",
+            "label": "Re-locate round 2",
+            "inputs": [
+              {
+                "from": "locate-2",
+                "as": "locate"
+              }
+            ],
+            "expand": {
+              "hook": "expand-relocations",
+              "as": "relocation",
+              "id_from": "$.id",
+              "max_legs": 256
+            },
+            "each": {
+              "kind": "agent",
+              "workflow": "relocate-agent",
+              "evidence": "relocate.evidence.schema.json",
+              "max_iterations": 2,
+              "inputs": [
+                {
+                  "from": "select",
+                  "as": "select"
+                }
+              ]
+            },
+            "next": "relocate-2-join"
+          },
+          {
+            "id": "relocate-2-join",
+            "kind": "join",
+            "of": "relocate-2",
+            "policy": "quorum:0%",
+            "next": "settle-2"
+          },
+          {
+            "id": "settle-2",
+            "kind": "code",
+            "label": "Settle round 2",
+            "workflow": "settle",
+            "checkout": true,
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "locate-2",
+                "as": "locate"
+              },
+              {
+                "from_fork": "relocate-2",
+                "as": "relocations"
+              }
+            ],
+            "next": "filter-gate-2"
+          },
+          {
+            "id": "filter-gate-2",
+            "kind": "choice",
+            "on": {
+              "from": "settle-2",
+              "path": "$.filter"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "filter-2-try"
+              }
+            ],
+            "default": "confirm-2"
+          },
+          {
+            "id": "filter-2-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "filter-2",
+                "kind": "agent",
+                "label": "Review filter round 2",
+                "workflow": "filter-agent",
+                "evidence": "filter.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  },
+                  {
+                    "from": "settle-2",
+                    "as": "settle"
+                  }
+                ]
+              }
+            ],
+            "next": "filter-2-join"
+          },
+          {
+            "id": "filter-2-join",
+            "kind": "join",
+            "of": "filter-2-try",
+            "policy": "quorum:0%",
+            "next": "confirm-2"
+          },
+          {
+            "id": "confirm-2",
+            "kind": "code",
+            "label": "Confirm round 2",
+            "workflow": "confirm",
+            "params": {
+              "round": 2
+            },
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "settle-2",
+                "as": "settle"
+              },
+              {
+                "from": "filter-2",
+                "as": "filter"
+              },
+              {
+                "from": "confirm-1",
+                "as": "previous"
+              }
+            ],
+            "next": "round-gate-2"
+          },
+          {
+            "id": "round-gate-2",
+            "kind": "choice",
+            "on": {
+              "from": "confirm-2",
+              "path": "$.continue"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "review-3-try"
+              }
+            ],
+            "default": "collect"
+          },
+          {
+            "id": "review-3-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "review-3",
+                "kind": "agent",
+                "label": "Review round 3",
+                "workflow": "review-agent",
+                "evidence": "review.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  },
+                  {
+                    "from": "confirm-2",
+                    "as": "previous"
+                  }
+                ]
+              }
+            ],
+            "next": "review-3-join"
+          },
+          {
+            "id": "review-3-join",
+            "kind": "join",
+            "of": "review-3-try",
+            "policy": "quorum:0%",
+            "next": "locate-3"
+          },
+          {
+            "id": "locate-3",
+            "kind": "code",
+            "label": "Locate round 3",
+            "workflow": "locate",
+            "checkout": true,
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "review-3",
+                "as": "review"
+              }
+            ],
+            "next": "relocate-3"
+          },
+          {
+            "id": "relocate-3",
+            "kind": "fork",
+            "label": "Re-locate round 3",
+            "inputs": [
+              {
+                "from": "locate-3",
+                "as": "locate"
+              }
+            ],
+            "expand": {
+              "hook": "expand-relocations",
+              "as": "relocation",
+              "id_from": "$.id",
+              "max_legs": 256
+            },
+            "each": {
+              "kind": "agent",
+              "workflow": "relocate-agent",
+              "evidence": "relocate.evidence.schema.json",
+              "max_iterations": 2,
+              "inputs": [
+                {
+                  "from": "select",
+                  "as": "select"
+                }
+              ]
+            },
+            "next": "relocate-3-join"
+          },
+          {
+            "id": "relocate-3-join",
+            "kind": "join",
+            "of": "relocate-3",
+            "policy": "quorum:0%",
+            "next": "settle-3"
+          },
+          {
+            "id": "settle-3",
+            "kind": "code",
+            "label": "Settle round 3",
+            "workflow": "settle",
+            "checkout": true,
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "locate-3",
+                "as": "locate"
+              },
+              {
+                "from_fork": "relocate-3",
+                "as": "relocations"
+              }
+            ],
+            "next": "filter-gate-3"
+          },
+          {
+            "id": "filter-gate-3",
+            "kind": "choice",
+            "on": {
+              "from": "settle-3",
+              "path": "$.filter"
+            },
+            "cases": [
+              {
+                "when": true,
+                "next": "filter-3-try"
+              }
+            ],
+            "default": "confirm-3"
+          },
+          {
+            "id": "filter-3-try",
+            "kind": "fork",
+            "branches": [
+              {
+                "id": "filter-3",
+                "kind": "agent",
+                "label": "Review filter round 3",
+                "workflow": "filter-agent",
+                "evidence": "filter.evidence.schema.json",
+                "max_iterations": 2,
+                "inputs": [
+                  {
+                    "from": "select",
+                    "as": "select"
+                  },
+                  {
+                    "from": "prepare",
+                    "as": "prepare"
+                  },
+                  {
+                    "from": "settle-3",
+                    "as": "settle"
+                  }
+                ]
+              }
+            ],
+            "next": "filter-3-join"
+          },
+          {
+            "id": "filter-3-join",
+            "kind": "join",
+            "of": "filter-3-try",
+            "policy": "quorum:0%",
+            "next": "confirm-3"
+          },
+          {
+            "id": "confirm-3",
+            "kind": "code",
+            "label": "Confirm round 3",
+            "workflow": "confirm",
+            "params": {
+              "round": 3
+            },
+            "inputs": [
+              {
+                "from": "select",
+                "as": "select"
+              },
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "settle-3",
+                "as": "settle"
+              },
+              {
+                "from": "filter-3",
+                "as": "filter"
+              },
+              {
+                "from": "confirm-2",
+                "as": "previous"
+              }
+            ],
+            "next": "collect"
+          },
+          {
+            "id": "collect",
+            "kind": "code",
+            "label": "Collect",
+            "workflow": "collect",
+            "inputs": [
+              {
+                "from": "prepare",
+                "as": "prepare"
+              },
+              {
+                "from": "confirm-1",
+                "as": "round-1"
+              },
+              {
+                "from": "confirm-2",
+                "as": "round-2"
+              },
+              {
+                "from": "confirm-3",
+                "as": "round-3"
+              }
+            ]
           }
-        ],
-        "kind": "sequence"
+        ]
       },
-      "next": "join-review"
+      "next": "review-join"
     },
     {
-      "id": "join-review",
+      "id": "review-join",
       "kind": "join",
       "of": "review",
-      "policy": "any",
-      "next": "merge"
+      "policy": "quorum:0%",
+      "next": "post"
     },
     {
-      "id": "merge",
+      "id": "post",
       "kind": "code",
-      "_note": "Posts one review of every file's surviving findings, from its own microVM with its job token (pull-requests: write). REQUEST_CHANGES is a failure conclusion: the run goes red and ends.",
+      "label": "Post review",
+      "workflow": "post-review",
+      "checkout": true,
       "inputs": [
         {
+          "from": "select",
+          "as": "select"
+        },
+        {
+          "from": "partition",
+          "as": "partition"
+        },
+        {
           "from_fork": "review",
-          "as": "files"
+          "as": "groups"
         }
-      ],
-      "workflow": "post-review"
+      ]
     }
   ]
 }

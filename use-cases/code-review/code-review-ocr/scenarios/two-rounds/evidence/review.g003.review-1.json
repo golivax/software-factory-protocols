@@ -1,0 +1,13 @@
+{
+  "state": "DONE",
+  "comments": [
+    {
+      "path": "web/api.ts",
+      "content": "`key` is concatenated into the query string unencoded: a key holding `&` or `#` reads another key. Use `encodeURIComponent(key)`.",
+      "existing_code": "const res = await fetch(\"/cache?key=\" + key);",
+      "suggestion_code": "const res = await fetch(\"/cache?key=\" + encodeURIComponent(key));",
+      "category": "bug",
+      "severity": "medium"
+    }
+  ]
+}

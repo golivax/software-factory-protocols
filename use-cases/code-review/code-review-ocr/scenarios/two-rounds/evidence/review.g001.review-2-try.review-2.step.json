@@ -1,0 +1,13 @@
+{
+  "state": "DONE",
+  "comments": [
+    {
+      "path": "svc/cache.go",
+      "content": "`Purge` calls `time.Now()` once per entry while holding the lock; read the clock once before the loop so a large cache is purged against one instant and the lock is held for less time.",
+      "existing_code": "if time.Now().After(e.expires) {",
+      "suggestion_code": "now := time.Now()\nfor k, e := range c.entries {\n\tif now.After(e.expires) {",
+      "category": "performance",
+      "severity": "low"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "groups": [
+    {
+      "label": "TTL cache and its HTTP handler",
+      "files": [
+        1,
+        2
+      ]
+    },
+    {
+      "label": "maintenance job",
+      "files": [
+        0
+      ]
+    },
+    {
+      "label": "web client",
+      "files": [
+        3
+      ]
+    }
+  ]
+}

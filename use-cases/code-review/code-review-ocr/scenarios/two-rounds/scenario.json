@@ -1,0 +1,28 @@
+{
+  "purpose": "A four-file MR (a TTL cache with a race, its handler, a job, a web client) beside a secret and a vendored file: OCR selects the four, an LLM grouping makes three groups, the cache group gets a plan, its round-1 comments are placed, one re-located by the LLM, one removed by the filter, round 2 adds a finding, and the review is posted as inline comments under a sticky summary. Run twice on the same MR, the summary is edited, not duplicated.",
+  "mr": {
+    "title": "Add a TTL cache for the request handlers",
+    "description": "Caches lookups for five minutes; a nightly job purges expired entries."
+  },
+  "steps": [
+    {
+      "wait": "done"
+    },
+    {
+      "post": "/open-code-review"
+    },
+    {
+      "wait": "done"
+    }
+  ],
+  "expect": {
+    "end": "done",
+    "route": {
+      "grouping-gate": "llm"
+    },
+    "notes": [
+      "🔍 **OpenCodeReview** found **4** issue(s) in this PR.",
+      "- ✅ Successfully posted inline: 4 comment(s)"
+    ]
+  }
+}

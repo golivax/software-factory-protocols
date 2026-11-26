@@ -1,0 +1,115 @@
+package diff
+
+// Oracle for the code-review-ocr protocol port (scratch, never upstreamed):
+// runs this package's functions over $OCR_ORACLE_IN and writes the answers.
+
+import (
+	"encoding/json"
+	"os"
+	"testing"
+
+	"github.com/alibaba/open-code-review/internal/model"
+)
+
+type oracleIn struct {
+	Patches  []string `json:"patches"`
+	Resolve  []struct {
+		Comment model.LlmComment `json:"comment"`
+		Diff    model.Diff       `json:"diff"`
+	} `json:"resolve"`
+	ResolveAll []struct {
+		Comments []model.LlmComment `json:"comments"`
+		Diffs    []model.Diff       `json:"diffs"`
+	} `json:"resolve_all"`
+	Relocate []struct {
+		Comment model.LlmComment `json:"comment"`
+		Diffs   []model.Diff     `json:"diffs"`
+	} `json:"relocate"`
+	CodeBlocks []string `json:"code_blocks"`
+	Gitignore  []struct {
+		Patterns []string `json:"patterns"`
+		Path     string   `json:"path"`
+	} `json:"gitignore"`
+	ProviderDirs []string `json:"provider_dirs"`
+}
+
+func TestOracle(t *testing.T) {
+	in := os.Getenv("OCR_ORACLE_IN")
+	if in == "" {
+		t.Skip("no oracle input")
+	}
+	raw, err := os.ReadFile(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var cases oracleIn
+	if err := json.Unmarshal(raw, &cases); err != nil {
+		t.Fatal(err)
+	}
+	out := map[string]any{}
+
+	var patches [][]model.Diff
+	for _, p := range cases.Patches {
+		ds := ParsePatch(p)
+		for i := range ds {
+			if ds[i].IsDeleted || ds[i].NewPath == "/dev/null" {
+				ds[i].NewPath = "/dev/null"
+			}
+		}
+		if ds == nil {
+			ds = []model.Diff{}
+		}
+		patches = append(patches, ds)
+	}
+	out["patches"] = patches
+
+	var resolve []model.LlmComment
+	for _, c := range cases.Resolve {
+		cm, d := c.Comment, c.Diff
+		ResolveComment(&cm, &d)
+		resolve = append(resolve, cm)
+	}
+	out["resolve"] = resolve
+
+	var all [][]model.LlmComment
+	for _, c := range cases.ResolveAll {
+		all = append(all, ResolveLineNumbers(c.Comments, c.Diffs))
+	}
+	out["resolve_all"] = all
+
+	type relocated struct {
+		Comment model.LlmComment `json:"comment"`
+		To      string           `json:"to"`
+		OK      bool             `json:"ok"`
+	}
+	var reloc []relocated
+	for _, c := range cases.Relocate {
+		cm := c.Comment
+		to, ok := RelocateAcrossFiles(&cm, c.Diffs)
+		reloc = append(reloc, relocated{cm, to, ok})
+	}
+	out["relocate"] = reloc
+
+	var blocks []string
+	for _, b := range cases.CodeBlocks {
+		blocks = append(blocks, extractCodeBlock(b))
+	}
+	out["code_blocks"] = blocks
+
+	var ign []bool
+	for _, g := range cases.Gitignore {
+		ign = append(ign, GitignorePatterns(g.Patterns).Matches(g.Path))
+	}
+	out["gitignore"] = ign
+
+	var dirs []string
+	for _, p := range cases.ProviderDirs {
+		dirs = append(dirs, ProviderDirPrefix(p))
+	}
+	out["provider_dirs"] = dirs
+
+	data, _ := json.MarshalIndent(out, "", " ")
+	if err := os.WriteFile(os.Getenv("OCR_ORACLE_OUT"), data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+}

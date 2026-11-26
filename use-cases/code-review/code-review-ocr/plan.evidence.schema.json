@@ -1,5 +1,13 @@
-{ "type": "object", "additionalProperties": false,
-  "required": ["examined", "plan_items"],
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan"
+  ],
   "properties": {
-    "examined": { "type": "array", "items": {"type": "string"} },
-    "plan_items": { "type": "array", "items": {"type": "string"} } } }
+    "plan": {
+      "type": "string",
+      "description": "The plan task's plain-text answer, verbatim."
+    }
+  }
+}

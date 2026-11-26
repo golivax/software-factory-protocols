@@ -130,7 +130,9 @@ next to the unit, nothing else).
 ## Status
 
 `demo/hello`, `demo/toy`, `demo/demo` and `demo/grumpy` are verified live on the
-deployed factory. The `use-cases/` protocols were ported from the engine's
+deployed factory. `use-cases/code-review/code-review-ocr` was rebuilt on the current
+engine from alibaba/open-code-review; its README says how it is tested. The other
+`use-cases/` protocols were ported from the engine's
 GitHub-Actions era and have **not** been re-verified on the deployed service: their
 units still reference in-repo `.github/agent-factory/...` paths and some checks assume
 that layout. They are kept here as the engine's regression corpus and as protocol
