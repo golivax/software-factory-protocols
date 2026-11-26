@@ -30,6 +30,92 @@ selected, the same exclusions and the same rule text). On the test stack (GitLab
 
 The agent units compile with gh-aw v0.89.0.
 
+## Shape
+
+Rounded boxes are agent nodes, boxes code nodes, diamonds `choice` nodes; each pair of
+circles is a fork and its join. A tolerant fork (below) wraps a step that may fail.
+Rounds 2 and 3 are drawn folded: each repeats round 1's steps. `tests/generate/gen_diagram.py
+--readme` draws it from `protocol.json`.
+
+<!-- protocol-diagram:start -->
+```mermaid
+flowchart TD
+  n32(("start"))
+  n0["Select files<br/><i>code</i>"]
+  n1{"grouping-gate"}
+  n2(("fork"))
+  n3(["Group files<br/><i>agent</i>"])
+  n2 --> n3
+  n4(("join"))
+  n5["Partition<br/><i>code</i>"]
+  n6(("fork"))
+  subgraph n7["for each group (expand-groups)"]
+    n8["Prepare<br/><i>code</i>"]
+    n9{"plan-gate"}
+    n10(("fork"))
+    n11(["Plan<br/><i>agent</i>"])
+    n10 --> n11
+    n12(("join"))
+    n13{"over-budget-gate"}
+    n14(["Review round 1<br/><i>agent</i>"])
+    n15["Locate round 1<br/><i>code</i>"]
+    n16(("fork"))
+    subgraph n17["for each relocation (expand-relocations)"]
+      n18(["relocate<br/><i>agent</i>"])
+    end
+    n16 --> n18
+    n19(("join"))
+    n20["Settle round 1<br/><i>code</i>"]
+    n21{"filter-gate-1"}
+    n22(("fork"))
+    n23(["Review filter round 1<br/><i>agent</i>"])
+    n22 --> n23
+    n24(("join"))
+    n25["Confirm round 1<br/><i>code</i>"]
+    n26{"round-gate-1"}
+    n27[["round 2<br/><i>as round 1, with the findings confirmed so far and no plan</i>"]]
+    n28[["round 3<br/><i>as round 1, with the findings confirmed so far and no plan</i>"]]
+    n29["Collect<br/><i>code</i>"]
+    n8 --> n9
+    n9 -->|true| n10
+    n9 -->|else| n13
+    n11 --> n12
+    n12 --> n14
+    n13 -->|true| n29
+    n13 -->|else| n14
+    n14 --> n15
+    n15 --> n16
+    n17 --> n19
+    n19 --> n20
+    n20 --> n21
+    n21 -->|true| n22
+    n21 -->|else| n25
+    n23 --> n24
+    n24 --> n25
+    n25 --> n26
+    n26 -->|true| n27
+    n26 -->|else| n29
+    n27 -->|true| n28
+    n27 -->|else| n29
+    n28 --> n29
+  end
+  n6 --> n8
+  n30(("join"))
+  n31["Post review<br/><i>code</i>"]
+  n0 --> n1
+  n1 -->|llm| n2
+  n1 -->|else| n5
+  n3 --> n4
+  n4 --> n5
+  n5 --> n6
+  n7 --> n30
+  n30 --> n31
+  n32 --> n0
+  n33(("done"))
+  n31 --> n33
+```
+<!-- protocol-diagram:end -->
+
 ## How it works
 
 | Upstream (`ocr review --from <base> --to <head>`) | Here |
